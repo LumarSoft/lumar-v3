@@ -11,9 +11,9 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: "Liquid Metal Buttons | Premium UI Components",
+  title: "LumarSoft — Desarrollo web a medida | Rosario, Argentina",
   description:
-    "A collection of premium button components featuring animated liquid metal borders powered by Paper Shaders.",
+    "Desarrollamos lo que tu empresa realmente necesita. Sin templates, sin vueltas. Ecommerce, landing pages y aplicaciones web a medida desde Rosario.",
   generator: "v0.app",
   icons: {
     icon: [
@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="es" className="dark">
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Instrument+Sans:wght@400;500;600;700&display=swap"
