@@ -1,25 +1,29 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 
 const painPoints = [
   {
     pain: '"Me entregaron algo genérico con mi logo pegado."',
-    solution: "Cada proyecto arranca desde cero. Escuchamos el problema antes de escribir una línea de código.",
+    solution:
+      "Cada proyecto arranca con un proceso de discovery: entendemos tu negocio antes de proponer cualquier solución. Nada de templates adaptados.",
   },
   {
     pain: '"El desarrollador desapareció a mitad del proyecto."',
-    solution: "Comunicación directa con quien hace el trabajo. Sin cuentas genéricas, sin intermediarios.",
+    solution:
+      "Trabajás directamente con el equipo que ejecuta. Actualizaciones regulares, seguimiento activo y canal de comunicación siempre abierto.",
   },
   {
     pain: '"No entendí nada de lo que me explicaron."',
-    solution: "Te hablamos en castellano. Sin tecnicismos innecesarios, sin humo.",
+    solution:
+      "Documentamos todo en términos que hacen sentido para tu negocio. Sabés exactamente qué se está construyendo, para qué y cuándo.",
   },
   {
     pain: '"Tardaron meses y el resultado fue mediocre."',
-    solution: "Fechas reales, no optimistas. Si algo tarda dos semanas, te decimos dos semanas.",
+    solution:
+      "Planificamos con fechas reales desde el primer día. Cada etapa tiene hitos claros y vos aprobás antes de avanzar a la siguiente.",
   },
-]
+];
 
 export function ImpactSection() {
   return (
@@ -32,10 +36,16 @@ export function ImpactSection() {
           transition={{ duration: 0.5 }}
           className="mb-14"
         >
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">¿Te suena esto?</p>
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">
+            ¿Te suena esto?
+          </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
             Malas experiencias que no deberían repetirse.
           </h2>
+          <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
+            Las escuchamos seguido. Por eso construimos un proceso que elimina
+            cada uno de estos problemas desde el principio.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-800/50 rounded-2xl overflow-hidden">
@@ -52,11 +62,13 @@ export function ImpactSection() {
                 {item.pain}
               </p>
               <div className="w-8 h-px bg-zinc-700 mb-4" />
-              <p className="text-zinc-300 text-sm leading-relaxed">{item.solution}</p>
+              <p className="text-zinc-300 text-sm leading-relaxed">
+                {item.solution}
+              </p>
             </motion.div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

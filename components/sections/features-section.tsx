@@ -1,34 +1,43 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ShoppingCart, MousePointerClick, Wrench, BookOpen } from "lucide-react"
+import { motion } from "framer-motion";
+import {
+  ShoppingCart,
+  MousePointerClick,
+  Wrench,
+  BookOpen,
+} from "lucide-react";
 
 const services = [
   {
     icon: ShoppingCart,
     title: "Ecommerce",
-    description: "Vendé online sin perder el trato personalizado que te diferencia. Diseñamos cada flujo de compra pensando en tus clientes reales.",
+    description:
+      "Vendé online sin perder el trato personalizado que te diferencia. Diseñamos cada flujo de compra pensando en tus clientes reales.",
     tag: "Tiendas online",
   },
   {
     icon: MousePointerClick,
     title: "Landing Pages",
-    description: "Una página que convierte visitas en consultas reales. Sin distracciones, con un objetivo claro y copy que habla el idioma de tu cliente.",
+    description:
+      "Una página que convierte visitas en consultas reales. Sin distracciones, con un objetivo claro y copy que habla el idioma de tu cliente.",
     tag: "Conversión",
   },
   {
     icon: Wrench,
     title: "Apps Web a Medida",
-    description: "Si ninguna herramienta existente te cierra, la construimos para vos. Sistemas internos, paneles de gestión, automatizaciones.",
+    description:
+      "Si ninguna herramienta existente te cierra, la construimos para vos. Sistemas internos, paneles de gestión, automatizaciones.",
     tag: "Desarrollo a medida",
   },
   {
     icon: BookOpen,
     title: "Presencia Digital",
-    description: "Contá lo que sabés. Nosotros hacemos que llegue a quien tiene que llegar. Sitios web, blogs y estrategia de contenido.",
+    description:
+      "Contá lo que sabés. Nosotros hacemos que llegue a quien tiene que llegar. Sitios web, blogs y estrategia de contenido.",
     tag: "Contenido y SEO",
   },
-]
+];
 
 export function FeaturesSection() {
   return (
@@ -41,15 +50,22 @@ export function FeaturesSection() {
           transition={{ duration: 0.5 }}
           className="mb-14"
         >
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">Servicios</p>
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">
+            Servicios
+          </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
             Lo que hacemos, y por qué importa.
           </h2>
+          <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
+            Más de tres años desarrollando soluciones digitales para empresas y
+            organizaciones argentinas. Cada proyecto tiene metodología clara,
+            entregas definidas y código que te pertenece.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {services.map((service, i) => {
-            const Icon = service.icon
+            const Icon = service.icon;
             return (
               <motion.div
                 key={service.title}
@@ -67,13 +83,17 @@ export function FeaturesSection() {
                     {service.tag}
                   </span>
                 </div>
-                <h3 className="font-display text-xl font-semibold text-zinc-100 mb-3">{service.title}</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">{service.description}</p>
+                <h3 className="font-display text-xl font-semibold text-zinc-100 mb-3">
+                  {service.title}
+                </h3>
+                <p className="text-zinc-500 text-sm leading-relaxed">
+                  {service.description}
+                </p>
               </motion.div>
-            )
+            );
           })}
         </div>
       </div>
     </section>
-  )
+  );
 }

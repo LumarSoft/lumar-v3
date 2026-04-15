@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { MessageCircle, Send } from "lucide-react"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { MessageCircle, Send } from "lucide-react";
 
 export function CtaSection() {
-  const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" })
-  const [sent, setSent] = useState(false)
+  const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
+  const [sent, setSent] = useState(false);
 
   function handleWhatsApp(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     const text = encodeURIComponent(
-      `Hola, soy ${form.nombre}${form.email ? ` (${form.email})` : ""}.\n\n${form.mensaje}`
-    )
-    window.open(`https://wa.me/5493415690470?text=${text}`, "_blank")
-    setSent(true)
+      `Hola, soy ${form.nombre}${form.email ? ` (${form.email})` : ""}.\n\n${form.mensaje}`,
+    );
+    window.open(`https://wa.me/5493415690470?text=${text}`, "_blank");
+    setSent(true);
   }
 
   return (
@@ -28,13 +28,17 @@ export function CtaSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">Contacto</p>
+            <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">
+              Contacto
+            </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 mb-6 leading-tight">
               ¿Tenés un proyecto en mente?{" "}
               <span className="text-zinc-500">Contanos.</span>
             </h2>
             <p className="text-zinc-500 text-sm leading-relaxed mb-8">
-              No hace falta tener todo claro todavía. Contanos qué necesitás y charlamos. Sin presión, sin vendedores.
+              No hace falta tener todo definido. Contanos el problema y
+              evaluamos juntos qué tiene sentido construir, con qué alcance y en
+              qué tiempo. Sin presión, sin vendedores.
             </p>
 
             <a
@@ -61,13 +65,20 @@ export function CtaSection() {
           >
             {sent ? (
               <div className="p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 text-center">
-                <p className="text-zinc-100 font-semibold mb-2">Gracias, {form.nombre}.</p>
-                <p className="text-zinc-500 text-sm">Te abrimos WhatsApp para seguir la charla.</p>
+                <p className="text-zinc-100 font-semibold mb-2">
+                  Gracias, {form.nombre}.
+                </p>
+                <p className="text-zinc-500 text-sm">
+                  Te abrimos WhatsApp para seguir la charla.
+                </p>
               </div>
             ) : (
               <form onSubmit={handleWhatsApp} className="space-y-4">
                 <div>
-                  <label htmlFor="nombre" className="block text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider">
+                  <label
+                    htmlFor="nombre"
+                    className="block text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider"
+                  >
                     Nombre
                   </label>
                   <input
@@ -75,33 +86,45 @@ export function CtaSection() {
                     type="text"
                     required
                     value={form.nombre}
-                    onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, nombre: e.target.value })
+                    }
                     placeholder="Tu nombre"
                     className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-zinc-100 placeholder-zinc-600 text-sm transition-colors"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider">
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider"
+                  >
                     Email
                   </label>
                   <input
                     id="email"
                     type="email"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
                     placeholder="tu@empresa.com"
                     className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-zinc-100 placeholder-zinc-600 text-sm transition-colors"
                   />
                 </div>
                 <div>
-                  <label htmlFor="mensaje" className="block text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider">
+                  <label
+                    htmlFor="mensaje"
+                    className="block text-xs font-medium text-zinc-500 mb-2 uppercase tracking-wider"
+                  >
                     Mensaje
                   </label>
                   <textarea
                     id="mensaje"
                     required
                     value={form.mensaje}
-                    onChange={(e) => setForm({ ...form, mensaje: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, mensaje: e.target.value })
+                    }
                     placeholder="Contanos qué necesitás, aunque sea a grandes rasgos..."
                     rows={4}
                     className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-zinc-100 placeholder-zinc-600 text-sm transition-colors resize-none"
@@ -120,5 +143,5 @@ export function CtaSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

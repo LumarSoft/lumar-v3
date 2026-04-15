@@ -1,31 +1,34 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Github, Linkedin } from "lucide-react"
+import { motion } from "framer-motion";
+import { Github, Linkedin } from "lucide-react";
 
 const team = [
   {
     name: "Mateo Bodini",
-    description: "Desarrollo frontend y arquitectura de interfaces. Convierte problemas de negocio en experiencias digitales que funcionan.",
+    description:
+      "Especialista en frontend y arquitectura de interfaces. Diseña flujos de usuario con foco en conversión y claridad, no en estética vacía.",
     linkedin: "https://www.linkedin.com/in/mateobodini/",
     github: "https://github.com/mateoBodiniARG",
     initials: "MB",
   },
   {
     name: "Marcelo Benitez",
-    description: "Backend y sistemas a medida. Si hay lógica de negocio compleja que modelar, es donde se siente cómodo.",
+    description:
+      "Especialista en backend y sistemas a medida. Modela lógica de negocio compleja y construye arquitecturas que escalan sin volverse un caos.",
     linkedin: "https://www.linkedin.com/in/benitez-marcelo/",
     github: "https://github.com/marcebenitez2",
     initials: "MB",
   },
   {
     name: "Lucas Quaroni",
-    description: "Fullstack y performance. Obsesionado con que las cosas funcionen rápido y bien en producción, no solo en demo.",
+    description:
+      "Fullstack con foco en performance y entrega. Garantiza que lo que se lanza a producción funcione exactamente como lo que se mostró en demo.",
     linkedin: "https://www.linkedin.com/in/lucasquaroni/",
     github: "https://github.com/LucasQuaroni",
     initials: "LQ",
   },
-]
+];
 
 export function EquipoSection() {
   return (
@@ -38,12 +41,16 @@ export function EquipoSection() {
           transition={{ duration: 0.5 }}
           className="mb-14"
         >
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">El equipo</p>
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">
+            El equipo
+          </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-2xl leading-tight">
-            Tres desarrolladores de Rosario que aprendieron que la tecnología sola no alcanza.
+            Tres desarrolladores especializados. Un equipo que responde.
           </h2>
           <p className="text-zinc-500 mt-4 max-w-lg text-sm leading-relaxed">
-            Hay que entender el negocio primero. Por eso cada proyecto empieza con preguntas, no con presupuestos.
+            Con experiencia en proyectos reales para empresas, gremios y
+            organizaciones argentinas. Cada integrante domina su área y trabaja
+            directamente con el cliente — sin capas, sin intermediarios.
           </p>
         </motion.div>
 
@@ -59,11 +66,17 @@ export function EquipoSection() {
             >
               {/* Avatar */}
               <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center mb-5 group-hover:bg-zinc-700 transition-colors">
-                <span className="font-display text-sm font-bold text-zinc-400">{member.initials}</span>
+                <span className="font-display text-sm font-bold text-zinc-400">
+                  {member.initials}
+                </span>
               </div>
 
-              <h3 className="font-display text-lg font-semibold text-zinc-100 mb-2">{member.name}</h3>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-5">{member.description}</p>
+              <h3 className="font-display text-lg font-semibold text-zinc-100 mb-2">
+                {member.name}
+              </h3>
+              <p className="text-zinc-500 text-sm leading-relaxed mb-5">
+                {member.description}
+              </p>
 
               <div className="flex items-center gap-3">
                 <a
@@ -90,5 +103,5 @@ export function EquipoSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
