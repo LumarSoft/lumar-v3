@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { motion } from "motion/react"
-import Image from "next/image"
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 const projects = [
   {
@@ -46,7 +46,27 @@ const projects = [
       "Necesitaban gestionar membresías y sorteos sin margen de error. Sistema automatizado con reportes en tiempo real y cero posibilidad de irregularidades.",
     image: "/5.png",
   },
-]
+];
+
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 48,
+    filter: "blur(6px)",
+    scale: 0.97,
+  },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    scale: 1,
+    transition: {
+      duration: 0.55,
+      delay: i * 0.09,
+      ease: [0.22, 1, 0.36, 1], // custom ease-out-expo
+    },
+  }),
+};
 
 export function TestimonialsSection() {
   return (
@@ -59,7 +79,9 @@ export function TestimonialsSection() {
           viewport={{ once: true }}
           className="mb-14"
         >
-          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">Portfolio</p>
+          <p className="text-sm font-medium text-zinc-500 uppercase tracking-wider mb-4">
+            Portfolio
+          </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
             Proyectos reales, problemas reales.
           </h2>
@@ -69,11 +91,12 @@ export function TestimonialsSection() {
           {projects.map((project, i) => (
             <motion.div
               key={`${project.client}-${i}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
-              className="group rounded-2xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-700/50 overflow-hidden transition-all duration-300 flex flex-col"
+              custom={i}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              className="group rounded-2xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-700/50 overflow-hidden transition-colors duration-300 flex flex-col"
             >
               {/* Image */}
               <div className="aspect-video bg-zinc-800/50 overflow-hidden relative">
@@ -90,15 +113,21 @@ export function TestimonialsSection() {
               {/* Content */}
               <div className="p-6 flex flex-col flex-1">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs text-zinc-500 bg-zinc-800/80 px-2.5 py-1 rounded-full">{project.category}</p>
+                  <p className="text-xs text-zinc-500 bg-zinc-800/80 px-2.5 py-1 rounded-full">
+                    {project.category}
+                  </p>
                 </div>
-                <h3 className="font-display text-base font-semibold text-zinc-100 mb-2">{project.client}</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">{project.description}</p>
+                <h3 className="font-display text-base font-semibold text-zinc-100 mb-2">
+                  {project.client}
+                </h3>
+                <p className="text-zinc-500 text-sm leading-relaxed">
+                  {project.description}
+                </p>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -56,9 +56,15 @@ export function PricingSection() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="group flex gap-8 p-8 bg-zinc-950 hover:bg-zinc-900/60 transition-colors duration-300"
             >
-              <span className="font-display text-4xl font-bold text-zinc-800 group-hover:text-zinc-700 transition-colors shrink-0 leading-none mt-1">
+              <motion.span
+                initial={{ opacity: 0, scale: 1.4 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: i * 0.08 + 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="font-display text-4xl font-bold text-zinc-800 group-hover:text-zinc-600 transition-colors shrink-0 leading-none mt-1 tabular-nums"
+              >
                 {value.number}
-              </span>
+              </motion.span>
               <div>
                 <h3 className="font-display text-lg font-semibold text-zinc-100 mb-2">{value.title}</h3>
                 <p className="text-zinc-500 text-sm leading-relaxed max-w-xl">{value.description}</p>

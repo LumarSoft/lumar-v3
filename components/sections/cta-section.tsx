@@ -52,7 +52,7 @@ export function CtaSection() {
             </a>
 
             <p className="mt-6 text-xs text-zinc-600">
-              Respondemos en menos de 24hs. Sin spam, sin seguimiento.
+              En LumarSoft respondemos en menos de 24hs. Sin spam, sin seguimiento.
             </p>
           </motion.div>
 
@@ -90,7 +90,7 @@ export function CtaSection() {
                       setForm({ ...form, nombre: e.target.value })
                     }
                     placeholder="Tu nombre"
-                    className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-zinc-100 placeholder-zinc-600 text-sm transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none focus:shadow-[0_0_0_3px_rgba(161,161,170,0.08)] text-zinc-100 placeholder-zinc-600 text-sm transition-all"
                   />
                 </div>
                 <div>
@@ -108,7 +108,7 @@ export function CtaSection() {
                       setForm({ ...form, email: e.target.value })
                     }
                     placeholder="tu@empresa.com"
-                    className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-zinc-100 placeholder-zinc-600 text-sm transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none focus:shadow-[0_0_0_3px_rgba(161,161,170,0.08)] text-zinc-100 placeholder-zinc-600 text-sm transition-all"
                   />
                 </div>
                 <div>
@@ -127,7 +127,7 @@ export function CtaSection() {
                     }
                     placeholder="Contanos qué necesitás, aunque sea a grandes rasgos..."
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none text-zinc-100 placeholder-zinc-600 text-sm transition-colors resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-zinc-600 focus:outline-none focus:shadow-[0_0_0_3px_rgba(161,161,170,0.08)] text-zinc-100 placeholder-zinc-600 text-sm transition-all resize-none"
                   />
                 </div>
                 <button

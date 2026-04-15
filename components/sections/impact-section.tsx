@@ -43,7 +43,7 @@ export function ImpactSection() {
             Malas experiencias que no deberían repetirse.
           </h2>
           <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Las escuchamos seguido. Por eso construimos un proceso que elimina
+            Las escuchamos seguido. Por eso en LumarSoft construimos un proceso que elimina
             cada uno de estos problemas desde el principio.
           </p>
         </motion.div>
@@ -61,7 +61,13 @@ export function ImpactSection() {
               <p className="text-zinc-500 text-sm italic mb-4 group-hover:text-zinc-400 transition-colors">
                 {item.pain}
               </p>
-              <div className="w-8 h-px bg-zinc-700 mb-4" />
+              <motion.div
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+                className="w-8 h-px bg-zinc-700 mb-4 origin-left"
+              />
               <p className="text-zinc-300 text-sm leading-relaxed">
                 {item.solution}
               </p>

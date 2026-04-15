@@ -1,12 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import {
-  ShoppingCart,
-  MousePointerClick,
-  Wrench,
-  BookOpen,
-} from "lucide-react";
+import { motion, useMotionTemplate, useMotionValue, useSpring, animate } from "framer-motion";
+import { ShoppingCart, MousePointerClick, Wrench, BookOpen } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const services = [
   {
@@ -39,6 +35,66 @@ const services = [
   },
 ];
 
+function ServiceCard({
+  icon: Icon,
+  title,
+  description,
+  tag,
+  delay,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  tag: string;
+  delay: number;
+}) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const spotlightOpacity = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 120, damping: 25 });
+  const springY = useSpring(mouseY, { stiffness: 120, damping: 25 });
+  const spotlight = useMotionTemplate`radial-gradient(260px circle at ${springX}px ${springY}px, rgba(161,161,170,0.09), transparent 80%)`;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+      className="group relative p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-900/80 transition-all duration-300 overflow-hidden"
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        mouseX.set(e.clientX - rect.left);
+        mouseY.set(e.clientY - rect.top);
+        animate(spotlightOpacity, 1, { duration: 0.15 });
+      }}
+      onMouseLeave={() => {
+        animate(spotlightOpacity, 0, { duration: 0.12 });
+      }}
+    >
+      {/* Per-card spotlight */}
+      <motion.div
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{ background: spotlight, opacity: spotlightOpacity }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-6">
+          <div className="w-11 h-11 rounded-xl bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
+            <Icon className="w-5 h-5 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
+          </div>
+          <span className="text-xs text-zinc-600 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
+            {tag}
+          </span>
+        </div>
+        <h3 className="font-display text-xl font-semibold text-zinc-100 mb-3">{title}</h3>
+        <p className="text-zinc-500 text-sm leading-relaxed">{description}</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export function FeaturesSection() {
   return (
     <section id="servicios" className="px-6 py-24">
@@ -64,34 +120,9 @@ export function FeaturesSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {services.map((service, i) => {
-            const Icon = service.icon;
-            return (
-              <motion.div
-                key={service.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="group p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-900/80 transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-6">
-                  <div className="w-11 h-11 rounded-xl bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-                    <Icon className="w-5 h-5 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
-                  </div>
-                  <span className="text-xs text-zinc-600 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
-                    {service.tag}
-                  </span>
-                </div>
-                <h3 className="font-display text-xl font-semibold text-zinc-100 mb-3">
-                  {service.title}
-                </h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">
-                  {service.description}
-                </p>
-              </motion.div>
-            );
-          })}
+          {services.map((service, i) => (
+            <ServiceCard key={service.title} {...service} delay={i * 0.08} />
+          ))}
         </div>
       </div>
     </section>
