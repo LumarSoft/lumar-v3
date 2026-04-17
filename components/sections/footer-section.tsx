@@ -30,9 +30,9 @@ export function FooterSection() {
   return (
     <footer className="px-6 py-16 border-t border-zinc-900">
       <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="md:col-span-1">
             <Link
               href="/"
               className="font-display text-xl font-semibold text-zinc-100 tracking-tight"
@@ -73,7 +73,7 @@ export function FooterSection() {
           </div>
 
           {/* Team */}
-          <div className="col-span-2 md:col-span-2">
+          <div className="md:col-span-2">
             <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">
               El equipo
             </h4>

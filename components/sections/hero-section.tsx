@@ -49,7 +49,7 @@ export function HeroSection() {
   const spotlightOpacity = useMotionValue(0);
   const springX = useSpring(rawX, { stiffness: 90, damping: 22 });
   const springY = useSpring(rawY, { stiffness: 90, damping: 22 });
-  const spotlight = useMotionTemplate`radial-gradient(480px circle at ${springX}px ${springY}px, rgba(161,161,170,0.10), transparent 80%)`;
+  const spotlight = useMotionTemplate`radial-gradient(480px circle at ${springX}px ${springY}px, rgba(218,128,55,0.13), transparent 80%)`;
 
   // Scroll indicator fade
   const { scrollY } = useScroll();
@@ -76,7 +76,7 @@ export function HeroSection() {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: "radial-gradient(circle, rgba(161,161,170,0.18) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(circle, rgba(161,161,170,0.14) 1px, transparent 1px)",
           backgroundSize: "32px 32px",
         }}
       />
@@ -98,7 +98,7 @@ export function HeroSection() {
           transition={{ duration: 0.5 }}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900/80 border border-zinc-800 mb-10"
         >
-          <span className="w-2 h-2 rounded-full bg-zinc-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           <span className="text-sm text-zinc-400">Rosario, Argentina</span>
         </motion.div>
 
@@ -107,7 +107,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.95]"
+          className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.95]"
         >
           <span className="text-zinc-100 block">Tu negocio creció.</span>
           <span className="text-zinc-500 block mt-2">Tu web, no.</span>
@@ -118,7 +118,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-lg md:text-xl text-zinc-400 max-w-xl mx-auto mb-12 leading-relaxed"
+          className="text-base md:text-xl text-zinc-400 max-w-xl mx-auto mb-12 leading-relaxed"
         >
           Desarrollamos lo que tu empresa realmente necesita, desde Rosario para donde estés.
           Sin intermediarios, sin vueltas.
@@ -144,7 +144,7 @@ export function HeroSection() {
           className="mt-16 grid grid-cols-3 gap-px bg-zinc-800/50 rounded-2xl overflow-hidden max-w-md mx-auto"
         >
           {stats.map((stat, i) => (
-            <div key={i} className="bg-zinc-950 px-4 py-5 flex flex-col items-center gap-1.5 hover:bg-zinc-900/60 transition-colors duration-300">
+            <div key={i} className="bg-zinc-950 px-2 sm:px-4 py-4 sm:py-5 flex flex-col items-center gap-1 sm:gap-1.5 hover:bg-zinc-900/60 transition-colors duration-300">
               <span className="font-display text-2xl font-bold text-zinc-100">
                 <AnimatedCounter target={stat.target} suffix={stat.suffix} />
               </span>
