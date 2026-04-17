@@ -90,7 +90,12 @@ export function Navbar() {
           })}
           <Link
             href="#contacto"
-            className="ml-2 px-4 py-1.5 text-sm rounded-full bg-zinc-100 text-zinc-900 font-medium hover:bg-zinc-200 transition-colors"
+            className="group ml-2 inline-flex items-center gap-2 px-4 py-1.5 text-sm rounded-full
+              bg-orange-500/10 border border-orange-500/25 text-orange-400 font-medium
+              hover:bg-orange-500/18 hover:border-orange-500/45
+              shadow-[0_0_14px_rgba(249,115,22,0.08)]
+              hover:shadow-[0_0_20px_rgba(249,115,22,0.18)]
+              backdrop-blur-sm transition-all duration-300"
           >
             Contanos tu proyecto
           </Link>
@@ -165,7 +170,12 @@ export function Navbar() {
               <Link
                 href="#contacto"
                 onClick={() => setOpen(false)}
-                className="mt-1 block px-4 py-2.5 text-sm rounded-xl bg-zinc-100 text-zinc-900 font-medium hover:bg-zinc-200 transition-colors text-center"
+                className="mt-1 block px-4 py-2.5 text-sm rounded-xl text-center font-medium
+                  bg-orange-500/10 border border-orange-500/25 text-orange-400
+                  hover:bg-orange-500/18 hover:border-orange-500/45
+                  shadow-[0_0_14px_rgba(249,115,22,0.08)]
+                  hover:shadow-[0_0_20px_rgba(249,115,22,0.18)]
+                  backdrop-blur-sm transition-all duration-300"
               >
                 Contanos tu proyecto
               </Link>
