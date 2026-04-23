@@ -4,22 +4,22 @@ import { motion } from "framer-motion";
 
 const exchanges = [
   {
-    client: "Me entregaron algo genérico con mi logo pegado.",
+    client: "Me entregaron un template con mi nombre. No tenía nada que ver con mi negocio.",
     response:
-      "Antes de escribir una línea de código, entendemos tu negocio. Cada proyecto arranca desde cero — nada de templates adaptados.",
+      "Cada proyecto arranca desde cero. Antes de escribir una línea de código, entendemos cómo funcionás y qué querés lograr.",
   },
   {
-    client: "El desarrollador desapareció a mitad del proyecto.",
+    client: "Contraté a alguien y desapareció a la mitad del proyecto.",
     response:
-      "Trabajás directamente con el equipo que ejecuta. Actualizaciones regulares, seguimiento activo y canal de comunicación siempre abierto.",
+      "Hablás directamente con quien construye tu proyecto, de principio a fin. Sin intermediarios, sin cuentas de soporte genéricas.",
   },
   {
-    client: "No entendí nada de lo que me explicaron.",
+    client: "Me explicaron todo con tecnicismos y nunca entendí qué se estaba haciendo.",
     response:
-      "Documentamos todo en términos que hacen sentido para tu negocio. Sabés exactamente qué se construye, para qué y cuándo.",
+      "Si algo no se entiende, es nuestro problema explicarlo mejor. Te contamos qué se construye, para qué y cuándo — en castellano.",
   },
   {
-    client: "Tardaron meses y el resultado fue mediocre.",
+    client: "Tardaron el doble de lo prometido y el resultado era mediocre.",
     response:
       "Fechas reales desde el día uno. Cada etapa tiene hitos claros y vos aprobás antes de avanzar a la siguiente.",
   },
@@ -170,7 +170,7 @@ export function ImpactSection() {
                   Con una charla. Sin presupuesto apresurado, sin formularios largos. Nos contás el problema y te decimos honestamente si podemos ayudarte — y cómo.
                 </p>
                 <a
-                  href="https://wa.me/5493412776893"
+                  href="https://wa.me/5493415690470"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full bg-brand text-zinc-950 text-xs font-semibold hover:bg-brand/90 transition-colors"

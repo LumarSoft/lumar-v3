@@ -60,7 +60,7 @@ export function PricingSection() {
             Así es trabajar con nosotros.
           </h2>
           <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Un proceso que eliminamos en papel y construimos en la práctica,
+            No está escrito en un PDF. Es lo que hacemos de verdad,
             proyecto a proyecto.
           </p>
         </motion.div>

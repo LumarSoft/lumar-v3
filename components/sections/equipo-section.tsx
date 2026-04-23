@@ -7,7 +7,7 @@ import Image from "next/image";
 const team = [
   {
     name: "Lucas Quaroni",
-    role: "CEO · Fullstack",
+    role: "Co-fundador · Fullstack",
     degree: "Ing. en Sistemas",
     linkedin: "https://www.linkedin.com/in/lucasquaroni/",
     github: "https://github.com/LucasQuaroni",
@@ -15,16 +15,15 @@ const team = [
   },
   {
     name: "Marcelo Benitez",
-    role: "CEO · Fullstack",
+    role: "Co-fundador · Fullstack",
     degree: "Tec. en Desarrollo de Software",
     linkedin: "https://www.linkedin.com/in/benitez-marcelo/",
     github: "https://github.com/marcebenitez2",
     initials: "MB",
   },
   {
-    
     name: "Mateo Bodini",
-    role: "CEO · Fullstack",
+    role: "Co-fundador · Fullstack",
     degree: "Ing. en Sistemas",
     linkedin: "https://www.linkedin.com/in/mateobodini/",
     github: "https://github.com/mateoBodiniARG",

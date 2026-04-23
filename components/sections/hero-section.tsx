@@ -36,9 +36,9 @@ function AnimatedCounter({ target, suffix = "", duration = 1200 }: { target: num
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const stats = [
-  { target: 6, suffix: "", label: "Proyectos entregados" },
-  { target: 3, suffix: "+", label: "Años de experiencia" },
-  { target: 0, suffix: "", label: "Intermediarios" },
+  { target: 6,   suffix: "",  label: "Proyectos lanzados" },
+  { target: 3,   suffix: "+", label: "Años en el mercado" },
+  { target: 100, suffix: "%", label: "Trato directo" },
 ];
 
 // ── Hero ──────────────────────────────────────────────────────────────────────
@@ -109,8 +109,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.95]"
         >
-          <span className="text-zinc-100 block">Tu negocio creció.</span>
-          <span className="text-zinc-500 block mt-2">Tu web, no.</span>
+          <span className="text-zinc-100 block">Software que se entrega.</span>
+          <span className="text-zinc-500 block mt-2">No que se promete.</span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -120,8 +120,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-base md:text-xl text-zinc-400 max-w-xl mx-auto mb-12 leading-relaxed"
         >
-          Desarrollamos lo que tu empresa realmente necesita, desde Rosario para donde estés.
-          Sin intermediarios, sin vueltas.
+          Hablás directo con quienes lo construyen.
+          Sin agencias, sin intermediarios, sin sorpresas al final del proyecto.
         </motion.p>
 
         {/* CTA */}
