@@ -2,15 +2,16 @@
 
 import { motion } from "framer-motion";
 import { Github, Linkedin } from "lucide-react";
+import Image from "next/image";
 
 const team = [
   {
-    name: "Mateo Bodini",
+    name: "Lucas Quaroni",
     role: "CEO · Fullstack",
     degree: "Ing. en Sistemas",
-    linkedin: "https://www.linkedin.com/in/mateobodini/",
-    github: "https://github.com/mateoBodiniARG",
-    initials: "MB",
+    linkedin: "https://www.linkedin.com/in/lucasquaroni/",
+    github: "https://github.com/LucasQuaroni",
+    initials: "LQ",
   },
   {
     name: "Marcelo Benitez",
@@ -21,12 +22,13 @@ const team = [
     initials: "MB",
   },
   {
-    name: "Lucas Quaroni",
+    
+    name: "Mateo Bodini",
     role: "CEO · Fullstack",
     degree: "Ing. en Sistemas",
-    linkedin: "https://www.linkedin.com/in/lucasquaroni/",
-    github: "https://github.com/LucasQuaroni",
-    initials: "LQ",
+    linkedin: "https://www.linkedin.com/in/mateobodini/",
+    github: "https://github.com/mateoBodiniARG",
+    initials: "MB",
   },
 ];
 
@@ -94,37 +96,22 @@ export function EquipoSection() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="w-full aspect-[21/9] rounded-2xl bg-zinc-900 border border-zinc-800/60 overflow-hidden relative"
+            transition={{ duration: 0.6 }}
+            className="w-full p-[1px] rounded-2xl bg-gradient-to-b from-zinc-700/50 via-zinc-800/30 to-brand/10 shadow-[0_0_48px_rgba(218,128,55,0.07)]"
           >
-            {/* Dot-grid background */}
-            <div
-              className="absolute inset-0 opacity-50"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, rgba(161,161,170,0.14) 1px, transparent 1px)",
-                backgroundSize: "28px 28px",
-              }}
-            />
-            {/* Person zones */}
-            <div className="relative h-full grid grid-cols-3">
-              {team.map((member, i) => (
-                <div
-                  key={member.name}
-                  className={`flex flex-col items-center justify-center gap-3 ${
-                    i < team.length - 1 ? "border-r border-zinc-800/25" : ""
-                  }`}
-                >
-                  <div className="w-16 h-16 rounded-full bg-zinc-800/70 border border-zinc-700/50 flex items-center justify-center">
-                    <span className="font-display text-lg font-bold text-zinc-500">
-                      {member.initials}
-                    </span>
-                  </div>
-                  <span className="text-xs text-zinc-600 tracking-wide">
-                    {member.name}
-                  </span>
-                </div>
-              ))}
+            <div className="w-full aspect-[21/8] rounded-[calc(1rem-1px)] overflow-hidden relative bg-zinc-950">
+              <Image
+                src="/teamImage.jpeg"
+                alt="El equipo de LumarSoft"
+                fill
+                className="object-cover object-[center_60%]"
+                sizes="(max-width: 768px) 100vw, 960px"
+                priority
+              />
+              {/* Vignette bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent pointer-events-none" />
+              {/* Subtle brand tint top-right */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(218,128,55,0.07),transparent_60%)] pointer-events-none" />
             </div>
           </motion.div>
 
@@ -218,83 +205,78 @@ export function EquipoSection() {
 
         {/* ── Mobile: photo + stacked cards ── */}
         <div className="md:hidden flex flex-col gap-5">
-          {/* Photo placeholder */}
+          {/* Team photo */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="w-full aspect-[3/2] rounded-2xl bg-zinc-900 border border-zinc-800/60 overflow-hidden relative"
+            transition={{ duration: 0.6 }}
+            className="w-full p-[1px] rounded-2xl bg-gradient-to-b from-zinc-700/50 via-zinc-800/30 to-brand/10 shadow-[0_0_36px_rgba(218,128,55,0.07)]"
           >
-            <div
-              className="absolute inset-0 opacity-50"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, rgba(161,161,170,0.14) 1px, transparent 1px)",
-                backgroundSize: "24px 24px",
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-around px-8">
-              {team.map((member) => (
-                <div key={member.name} className="flex flex-col items-center gap-2">
-                  <div className="w-12 h-12 rounded-full bg-zinc-800/70 border border-zinc-700/50 flex items-center justify-center">
-                    <span className="font-display text-sm font-bold text-zinc-500">
-                      {member.initials}
-                    </span>
-                  </div>
-                </div>
-              ))}
+            <div className="w-full aspect-[3/2] rounded-[calc(1rem-1px)] overflow-hidden relative bg-zinc-950">
+              <Image
+                src="/teamImage.jpeg"
+                alt="El equipo de LumarSoft"
+                fill
+                className="object-cover object-[center_60%]"
+                sizes="100vw"
+              />
+              {/* Vignette bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent pointer-events-none" />
+              {/* Subtle brand tint */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(218,128,55,0.07),transparent_60%)] pointer-events-none" />
             </div>
           </motion.div>
 
-          {/* Person cards */}
-          {team.map((member, i) => (
-            <motion.div
-              key={member.name}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: i * 0.1 }}
-              className="flex items-start gap-4 p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800/50"
-            >
-              <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center shrink-0">
-                <span className="font-display text-xs font-bold text-zinc-500">
-                  {member.initials}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="text-xs text-brand font-medium uppercase tracking-wider">
-                  {member.role}
-                </span>
-                <span className="text-[10px] text-zinc-600 font-medium uppercase tracking-widest">
-                  {member.degree}
-                </span>
-                <h3 className="font-display text-base font-bold text-zinc-100 mt-0.5 mb-1.5">
-                  {member.name}
-                </h3>
-                <div className="flex items-center gap-3">
-                  <a
-                    href={member.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`LinkedIn de ${member.name}`}
-                    className="text-zinc-600 hover:text-brand transition-colors"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                  <a
-                    href={member.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`GitHub de ${member.name}`}
-                    className="text-zinc-600 hover:text-brand transition-colors"
-                  >
-                    <Github className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+          {/* 3-column annotation row */}
+          <div className="grid grid-cols-3 pt-1">
+            {team.map((member, i) => {
+              const align = ["items-start text-left", "items-center text-center", "items-end text-right"][i];
+              const socialAlign = ["justify-start", "justify-center", "justify-end"][i];
+              return (
+                <motion.div
+                  key={member.name}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.1 + i * 0.1 }}
+                  className={`flex flex-col gap-2 px-1 ${align}`}
+                >
+                  <div className={`flex flex-col gap-0.5 ${align}`}>
+                    <span className="text-[10px] text-brand font-medium uppercase tracking-wider leading-tight">
+                      {member.role}
+                    </span>
+                    <span className="text-[9px] text-zinc-600 font-medium uppercase tracking-widest leading-tight">
+                      {member.degree}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-sm font-bold text-zinc-100 leading-snug">
+                    {member.name}
+                  </h3>
+                  <div className={`flex items-center gap-2.5 ${socialAlign}`}>
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`LinkedIn de ${member.name}`}
+                      className="text-zinc-600 hover:text-brand transition-colors"
+                    >
+                      <Linkedin className="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href={member.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`GitHub de ${member.name}`}
+                      className="text-zinc-600 hover:text-brand transition-colors"
+                    >
+                      <Github className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
