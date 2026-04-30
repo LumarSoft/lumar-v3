@@ -36,8 +36,8 @@ function AnimatedCounter({ target, suffix = "", duration = 1200 }: { target: num
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const stats = [
-  { target: 6,   suffix: "",  label: "Proyectos lanzados" },
-  { target: 3,   suffix: "+", label: "Años en el mercado" },
+  { target: 6,   suffix: "+", label: "Proyectos entregados" },
+  { target: 3,   suffix: "+", label: "Años entregando" },
   { target: 100, suffix: "%", label: "Trato directo" },
 ];
 

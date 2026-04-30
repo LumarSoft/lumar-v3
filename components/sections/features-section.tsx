@@ -79,7 +79,7 @@ const detailVariants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
   },
   exit: {
     opacity: 0,
@@ -94,7 +94,7 @@ const accordionVariants = {
   open: {
     height: "auto",
     opacity: 1,
-    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
@@ -122,7 +122,7 @@ export function FeaturesSection() {
             De esto vivimos. Hacelo bien o no lo hagas.
           </h2>
           <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Tres años, proyectos reales, clientes que volvieron.
+            Proyectos reales, clientes que volvieron.
             Proceso claro, entregas definidas y código que siempre es tuyo.
           </p>
         </motion.div>

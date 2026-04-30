@@ -55,11 +55,11 @@ export function ImpactSection() {
             ¿Te suena esto?
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
-            Malas experiencias que no deberían repetirse.
+            Lo que nos cuentan antes de contratarnos.
           </h2>
           <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Las escuchamos seguido. Por eso construimos un proceso que elimina
-            cada uno de estos problemas desde el principio.
+            Siempre son las mismas historias. Por eso construimos un proceso
+            que elimina cada uno de estos problemas desde el primer día.
           </p>
         </motion.div>
 

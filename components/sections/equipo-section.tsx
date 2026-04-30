@@ -9,6 +9,7 @@ const team = [
     name: "Lucas Quaroni",
     role: "Co-fundador · Fullstack",
     degree: "Ing. en Sistemas",
+    bio: "Entiende el problema antes de proponer cualquier solución. El que insiste en hacer bien las preguntas.",
     linkedin: "https://www.linkedin.com/in/lucasquaroni/",
     github: "https://github.com/LucasQuaroni",
     initials: "LQ",
@@ -17,6 +18,7 @@ const team = [
     name: "Marcelo Benitez",
     role: "Co-fundador · Fullstack",
     degree: "Tec. en Desarrollo de Software",
+    bio: "Traduce procesos de negocio en sistemas que la gente realmente usa. Sin tecnicismos, sin humo.",
     linkedin: "https://www.linkedin.com/in/benitez-marcelo/",
     github: "https://github.com/marcebenitez2",
     initials: "MB",
@@ -25,6 +27,7 @@ const team = [
     name: "Mateo Bodini",
     role: "Co-fundador · Fullstack",
     degree: "Ing. en Sistemas",
+    bio: "Diseña sistemas que tienen que durar. No los que se ven bien en una demo y fallan en producción.",
     linkedin: "https://www.linkedin.com/in/mateobodini/",
     github: "https://github.com/mateoBodiniARG",
     initials: "MB",
@@ -177,6 +180,9 @@ export function EquipoSection() {
                 <h3 className="font-display text-xl font-bold text-zinc-100 leading-snug">
                   {member.name}
                 </h3>
+                <p className="text-xs text-zinc-500 leading-relaxed max-w-[180px]">
+                  {member.bio}
+                </p>
                 <div className={`flex items-center gap-3 ${socialAlignments[i]}`}>
                   <a
                     href={member.linkedin}
@@ -252,6 +258,9 @@ export function EquipoSection() {
                   <h3 className="font-display text-sm font-bold text-zinc-100 leading-snug">
                     {member.name}
                   </h3>
+                  <p className="text-[10px] text-zinc-500 leading-relaxed">
+                    {member.bio}
+                  </p>
                   <div className={`flex items-center gap-2.5 ${socialAlign}`}>
                     <a
                       href={member.linkedin}

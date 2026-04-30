@@ -13,12 +13,14 @@ const navLinks = [
 
 const sectionIds = ["servicios", "portfolio", "equipo", "contacto"]
 
+const DEFAULT_CTA = "#F97316" // orange-500
+
 export function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("")
+  const [portfolioAccent, setPortfolioAccent] = useState<string | null>(null)
 
-  // Scroll progress bar
   const { scrollYProgress } = useScroll()
   const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 30, restDelta: 0.001 })
 
@@ -27,6 +29,15 @@ export function Navbar() {
     const onScroll = () => setScrolled(window.scrollY > 40)
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
+  }, [])
+
+  // Listen for portfolio section accent color
+  useEffect(() => {
+    const handler = (e: Event) => {
+      setPortfolioAccent((e as CustomEvent<string | null>).detail)
+    }
+    window.addEventListener("portfolioAccent", handler)
+    return () => window.removeEventListener("portfolioAccent", handler)
   }, [])
 
   // Active section via IntersectionObserver
@@ -45,12 +56,26 @@ export function Navbar() {
     return () => observers.forEach((o) => o.disconnect())
   }, [])
 
+  const ctaColor = portfolioAccent ?? DEFAULT_CTA
+  // Hex alpha suffixes: 30 ≈ 19%, 20 ≈ 13%, 18 ≈ 9%
+  const ctaTransition = "color 0.65s cubic-bezier(.22,1,.36,1), border-color 0.65s cubic-bezier(.22,1,.36,1), background-color 0.65s cubic-bezier(.22,1,.36,1), box-shadow 0.65s cubic-bezier(.22,1,.36,1)"
+
   return (
     <header className="fixed top-0 left-0 right-0 z-40 p-4">
-      {/* Scroll progress bar */}
+      {/*
+        Scroll progress bar: background-color (animatable) +
+        CSS mask for the fade-in/out at edges (avoids gradient animation issues)
+      */}
       <motion.div
-        className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-zinc-400/60 to-transparent origin-left"
-        style={{ scaleX }}
+        className="absolute top-0 left-0 right-0 h-[2px] origin-left"
+        style={{
+          scaleX,
+          backgroundColor: ctaColor,
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+          maskImage: "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+          opacity: 0.7,
+          transition: "background-color 0.65s cubic-bezier(.22,1,.36,1)",
+        }}
       />
 
       <nav
@@ -64,7 +89,7 @@ export function Navbar() {
           LumarSoft
         </Link>
 
-        {/* Desktop */}
+        {/* Desktop links */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
             const id = link.href.replace("#", "")
@@ -90,12 +115,14 @@ export function Navbar() {
           })}
           <Link
             href="#contacto"
-            className="group ml-2 inline-flex items-center gap-2 px-4 py-1.5 text-sm rounded-full
-              bg-orange-500/10 border border-orange-500/25 text-orange-400 font-medium
-              hover:bg-orange-500/18 hover:border-orange-500/45
-              shadow-[0_0_14px_rgba(249,115,22,0.08)]
-              hover:shadow-[0_0_20px_rgba(249,115,22,0.18)]
-              backdrop-blur-sm transition-all duration-300"
+            className="group ml-2 inline-flex items-center gap-2 px-4 py-1.5 text-sm rounded-full border font-medium backdrop-blur-sm"
+            style={{
+              color: ctaColor,
+              borderColor: `${ctaColor}50`,
+              backgroundColor: `${ctaColor}18`,
+              boxShadow: `0 0 18px ${ctaColor}22`,
+              transition: ctaTransition,
+            }}
           >
             Contanos tu proyecto
           </Link>
@@ -170,12 +197,14 @@ export function Navbar() {
               <Link
                 href="#contacto"
                 onClick={() => setOpen(false)}
-                className="mt-1 block px-4 py-2.5 text-sm rounded-xl text-center font-medium
-                  bg-orange-500/10 border border-orange-500/25 text-orange-400
-                  hover:bg-orange-500/18 hover:border-orange-500/45
-                  shadow-[0_0_14px_rgba(249,115,22,0.08)]
-                  hover:shadow-[0_0_20px_rgba(249,115,22,0.18)]
-                  backdrop-blur-sm transition-all duration-300"
+                className="mt-1 block px-4 py-2.5 text-sm rounded-xl text-center font-medium border backdrop-blur-sm"
+                style={{
+                  color: ctaColor,
+                  borderColor: `${ctaColor}50`,
+                  backgroundColor: `${ctaColor}18`,
+                  boxShadow: `0 0 18px ${ctaColor}22`,
+                  transition: ctaTransition,
+                }}
               >
                 Contanos tu proyecto
               </Link>
