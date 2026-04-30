@@ -49,7 +49,7 @@ const services: Service[] = [
     title: "Apps Web a Medida",
     tag: "Desarrollo a medida",
     description:
-      "Si ninguna herramienta existente te cierra, la construimos para vos. Sistemas internos, paneles de gestión y automatizaciones que encajan exactamente en tu operación.",
+      "Si ninguna herramienta existente te cierra, la construimos para vos. Sistemas internos, paneles y automatizaciones que encajan en tu operación — no al revés.",
     points: [
       "Análisis del proceso antes de escribir código",
       "Sistemas internos y paneles de control",
@@ -79,7 +79,7 @@ const detailVariants = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
   },
   exit: {
     opacity: 0,
@@ -94,7 +94,7 @@ const accordionVariants = {
   open: {
     height: "auto",
     opacity: 1,
-    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
@@ -119,12 +119,11 @@ export function FeaturesSection() {
             Servicios
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
-            Lo que hacemos, y por qué importa.
+            De esto vivimos. Hacelo bien o no lo hagas.
           </h2>
           <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Más de tres años desarrollando soluciones digitales para empresas y
-            organizaciones argentinas. Cada proyecto tiene metodología clara,
-            entregas definidas y código que te pertenece.
+            Proyectos reales, clientes que volvieron.
+            Proceso claro, entregas definidas y código que siempre es tuyo.
           </p>
         </motion.div>
 
