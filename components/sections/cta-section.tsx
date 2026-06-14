@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { whatsappUrl } from "@/lib/site";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -24,10 +26,8 @@ export function CtaSection() {
 
   function handleWhatsApp(e: React.FormEvent) {
     e.preventDefault();
-    const text = encodeURIComponent(
-      `Hola, soy ${form.nombre}.\n\n${form.mensaje}`,
-    );
-    window.open(`https://wa.me/5493415690470?text=${text}`, "_blank");
+    const message = `Hola, soy ${form.nombre}.\n\n${form.mensaje}`;
+    window.open(whatsappUrl(message), "_blank");
     setSent(true);
   }
 
@@ -57,18 +57,14 @@ export function CtaSection() {
               className="p-8 md:p-12 flex flex-col justify-between md:border-r border-b md:border-b-0 border-zinc-800/60"
             >
               <div>
-                <p className="text-sm font-medium text-brand uppercase tracking-wider mb-4">
-                  Contacto
-                </p>
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 mb-5 leading-tight">
+                <SectionHeading
+                  eyebrow="Contacto"
+                  index="07"
+                  description="No hace falta tener todo definido. Contanos el problema y evaluamos juntos qué tiene sentido construir, con qué alcance y en qué tiempo."
+                >
                   ¿Tenés un proyecto en mente?{" "}
                   <span className="text-zinc-500">Contanos.</span>
-                </h2>
-                <p className="text-zinc-500 text-sm leading-relaxed">
-                  No hace falta tener todo definido. Contanos el problema y
-                  evaluamos juntos qué tiene sentido construir, con qué alcance
-                  y en qué tiempo.
-                </p>
+                </SectionHeading>
               </div>
 
               <div className="mt-10 flex flex-col gap-3">

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Github, Linkedin } from "lucide-react";
 import Image from "next/image";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 const team = [
   {
@@ -71,25 +72,14 @@ export function EquipoSection() {
     <section id="equipo" className="px-6 py-24">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
+        <SectionHeading
+          eyebrow="El equipo"
+          index="04"
+          className="mb-12 max-w-2xl"
+          description="Ingenieros en Sistemas de Rosario. Cuando contratás LumarSoft, no hay un equipo de ventas que te pasa a un equipo de desarrollo. Hablás directamente con quien construye tu proyecto, de principio a fin."
         >
-          <p className="text-sm font-medium text-brand uppercase tracking-wider mb-4">
-            El equipo
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-2xl leading-tight">
-            Somos los tres que fundamos LumarSoft. También somos los tres que escriben el código.
-          </h2>
-          <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Ingenieros en Sistemas de Rosario. Cuando contratás LumarSoft, no hay
-            un equipo de ventas que te pasa a un equipo de desarrollo. Hablás
-            directamente con quien construye tu proyecto, de principio a fin.
-          </p>
-        </motion.div>
+          Somos los tres que fundamos LumarSoft. También somos los tres que escriben el código.
+        </SectionHeading>
 
         {/* ── Desktop: annotated photo ── */}
         <div className="hidden md:block">

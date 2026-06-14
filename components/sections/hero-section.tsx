@@ -12,6 +12,36 @@ import {
   useTransform,
 } from "framer-motion";
 import { LiquidCtaButton } from "@/components/buttons/liquid-cta-button";
+import { Magnetic } from "@/components/buttons/magnetic";
+import { whatsappUrl } from "@/lib/site";
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+// Word-by-word reveal for the headline
+const headlineContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.12 } },
+};
+const wordVariant = {
+  hidden: { opacity: 0, y: "0.5em", filter: "blur(8px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease } },
+};
+
+function RevealWords({ text, className = "" }: { text: string; className?: string }) {
+  return (
+    <>
+      {text.split(" ").map((word, i) => (
+        <motion.span
+          key={`${word}-${i}`}
+          variants={wordVariant}
+          className={`inline-block ${className}`}
+        >
+          {word}&nbsp;
+        </motion.span>
+      ))}
+    </>
+  );
+}
 
 // ── Animated counter ──────────────────────────────────────────────────────────
 function AnimatedCounter({ target, suffix = "", duration = 1200 }: { target: number; suffix?: string; duration?: number }) {
@@ -91,26 +121,23 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_-5%,rgba(161,161,170,0.07),transparent)]" />
 
       <div className="relative z-10 text-center max-w-4xl mx-auto">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900/80 border border-zinc-800 mb-10"
-        >
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-sm text-zinc-400">Rosario, Argentina</span>
-        </motion.div>
 
         {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          variants={headlineContainer}
+          initial="hidden"
+          animate="visible"
           className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[0.95]"
         >
-          <span className="text-zinc-100 block">Software que se entrega.</span>
-          <span className="text-zinc-500 block mt-2">No que se promete.</span>
+          <span className="block">
+            <RevealWords
+              text="Software que se entrega."
+              className="bg-gradient-to-b from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent"
+            />
+          </span>
+          <span className="block mt-2">
+            <RevealWords text="No que se promete." className="text-zinc-500" />
+          </span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -131,9 +158,11 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex items-center justify-center"
         >
-          <a href="https://wa.me/5493415690470" target="_blank" rel="noopener noreferrer">
-            <LiquidCtaButton>Contanos qué necesitás</LiquidCtaButton>
-          </a>
+          <Magnetic strength={0.4} className="inline-block">
+            <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+              <LiquidCtaButton>Contanos qué necesitás</LiquidCtaButton>
+            </a>
+          </Magnetic>
         </motion.div>
 
         {/* Stats */}
@@ -141,8 +170,10 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-16 grid grid-cols-3 gap-px bg-zinc-800/50 rounded-2xl overflow-hidden max-w-md mx-auto"
+          className="relative mt-16 grid grid-cols-3 gap-px bg-zinc-800/50 rounded-2xl overflow-hidden max-w-md mx-auto"
         >
+          {/* Rotating light beam around the stats */}
+          <span className="beam-border" aria-hidden />
           {stats.map((stat, i) => (
             <div key={i} className="bg-zinc-950 px-2 sm:px-4 py-4 sm:py-5 flex flex-col items-center gap-1 sm:gap-1.5 hover:bg-zinc-900/60 transition-colors duration-300">
               <span className="font-display text-2xl font-bold text-zinc-100">

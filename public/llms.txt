@@ -1,0 +1,39 @@
+# LumarSoft
+
+> Estudio de desarrollo web y software a medida con base en Rosario, Argentina. Desarrollamos páginas web, ecommerce, landing pages, aplicaciones web y sistemas de gestión a medida. Trabajo remoto para clientes de Argentina y el mundo. Sin intermediarios: hablás directamente con quien construye tu proyecto.
+
+LumarSoft es un equipo de tres ingenieros en sistemas (Lucas Quaroni, Marcelo Benitez y Mateo Bodini) que fundaron y también escriben el código de cada proyecto. La propuesta central es trato directo, todo a medida (nada de templates), fechas reales y código que queda en manos del cliente.
+
+## Servicios
+
+- **Ecommerce a medida**: tiendas online con flujo de compra adaptado al negocio e integración con medios de pago locales.
+- **Landing pages**: páginas enfocadas en convertir visitas en consultas reales, optimizadas para velocidad y conversión.
+- **Aplicaciones web a medida**: sistemas internos, paneles de control y automatizaciones construidos desde cero.
+- **Presencia digital / SEO**: sitios, blogs y estrategia de contenido con SEO técnico desde la estructura.
+- **Sistemas de gestión**: plataformas multi-rol, reportes, autenticación y centralización de datos.
+
+## Diferenciadores
+
+- Todo a medida, nada de templates: cada proyecto arranca desde cero.
+- Comunicación directa: hablás con quien hace el trabajo, sin intermediarios.
+- Entrega rápida y sin vueltas: fechas reales con hitos claros que el cliente aprueba.
+- Escuchamos de verdad: entendemos el problema antes de proponer una solución.
+
+## Proyectos destacados
+
+- **FULL E-commerce**: tienda online que deriva cada venta al chat del vendedor para cerrarla de forma personalizada.
+- **Heroica**: plataforma interna full-stack para gastronomía multi-sucursal (tesorería, RRHH, aprobación de pagos, reportes PDF, 2FA).
+- **UESEVI**: portal multi-rol para un sindicato que automatiza declaraciones de +150 empresas, cálculos de aportes, intereses y vencimientos.
+
+## Contacto
+
+- WhatsApp: https://wa.me/5493415690470
+- Ubicación: Rosario, Santa Fe, Argentina (trabajo remoto en todo el mundo)
+- Idiomas: español (principal), inglés
+
+## Preguntas frecuentes
+
+- **¿Cuánto tarda un proyecto?** Depende del alcance; se da una fecha real desde el inicio, dividida en hitos que el cliente aprueba. Una landing puede estar en una o dos semanas.
+- **¿Cuánto sale?** No hay precios de lista. Tras entender la necesidad se entrega un presupuesto cerrado, sin sorpresas en la factura.
+- **¿El código queda del cliente?** Sí. Se entrega código limpio y documentado, sin dependencias artificiales con LumarSoft.
+- **¿Trabajan fuera de Rosario o de Argentina?** Sí, en remoto con clientes de todo el país y del exterior.

@@ -1,188 +1,123 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { X, Check, ArrowRight } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { whatsappUrl } from "@/lib/site";
 
-const exchanges = [
+type Objection = {
+  tag: string;
+  problem: string;
+  solution: string;
+};
+
+const objections: Objection[] = [
   {
-    client: "Me entregaron un template con mi nombre. No tenía nada que ver con mi negocio.",
-    response:
-      "Cada proyecto arranca desde cero. Antes de escribir una línea de código, entendemos cómo funcionás y qué querés lograr.",
-  },
-  {
-    client: "Contraté a alguien y desapareció a la mitad del proyecto.",
-    response:
+    tag: "El que desaparece",
+    problem: "Contraté a alguien y desapareció a la mitad del proyecto.",
+    solution:
       "Hablás directamente con quien construye tu proyecto, de principio a fin. Sin intermediarios, sin cuentas de soporte genéricas.",
   },
   {
-    client: "Me explicaron todo con tecnicismos y nunca entendí qué se estaba haciendo.",
-    response:
+    tag: "El template con tu logo",
+    problem: "Me entregaron un template con mi nombre. No tenía nada que ver con mi negocio.",
+    solution:
+      "Cada proyecto arranca desde cero. Antes de escribir una línea de código, entendemos cómo funcionás y qué querés lograr.",
+  },
+  {
+    tag: "El idioma marciano",
+    problem: "Me explicaron todo con tecnicismos y nunca entendí qué se estaba haciendo.",
+    solution:
       "Si algo no se entiende, es nuestro problema explicarlo mejor. Te contamos qué se construye, para qué y cuándo — en castellano.",
   },
   {
-    client: "Tardaron el doble de lo prometido y el resultado era mediocre.",
-    response:
+    tag: "El plazo eterno",
+    problem: "Tardaron el doble de lo prometido y el resultado era mediocre.",
+    solution:
       "Fechas reales desde el día uno. Cada etapa tiene hitos claros y vos aprobás antes de avanzar a la siguiente.",
   },
 ];
 
-const bubbleVariants = {
-  hidden: { opacity: 0, y: 10, scale: 0.97 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.4,
-      delay: i * 0.18,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  }),
-};
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export function ImpactSection() {
   return (
     <section className="px-6 py-24 bg-zinc-900/20">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
+        <SectionHeading
+          eyebrow="¿Te suena esto?"
+          index="02"
+          className="mb-12 max-w-lg"
+          description="Siempre son las mismas historias. Por eso construimos un proceso que elimina cada uno de estos problemas desde el primer día."
+        >
+          Lo que nos cuentan antes de contratarnos.
+        </SectionHeading>
+
+        {/* Problem → solution cards */}
+        <div className="grid md:grid-cols-2 gap-5">
+          {objections.map((item, i) => (
+            <motion.div
+              key={item.tag}
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, delay: i * 0.08, ease }}
+              className="group relative rounded-2xl border border-zinc-800/60 bg-zinc-950/40 p-7 overflow-hidden transition-colors duration-300 hover:border-zinc-700"
+            >
+              {/* Hover glow */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(218,128,55,0.06),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+              <div className="relative">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
+                  {item.tag}
+                </span>
+
+                {/* Problem — muted */}
+                <div className="flex items-start gap-3 mt-4">
+                  <span className="mt-0.5 w-5 h-5 rounded-full bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center shrink-0">
+                    <X className="w-3 h-3 text-zinc-500" />
+                  </span>
+                  <p className="text-sm text-zinc-500 italic leading-relaxed">
+                    &ldquo;{item.problem}&rdquo;
+                  </p>
+                </div>
+
+                {/* Solution — lit */}
+                <div className="flex items-start gap-3 mt-5 pt-5 border-t border-zinc-800/60">
+                  <span className="mt-0.5 w-5 h-5 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center shrink-0">
+                    <Check className="w-3 h-3 text-brand" />
+                  </span>
+                  <p className="text-sm text-zinc-200 leading-relaxed">
+                    {item.solution}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Closing reassurance + CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55, ease }}
+          className="mt-12 flex flex-col items-center text-center gap-5"
         >
-          <p className="text-sm font-medium text-brand uppercase tracking-wider mb-4">
-            ¿Te suena esto?
+          <p className="text-zinc-300 text-base md:text-lg max-w-xl leading-relaxed text-balance">
+            ¿Por dónde empezás? Con una charla. Nos contás el problema y te decimos
+            honestamente si podemos ayudarte — y cómo. Sin presupuesto apresurado.
           </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
-            Lo que nos cuentan antes de contratarnos.
-          </h2>
-          <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Siempre son las mismas historias. Por eso construimos un proceso
-            que elimina cada uno de estos problemas desde el primer día.
-          </p>
-        </motion.div>
-
-        {/* Chat window */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="rounded-2xl border border-zinc-800/60 overflow-hidden"
-        >
-          {/* Window chrome */}
-          <div className="flex items-center justify-between px-5 py-3.5 bg-zinc-900 border-b border-zinc-800/60">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center shrink-0">
-                <span className="font-display text-[10px] font-bold text-brand">LS</span>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-zinc-200">LumarSoft</p>
-                <p className="text-[10px] text-zinc-500 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-                  Responde en minutos
-                </p>
-              </div>
-            </div>
-            {/* Window dots */}
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-              <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-              <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className="bg-zinc-950 px-4 sm:px-6 py-6 flex flex-col gap-5">
-            {exchanges.map((exchange, i) => (
-              <div key={i} className="flex flex-col gap-2.5">
-                {/* Client message — left */}
-                <motion.div
-                  custom={i * 2}
-                  variants={bubbleVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="flex items-end gap-2.5 self-start max-w-[85%] sm:max-w-[70%]"
-                >
-                  <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center shrink-0 mb-0.5">
-                    <span className="text-[9px] text-zinc-500 font-medium">C</span>
-                  </div>
-                  <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-zinc-800/80 border border-zinc-700/40">
-                    <p className="text-sm text-zinc-300 italic leading-relaxed">
-                      &ldquo;{exchange.client}&rdquo;
-                    </p>
-                  </div>
-                </motion.div>
-
-                {/* LumarSoft response — right */}
-                <motion.div
-                  custom={i * 2 + 1}
-                  variants={bubbleVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="flex items-end gap-2.5 self-end max-w-[85%] sm:max-w-[70%]"
-                >
-                  <div className="px-4 py-3 rounded-2xl rounded-br-sm bg-brand/10 border border-brand/20">
-                    <p className="text-sm text-zinc-200 leading-relaxed">
-                      {exchange.response}
-                    </p>
-                  </div>
-                  <div className="w-6 h-6 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center shrink-0 mb-0.5">
-                    <span className="text-[9px] text-brand font-bold">LS</span>
-                  </div>
-                </motion.div>
-              </div>
-            ))}
-
-            {/* Client closing question */}
-            <motion.div
-              custom={exchanges.length * 2}
-              variants={bubbleVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="flex items-end gap-2.5 self-start max-w-[85%] sm:max-w-[70%]"
-            >
-              <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center shrink-0 mb-0.5">
-                <span className="text-[9px] text-zinc-500 font-medium">C</span>
-              </div>
-              <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-zinc-800/80 border border-zinc-700/40">
-                <p className="text-sm text-zinc-300 italic leading-relaxed">
-                  &ldquo;¿Y por dónde empiezo? ¿Cómo sé que con ustedes va a ser distinto?&rdquo;
-                </p>
-              </div>
-            </motion.div>
-
-            {/* LumarSoft CTA response */}
-            <motion.div
-              custom={exchanges.length * 2 + 1}
-              variants={bubbleVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="flex items-end gap-2.5 self-end max-w-[90%] sm:max-w-[72%]"
-            >
-              <div className="px-4 py-3.5 rounded-2xl rounded-br-sm bg-brand/10 border border-brand/20 flex flex-col gap-3">
-                <p className="text-sm text-zinc-200 leading-relaxed">
-                  Con una charla. Sin presupuesto apresurado, sin formularios largos. Nos contás el problema y te decimos honestamente si podemos ayudarte — y cómo.
-                </p>
-                <a
-                  href="https://wa.me/5493415690470"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full bg-brand text-zinc-950 text-xs font-semibold hover:bg-brand/90 transition-colors"
-                >
-                  Hablemos por WhatsApp →
-                </a>
-              </div>
-              <div className="w-6 h-6 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center shrink-0 mb-0.5">
-                <span className="text-[9px] text-brand font-bold">LS</span>
-              </div>
-            </motion.div>
-          </div>
+          <a
+            href={whatsappUrl("Hola, quiero contarles mi proyecto.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand text-zinc-950 text-sm font-semibold hover:bg-brand/90 transition-colors"
+          >
+            Hablemos por WhatsApp
+            <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+          </a>
         </motion.div>
       </div>
     </section>

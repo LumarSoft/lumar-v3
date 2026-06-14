@@ -1,8 +1,10 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Manrope } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { LenisProvider } from "@/components/providers/lenis-provider"
+import { SITE } from "@/lib/site"
+import { buildJsonLd } from "@/lib/structured-data"
 import "./globals.css"
 
 const manrope = Manrope({
@@ -10,15 +12,28 @@ const manrope = Manrope({
   variable: "--font-manrope",
 })
 
-const siteUrl = "https://lumarsoft.com"
+const siteUrl = SITE.url
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  colorScheme: "dark",
+}
 
 export const metadata: Metadata = {
   title: {
     default: "LumarSoft — Desarrollo Web y Software a Medida",
     template: "%s | LumarSoft",
   },
+  applicationName: "LumarSoft",
+  category: "technology",
   description:
     "Desarrollo de páginas web, sistemas y aplicaciones a medida. Ecommerce, landing pages, paneles de gestión y software personalizado. Trabajamos en remoto con clientes de Argentina y el mundo. Sin intermediarios, sin vueltas.",
+  formatDetection: { telephone: true, email: false, address: false },
+  appleWebApp: {
+    capable: true,
+    title: "LumarSoft",
+    statusBarStyle: "black-translucent",
+  },
   keywords: [
     "desarrollo web",
     "desarrollo web a medida",
@@ -83,73 +98,7 @@ export const metadata: Metadata = {
   },
 }
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${siteUrl}/#organization`,
-      name: "LumarSoft",
-      url: siteUrl,
-      telephone: "+5493415690470",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Rosario",
-        addressRegion: "Santa Fe",
-        addressCountry: "AR",
-      },
-      areaServed: "Worldwide",
-      description:
-        "Estudio de desarrollo web y software a medida con base en Rosario, Argentina. Especialistas en ecommerce, landing pages, aplicaciones web y sistemas de gestión. Trabajo remoto para clientes de Argentina y el mundo.",
-      knowsAbout: [
-        "Desarrollo Web",
-        "Software a Medida",
-        "Ecommerce",
-        "Landing Pages",
-        "Aplicaciones Web",
-        "Sistemas de Gestión",
-        "React",
-        "Next.js",
-        "TypeScript",
-        "Node.js",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${siteUrl}/#website`,
-      url: siteUrl,
-      name: "LumarSoft",
-      publisher: { "@id": `${siteUrl}/#organization` },
-      inLanguage: "es-AR",
-    },
-    {
-      "@type": "ProfessionalService",
-      "@id": `${siteUrl}/#service`,
-      name: "LumarSoft — Desarrollo Web y Software",
-      provider: { "@id": `${siteUrl}/#organization` },
-      areaServed: "Worldwide",
-      serviceType: [
-        "Desarrollo Web",
-        "Software a Medida",
-        "Ecommerce",
-        "Landing Pages",
-        "Aplicaciones Web",
-        "Sistemas de Gestión",
-      ],
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "Servicios de Desarrollo",
-        itemListElement: [
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Ecommerce a Medida" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Landing Pages" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Aplicaciones Web a Medida" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Sistemas de Gestión" } },
-          { "@type": "Offer", itemOffered: { "@type": "Service", name: "Rediseño Web" } },
-        ],
-      },
-    },
-  ],
-}
+const jsonLd = buildJsonLd()
 
 export default function RootLayout({
   children,
@@ -169,6 +118,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${manrope.variable} font-sans antialiased bg-zinc-950 text-zinc-100`}>
+        {/* Film grain — subtle premium texture across the whole site */}
+        <div className="noise-overlay" aria-hidden="true" />
         <LenisProvider>{children}</LenisProvider>
         <Analytics />
       </body>

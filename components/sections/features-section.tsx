@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, MousePointerClick, Wrench, BookOpen, ArrowRight, Check } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 type Service = {
   icon: LucideIcon;
@@ -108,24 +109,14 @@ export function FeaturesSection() {
     <section id="servicios" className="px-6 py-24">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-14"
+        <SectionHeading
+          eyebrow="Servicios"
+          index="01"
+          className="mb-14 max-w-lg"
+          description="Proyectos reales, clientes que volvieron. Proceso claro, entregas definidas y código que siempre es tuyo."
         >
-          <p className="text-sm font-medium text-brand uppercase tracking-wider mb-4">
-            Servicios
-          </p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-zinc-100 max-w-lg leading-tight">
-            De esto vivimos. Hacelo bien o no lo hagas.
-          </h2>
-          <p className="text-zinc-500 mt-4 max-w-xl text-sm leading-relaxed">
-            Proyectos reales, clientes que volvieron.
-            Proceso claro, entregas definidas y código que siempre es tuyo.
-          </p>
-        </motion.div>
+          De esto vivimos. Hacelo bien o no lo hagas.
+        </SectionHeading>
 
         {/* ── Desktop: selector + detail panel ── */}
         <motion.div
