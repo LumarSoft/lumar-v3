@@ -9,9 +9,11 @@ const navLinks = [
   { href: "#servicios", label: "Servicios" },
   { href: "#portfolio", label: "Portfolio" },
   { href: "#equipo", label: "Nosotros" },
+  { href: "#testimonios", label: "Testimonios" },
+  { href: "#faq", label: "FAQ" },
 ]
 
-const sectionIds = ["servicios", "portfolio", "equipo", "contacto"]
+const sectionIds = ["servicios", "portfolio", "equipo", "testimonios", "faq", "contacto"]
 
 const DEFAULT_CTA = "#F97316" // orange-500
 
@@ -40,20 +42,22 @@ export function Navbar() {
     return () => window.removeEventListener("portfolioAccent", handler)
   }, [])
 
-  // Active section via IntersectionObserver
+  // Active section via scroll-spy: the last section (in document order)
+  // whose top has crossed a reference line near the top of the viewport.
   useEffect(() => {
-    const observers: IntersectionObserver[] = []
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id)
-      if (!el) return
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id) },
-        { rootMargin: "-35% 0px -55% 0px" }
-      )
-      obs.observe(el)
-      observers.push(obs)
-    })
-    return () => observers.forEach((o) => o.disconnect())
+    const onScroll = () => {
+      const line = window.innerHeight * 0.3
+      let current = ""
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        if (el.getBoundingClientRect().top <= line) current = id
+      }
+      setActiveSection(current)
+    }
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
   const ctaColor = portfolioAccent ?? DEFAULT_CTA

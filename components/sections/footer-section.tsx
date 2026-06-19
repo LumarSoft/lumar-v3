@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
+import { whatsappUrl } from "@/lib/site";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -29,6 +30,8 @@ const navLinks = [
   { label: "Servicios", href: "#servicios" },
   { label: "Portfolio", href: "#portfolio" },
   { label: "Nosotros", href: "#equipo" },
+  { label: "Testimonios", href: "#testimonios" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contacto", href: "#contacto" },
 ];
 
@@ -77,7 +80,7 @@ export function FooterSection() {
               Rosario, Argentina
             </div>
             <a
-              href="https://wa.me/5493415690470"
+              href={whatsappUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 self-start px-4 py-2 rounded-full text-sm font-medium
@@ -102,7 +105,7 @@ export function FooterSection() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-500 hover:text-zinc-200 transition-colors duration-200"
+                    className="link-underline text-sm text-zinc-500 hover:text-zinc-200 transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -155,6 +158,13 @@ export function FooterSection() {
             Hecho con cuidado en Rosario, Argentina.
           </p>
         </div>
+      </div>
+
+      {/* Giant outline wordmark — agency signature remate */}
+      <div className="mt-12 px-2 select-none" aria-hidden="true">
+        <span className="wordmark-outline font-display font-black leading-[0.8] block text-center text-[20vw] md:text-[15vw] tracking-tight">
+          LumarSoft
+        </span>
       </div>
     </footer>
   );

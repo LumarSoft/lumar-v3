@@ -1,9 +1,10 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { motion, useScroll, AnimatePresence, useMotionValueEvent } from "framer-motion"
+import { useRef } from "react"
+import { motion, useScroll, useSpring } from "framer-motion"
 import { Search, MessageCircle, Clock, KeyRound } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { SectionHeading } from "@/components/ui/section-heading"
 
 type Step = {
   icon: LucideIcon
@@ -43,250 +44,88 @@ const steps: Step[] = [
   },
 ]
 
+const ease = [0.22, 1, 0.36, 1] as const
+
 export function PricingSection() {
-  const [activeStep, setActiveStep] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
 
+  // Fill the progress line as the timeline passes through the viewport.
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
+    target: trackRef,
+    offset: ["start 70%", "end 65%"],
   })
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    setActiveStep(Math.min(Math.floor(latest * steps.length), steps.length - 1))
+  const lineScale = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    restDelta: 0.001,
   })
-
-  const active = steps[activeStep]
-  const Icon = active.icon
 
   return (
-    <section id="valores">
-      <div ref={containerRef} className="relative h-[300vh]">
-        <div className="sticky top-0 h-screen bg-zinc-950 flex flex-col overflow-hidden">
+    <section id="valores" className="px-6 py-24">
+      <div className="max-w-3xl mx-auto">
+        <SectionHeading
+          eyebrow="Cómo trabajamos"
+          index="03"
+          className="mb-16"
+          description="Cuatro cosas que hacemos distinto. En cada proyecto, sin excepción."
+        >
+          No es lo que prometemos. Es cómo lo hacemos.
+        </SectionHeading>
 
-          {/* ── Mobile layout ── */}
-          <div className="md:hidden flex flex-col items-center justify-center flex-1 px-6 gap-5 text-center">
-            {/* Ambient glow */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_35%,rgba(218,128,55,0.06),transparent_70%)] pointer-events-none" />
+        {/* Timeline */}
+        <div ref={trackRef} className="relative">
+          {/* Base rail */}
+          <div className="absolute left-[21px] md:left-7 top-3 bottom-3 w-px bg-zinc-800/70" />
+          {/* Progress fill */}
+          <motion.div
+            style={{ scaleY: lineScale }}
+            className="absolute left-[21px] md:left-7 top-3 bottom-3 w-px origin-top bg-gradient-to-b from-brand via-brand/70 to-brand/10"
+          />
 
-            <p className="relative text-xs font-medium text-brand uppercase tracking-wider">
-              Cómo trabajamos
-            </p>
-
-            {/* Icon + watermark */}
-            <div className="relative flex items-center justify-center w-full h-28">
-              <AnimatePresence mode="wait">
+          <div className="flex flex-col gap-12 md:gap-16">
+            {steps.map((step) => {
+              const Icon = step.icon
+              return (
                 <motion.div
-                  key={`wm-m-${activeStep}`}
-                  initial={{ opacity: 0, scale: 0.88 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.12 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                  aria-hidden
+                  key={step.number}
+                  initial={{ opacity: 0, y: 26 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-90px" }}
+                  transition={{ duration: 0.55, ease }}
+                  className="relative flex gap-5 md:gap-8"
                 >
-                  <span className="font-display font-black text-[7rem] leading-none select-none text-zinc-900">
-                    {active.number}
+                  {/* Node */}
+                  <div className="relative z-10 shrink-0 w-[42px] h-[42px] md:w-14 md:h-14 rounded-2xl bg-zinc-900 border border-brand/25 flex items-center justify-center shadow-[0_0_30px_rgba(218,128,55,0.12)]">
+                    <Icon
+                      className="w-5 h-5 md:w-6 md:h-6 text-brand"
+                      strokeWidth={1.5}
+                    />
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex flex-col gap-2 pt-1 flex-1 min-w-0">
+                    <span className="font-mono text-xs text-brand/70 tabular-nums">
+                      {step.number} <span className="text-zinc-700">/ 04</span>
+                    </span>
+                    <h3 className="font-display text-xl md:text-2xl font-bold text-zinc-100 leading-snug">
+                      {step.title}
+                    </h3>
+                    <p className="text-zinc-400 text-sm md:text-base leading-relaxed max-w-md">
+                      {step.description}
+                    </p>
+                  </div>
+
+                  {/* Ghost watermark number */}
+                  <span
+                    aria-hidden
+                    className="hidden lg:block absolute right-2 -top-4 font-display font-black text-7xl leading-none text-zinc-900 select-none pointer-events-none"
+                  >
+                    {step.number}
                   </span>
                 </motion.div>
-              </AnimatePresence>
-
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`icon-m-${activeStep}`}
-                  initial={{ scale: 0.5, opacity: 0, rotate: -15 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  exit={{ scale: 1.2, opacity: 0, rotate: 10 }}
-                  transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative z-10 w-20 h-20 rounded-2xl bg-brand/8 border border-brand/20 flex items-center justify-center shadow-[0_0_48px_rgba(218,128,55,0.14),0_0_100px_rgba(218,128,55,0.06)]"
-                >
-                  <Icon className="w-9 h-9 text-brand" strokeWidth={1.25} />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Counter */}
-            <div className="flex items-baseline gap-1.5">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={`cnt-m-${activeStep}`}
-                  initial={{ opacity: 0, y: -16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 16 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-mono text-3xl font-bold text-brand tabular-nums leading-none"
-                >
-                  {active.number}
-                </motion.span>
-              </AnimatePresence>
-              <span className="font-mono text-sm text-zinc-700">/ 04</span>
-            </div>
-
-            {/* Title */}
-            <AnimatePresence mode="wait">
-              <motion.h2
-                key={`title-m-${activeStep}`}
-                initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -14, filter: "blur(4px)" }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="font-display text-2xl font-bold text-zinc-100 leading-tight"
-              >
-                {active.title}
-              </motion.h2>
-            </AnimatePresence>
-
-            {/* Description */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`desc-m-${activeStep}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-                className="text-zinc-400 text-sm leading-relaxed max-w-xs"
-              >
-                {active.description}
-              </motion.p>
-            </AnimatePresence>
-
-            {/* Progress pills */}
-            <div className="flex items-center gap-2">
-              {steps.map((_, i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    width: i === activeStep ? 28 : 6,
-                    opacity: i === activeStep ? 1 : 0.28,
-                  }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="h-1.5 rounded-full bg-brand"
-                />
-              ))}
-            </div>
+              )
+            })}
           </div>
-
-          {/* ── Desktop layout ── */}
-          <div className="hidden md:flex flex-col flex-1 justify-center relative">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_55%_at_65%_50%,rgba(218,128,55,0.05),transparent_70%)] pointer-events-none" />
-
-            <div className="relative max-w-5xl mx-auto w-full px-6 grid grid-cols-2 items-center gap-20">
-              {/* Left: text */}
-              <div className="flex flex-col gap-7">
-                <p className="text-sm font-medium text-brand uppercase tracking-wider">
-                  Cómo trabajamos
-                </p>
-
-                <div className="flex items-baseline gap-2">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={activeStep}
-                      initial={{ opacity: 0, y: -20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                      className="font-mono text-5xl font-bold text-brand tabular-nums leading-none"
-                    >
-                      {active.number}
-                    </motion.span>
-                  </AnimatePresence>
-                  <span className="font-mono text-lg text-zinc-700">/ 04</span>
-                </div>
-
-                <AnimatePresence mode="wait">
-                  <motion.h2
-                    key={`title-${activeStep}`}
-                    initial={{ opacity: 0, y: 28, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: -18, filter: "blur(6px)" }}
-                    transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                    className="font-display text-4xl lg:text-5xl font-bold text-zinc-100 leading-tight"
-                  >
-                    {active.title}
-                  </motion.h2>
-                </AnimatePresence>
-
-                <AnimatePresence mode="wait">
-                  <motion.p
-                    key={`desc-${activeStep}`}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.32, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-zinc-400 text-lg leading-relaxed max-w-sm"
-                  >
-                    {active.description}
-                  </motion.p>
-                </AnimatePresence>
-
-                <div className="flex items-center gap-2">
-                  {steps.map((_, i) => (
-                    <motion.div
-                      key={i}
-                      animate={{
-                        width: i === activeStep ? 32 : 6,
-                        opacity: i === activeStep ? 1 : 0.28,
-                      }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="h-1.5 rounded-full bg-brand"
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Right: icon + watermark */}
-              <div className="relative flex items-center justify-center h-80">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`wm-${activeStep}`}
-                    initial={{ opacity: 0, scale: 0.88 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.12 }}
-                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute inset-0 flex items-center justify-center"
-                    aria-hidden
-                  >
-                    <span className="font-display font-black text-[11rem] leading-none select-none text-zinc-900">
-                      {active.number}
-                    </span>
-                  </motion.div>
-                </AnimatePresence>
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`icon-${activeStep}`}
-                    initial={{ scale: 0.55, opacity: 0, rotate: -18 }}
-                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                    exit={{ scale: 1.25, opacity: 0, rotate: 12 }}
-                    transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative z-10 w-36 h-36 rounded-[2rem] bg-brand/8 border border-brand/20 flex items-center justify-center shadow-[0_0_80px_rgba(218,128,55,0.14),0_0_160px_rgba(218,128,55,0.06)]"
-                  >
-                    <Icon className="w-16 h-16 text-brand" strokeWidth={1.25} />
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
-
-          {/* Scroll hint — first step only, shared */}
-          <AnimatePresence>
-            {activeStep === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: 0.12 } }}
-                transition={{ duration: 0.4, delay: 0.6 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
-              >
-                <span className="text-[10px] text-zinc-700 uppercase tracking-widest">Scroll</span>
-                <motion.div
-                  animate={{ y: [0, 7, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-px h-6 bg-gradient-to-b from-zinc-700 to-transparent"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </div>
     </section>
