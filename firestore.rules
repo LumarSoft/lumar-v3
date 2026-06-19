@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Reglas de seguridad de Firestore para el panel /admin de LumarSoft.
+// Esta es la seguridad REAL: aunque alguien burle el guard del cliente,
+// la base rechaza cualquier lectura/escritura de un mail fuera del allowlist.
+//
+// IMPORTANTE: este allowlist debe coincidir con lib/admin/allowlist.ts.
+// Subir con: firebase deploy --only firestore:rules
+service cloud.firestore {
+  function isAdmin() {
+    return request.auth != null
+      && request.auth.token.email_verified == true
+      && request.auth.token.email in [
+        "lucas.quaroni@gmail.com",
+        "marcebenitez0607@gmail.com",
+        "bodinidev@gmail.com"
+      ];
+  }
+
+  match /databases/{database}/documents {
+    // Colecciones del panel: clientes, proyectos, cobros, futuros,
+    // roadmap, backlog y datos_relevantes (secretos).
+    match /{collection}/{docId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
