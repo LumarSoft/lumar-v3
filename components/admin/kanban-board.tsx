@@ -104,7 +104,7 @@ function TaskCard({
         </DropdownMenu>
       </div>
 
-      {(task.tipo || task.proyecto) && (
+      {(task.tipo || task.cliente) && (
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
           {task.tipo ? (
             <Badge
@@ -114,8 +114,8 @@ function TaskCard({
               {String(task.tipo)}
             </Badge>
           ) : null}
-          {task.proyecto ? (
-            <span className="truncate text-xs text-muted-foreground">{String(task.proyecto)}</span>
+          {task.cliente ? (
+            <span className="truncate text-xs text-muted-foreground">{String(task.cliente)}</span>
           ) : null}
         </div>
       )}
@@ -144,9 +144,11 @@ function TaskCard({
 
 export function KanbanBoard() {
   const { data, loading, add, update, remove } = useCollection("tareas")
-  const proyectos = useCollection("proyectos")
+  const clientes = useCollection("clientes")
   const [tab, setTab] = useState<"tablero" | "backlog">("tablero")
   const [filterMember, setFilterMember] = useState<string>("all")
+  const [filterTipo, setFilterTipo] = useState<string>("all")
+  const [filterCliente, setFilterCliente] = useState<string>("all")
   const [showCompleted, setShowCompleted] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<DocRecord | null>(null)
@@ -155,17 +157,19 @@ export function KanbanBoard() {
 
   const { existingIds } = useNotificationsContext()
 
-  // Opciones de proyecto, en vivo desde la colección Proyectos.
-  const proyectoOptions = useMemo(() => {
-    const names = proyectos.data.map((p) => String(p.proyecto ?? "")).filter(Boolean)
+  // Opciones de cliente, en vivo desde la colección Clientes.
+  const clienteOptions = useMemo(() => {
+    const names = clientes.data.map((c) => String(c.cliente ?? "")).filter(Boolean)
     return Array.from(new Set(names))
-  }, [proyectos.data])
+  }, [clientes.data])
 
   const visible = useMemo(() => {
     let rows = filterMember === "all" ? data : data.filter((t) => t.asignado === filterMember)
+    if (filterTipo !== "all") rows = rows.filter((t) => t.tipo === filterTipo)
+    if (filterCliente !== "all") rows = rows.filter((t) => t.cliente === filterCliente)
     if (!showCompleted) rows = rows.filter((t) => t.estado !== "Hecho")
     return rows
-  }, [data, filterMember, showCompleted])
+  }, [data, filterMember, filterTipo, filterCliente, showCompleted])
 
   // En el backlog, las completadas van al fondo.
   const backlogRows = useMemo(
@@ -322,6 +326,36 @@ export function KanbanBoard() {
         </div>
       </div>
 
+      {/* Filtros por tipo y cliente */}
+      <div className="flex flex-wrap gap-2">
+        <Select value={filterTipo} onValueChange={setFilterTipo}>
+          <SelectTrigger className="h-8 w-44 text-xs">
+            <SelectValue placeholder="Tipo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los tipos</SelectItem>
+            {TIPO_FIELD.options?.map((o) => (
+              <SelectItem key={o.value} value={o.value}>
+                {o.value}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterCliente} onValueChange={setFilterCliente}>
+          <SelectTrigger className="h-8 w-52 text-xs">
+            <SelectValue placeholder="Cliente" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los clientes</SelectItem>
+            {clienteOptions.map((name) => (
+              <SelectItem key={name} value={name}>
+                {name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-16">
           <Spinner className="size-5 text-muted-foreground" />
@@ -374,7 +408,7 @@ export function KanbanBoard() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Tarea</TableHead>
-                  <TableHead>Proyecto</TableHead>
+                  <TableHead>Cliente</TableHead>
                   <TableHead>Tipo</TableHead>
                   <TableHead>Asignado</TableHead>
                   <TableHead>Estado</TableHead>
@@ -390,7 +424,7 @@ export function KanbanBoard() {
                     <TableRow key={t.id}>
                       <TableCell>{t.tarea}</TableCell>
                       <TableCell className="text-muted-foreground">
-                        {t.proyecto ? String(t.proyecto) : "—"}
+                        {t.cliente ? String(t.cliente) : "—"}
                       </TableCell>
                       <TableCell>
                         {t.tipo ? (
@@ -484,13 +518,13 @@ export function KanbanBoard() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Proyecto</Label>
-                <Select value={form.proyecto} onValueChange={(v) => setForm((p) => ({ ...p, proyecto: v }))}>
+                <Label>Cliente</Label>
+                <Select value={form.cliente} onValueChange={(v) => setForm((p) => ({ ...p, cliente: v }))}>
                   <SelectTrigger>
-                    <SelectValue placeholder={proyectoOptions.length ? "Elegí" : "Creá un proyecto primero"} />
+                    <SelectValue placeholder={clienteOptions.length ? "Elegí" : "Creá un cliente primero"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {proyectoOptions.map((name) => (
+                    {clienteOptions.map((name) => (
                       <SelectItem key={name} value={name}>
                         {name}
                       </SelectItem>

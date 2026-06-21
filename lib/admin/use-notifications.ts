@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore"
 import { db } from "@/lib/firebase/client"
 
-export type NotifTipo = "vencimiento" | "cobro" | "tarea"
+export type NotifTipo = "vencimiento" | "cobro" | "tarea" | "revision" | "checkin" | "evento"
 
 export interface Notificacion {
   id: string

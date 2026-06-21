@@ -36,6 +36,38 @@ export function formatDate(value: string | null | undefined): string {
   return d.toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })
 }
 
+/** Add N months to a YYYY-MM-DD string (or today if empty). Returns YYYY-MM-DD. */
+export function addMonths(value: string | null | undefined, months: number): string {
+  const base = value ? new Date(value) : new Date()
+  const d = Number.isNaN(base.getTime()) ? new Date() : base
+  d.setMonth(d.getMonth() + months)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate(),
+  ).padStart(2, "0")}`
+}
+
+/** Next occurrence (today or future) of a given day-of-month, as YYYY-MM-DD. */
+export function nextMonthlyDate(day: number): string {
+  const today = new Date()
+  const todayMid = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const make = (y: number, m: number) => {
+    const last = new Date(y, m + 1, 0).getDate()
+    return new Date(y, m, Math.min(day, last))
+  }
+  let y = today.getFullYear()
+  let m = today.getMonth()
+  let d = make(y, m)
+  if (d < todayMid) {
+    m += 1
+    if (m > 11) {
+      m = 0
+      y += 1
+    }
+    d = make(y, m)
+  }
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 /** Whole days from today (local) until the given date. Negative = past. */
 export function daysUntil(value: string | null | undefined): number | null {
   if (!value) return null

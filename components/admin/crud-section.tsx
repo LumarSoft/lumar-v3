@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, type ReactNode } from "react"
 import { toast } from "sonner"
 import { Plus, Pencil, Trash2, Eye, EyeOff, Copy, Inbox } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -45,7 +45,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { useCollection, type DocRecord } from "@/lib/admin/use-collection"
 import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors"
-import { formatARS, formatUSD, arsToUsd, formatDate, dueInfo } from "@/lib/admin/format"
+import { formatARS, formatUSD, arsToUsd, formatDate, dueInfo, addMonths } from "@/lib/admin/format"
 import type { FieldDef, SectionSchema } from "@/lib/admin/schemas"
 
 type FormState = Record<string, string | number | undefined>
@@ -127,8 +127,31 @@ function renderCell(field: FieldDef, row: DocRecord) {
   }
 }
 
-export function CrudSection({ schema }: { schema: SectionSchema }) {
+export interface ExtraColumn {
+  key: string
+  label: string
+  render: (row: DocRecord) => ReactNode
+}
+
+export function CrudSection({
+  schema,
+  extraColumns = [],
+  sortRows,
+}: {
+  schema: SectionSchema
+  extraColumns?: ExtraColumn[]
+  sortRows?: (a: DocRecord, b: DocRecord) => number
+}) {
   const { data, loading, error, add, update, remove } = useCollection(schema.collection)
+  // Para campos con dynamicSource "clientes": opciones en vivo de la colección clientes.
+  const clientesCol = useCollection("clientes")
+  const clientOptions = useMemo(
+    () =>
+      Array.from(new Set(clientesCol.data.map((c) => String(c.cliente ?? "")).filter(Boolean))).map(
+        (v) => ({ value: v }) as { value: string },
+      ),
+    [clientesCol.data],
+  )
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<DocRecord | null>(null)
   const [form, setForm] = useState<FormState>({})
@@ -146,9 +169,13 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
   )
   const [filter, setFilter] = useState<string>("all")
   const visible = useMemo(() => {
-    if (filter === "all" || !schema.filterKey) return data
-    return data.filter((r) => String(r[schema.filterKey as string]) === filter)
-  }, [data, filter, schema.filterKey])
+    let rows =
+      filter === "all" || !schema.filterKey
+        ? data
+        : data.filter((r) => String(r[schema.filterKey as string]) === filter)
+    if (sortRows) rows = [...rows].sort(sortRows)
+    return rows
+  }, [data, filter, schema.filterKey, sortRows])
 
   function openCreate() {
     setEditing(null)
@@ -289,6 +316,9 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
                   {tableFields.map((f) => (
                     <TableHead key={f.key}>{f.label}</TableHead>
                   ))}
+                  {extraColumns.map((c) => (
+                    <TableHead key={c.key}>{c.label}</TableHead>
+                  ))}
                   <TableHead className="w-20 text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -297,6 +327,9 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
                   <TableRow key={row.id}>
                     {tableFields.map((f) => (
                       <TableCell key={f.key}>{renderCell(f, row)}</TableCell>
+                    ))}
+                    {extraColumns.map((c) => (
+                      <TableCell key={c.key}>{c.render(row)}</TableCell>
                     ))}
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
@@ -334,7 +367,11 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
           </DialogHeader>
 
           <div className="space-y-4 py-2">
-            {schema.fields.map((f) => (
+            {schema.fields.map((f) => {
+              if (f.showWhen && String(form[f.showWhen.field] ?? "") !== f.showWhen.equals) {
+                return null
+              }
+              return (
               <div key={f.key} className="space-y-1.5">
                 <Label htmlFor={f.key}>
                   {f.label}
@@ -346,10 +383,16 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
                     onValueChange={(v) => setField(f.key, v)}
                   >
                     <SelectTrigger id={f.key}>
-                      <SelectValue placeholder="Elegí una opción" />
+                      <SelectValue
+                        placeholder={
+                          f.dynamicSource && clientOptions.length === 0
+                            ? "Creá un cliente primero"
+                            : "Elegí una opción"
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      {f.options?.map((o) => (
+                      {(f.dynamicSource ? clientOptions : f.options)?.map((o) => (
                         <SelectItem key={o.value} value={o.value}>
                           {o.value}
                         </SelectItem>
@@ -373,6 +416,22 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
                     rows={2}
                     className="font-mono text-xs"
                   />
+                ) : f.type === "date" && f.reviewCycle ? (
+                  <div className="flex gap-2">
+                    <Input
+                      id={f.key}
+                      type="date"
+                      value={(form[f.key] as string | undefined) ?? ""}
+                      onChange={(e) => setField(f.key, e.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setField(f.key, addMonths(form[f.key] as string, f.reviewCycle!))}
+                    >
+                      +{f.reviewCycle} meses
+                    </Button>
+                  </div>
                 ) : (
                   <Input
                     id={f.key}
@@ -384,7 +443,8 @@ export function CrudSection({ schema }: { schema: SectionSchema }) {
                 )}
                 {f.helpText ? <p className="text-xs text-muted-foreground">{f.helpText}</p> : null}
               </div>
-            ))}
+              )
+            })}
           </div>
 
           <DialogFooter>

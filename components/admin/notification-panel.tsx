@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
-import { Bell, AlertTriangle, CreditCard, CheckSquare2 } from "lucide-react"
+import { Bell, AlertTriangle, CreditCard, CheckSquare2, TrendingUp, Flame, CalendarDays } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -16,6 +16,9 @@ function NotifIcon({ tipo }: { tipo: NotifTipo }) {
   if (tipo === "vencimiento")
     return <AlertTriangle className="mt-0.5 size-4 shrink-0 text-orange-400" />
   if (tipo === "cobro") return <CreditCard className="mt-0.5 size-4 shrink-0 text-yellow-400" />
+  if (tipo === "revision") return <TrendingUp className="mt-0.5 size-4 shrink-0 text-purple-400" />
+  if (tipo === "checkin") return <Flame className="mt-0.5 size-4 shrink-0 text-orange-400" />
+  if (tipo === "evento") return <CalendarDays className="mt-0.5 size-4 shrink-0 text-green-400" />
   return <CheckSquare2 className="mt-0.5 size-4 shrink-0 text-blue-400" />
 }
 

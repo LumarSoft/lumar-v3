@@ -3,6 +3,7 @@ import { getApps, initializeApp, cert, type App } from "firebase-admin/app"
 import { getFirestore, type QueryDocumentSnapshot } from "firebase-admin/firestore"
 import { Resend } from "resend"
 import { ADMIN_ALLOWLIST } from "@/lib/admin/allowlist"
+import { cobroDueDate, cobroPaidForMonth } from "@/lib/admin/cobros"
 
 // firebase-admin requires the Node.js runtime (not Edge).
 export const runtime = "nodejs"
@@ -67,12 +68,12 @@ export async function GET(request: Request) {
   const vSnap = await db.collection("vencimientos").get()
   vSnap.forEach((doc: QueryDocumentSnapshot) => {
     const v = doc.data()
-    if (!v.vencimiento || v.estado === "Pagado") return
+    if (!v.vencimiento || v.estado === "Pagar") return
     const days = daysUntil(String(v.vencimiento))
     if (days <= NOTIFY_DAYS) {
       items.push({
         concepto: String(v.concepto ?? "Vencimiento"),
-        detalle: [v.tipo, v.referencia].filter(Boolean).join(" · "),
+        detalle: [v.tipo, v.proveedor].filter(Boolean).join(" · "),
         fecha: String(v.vencimiento),
         days,
         monto: Number(v.monto) || undefined,
@@ -80,17 +81,19 @@ export async function GET(request: Request) {
     }
   })
 
-  // Cobros con vencimiento próximo que todavía no se cobraron.
+  // Cobros próximos que todavía no se cobraron (puntuales por vencimiento, recurrentes por día).
   const cSnap = await db.collection("cobros").get()
   cSnap.forEach((doc: QueryDocumentSnapshot) => {
     const c = doc.data()
-    if (!c.vencimiento || c.estado === "Cobrado") return
-    const days = daysUntil(String(c.vencimiento))
+    if (cobroPaidForMonth(c)) return
+    const due = cobroDueDate(c)
+    if (!due) return
+    const days = daysUntil(due)
     if (days <= NOTIFY_DAYS) {
       items.push({
         concepto: String(c.concepto ?? "Cobro"),
         detalle: ["Cobro", c.cliente].filter(Boolean).join(" · "),
-        fecha: String(c.vencimiento),
+        fecha: due,
         days,
         monto: Number(c.monto) || undefined,
       })

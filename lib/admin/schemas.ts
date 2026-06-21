@@ -31,7 +31,11 @@ export interface FieldDef {
   /** For date fields: show a "vence en X días" badge next to the date. */
   showDaysLeft?: boolean
   /** For select fields: resolve options at runtime from another collection. */
-  dynamicSource?: "proyectos"
+  dynamicSource?: "clientes"
+  /** For date fields: show a quick "+N meses" button (e.g. revisión cada 3 meses). */
+  reviewCycle?: number
+  /** For the form: only show this field when another field equals a value. */
+  showWhen?: { field: string; equals: string }
 }
 
 export interface SectionSchema {
@@ -48,35 +52,33 @@ export interface SectionSchema {
   filterKey?: string
 }
 
-const ESTADO_PROYECTO: SelectOption[] = [
-  { value: "Backlog", color: "gray" },
-  { value: "Pendiente", color: "orange" },
-  { value: "En curso", color: "blue" },
-  { value: "En pruebas", color: "purple" },
-  { value: "Produccion", color: "green" },
-  { value: "Frenado", color: "red" },
+export const MIEMBRO_OPTIONS: SelectOption[] = [
+  { value: "Lucas", color: "blue" },
+  { value: "Marcelo", color: "green" },
+  { value: "Mateo", color: "purple" },
 ]
 
-const PRIORIDAD: SelectOption[] = [
-  { value: "Alta", color: "red" },
-  { value: "Media", color: "yellow" },
-  { value: "Baja", color: "gray" },
-]
+const MIEMBRO_OPTIONS_OPCIONAL: SelectOption[] = [...MIEMBRO_OPTIONS, { value: "Sin asignar", color: "gray" }]
 
-const IMPACTO_ESFUERZO: SelectOption[] = [
-  { value: "Alto", color: "green" },
-  { value: "Medio", color: "yellow" },
-  { value: "Bajo", color: "gray" },
-]
-
+// ── Clientes (cada cliente ES el proyecto) ───────────────────────────────
 export const CLIENTES_SCHEMA: SectionSchema = {
   collection: "clientes",
   title: "Clientes",
-  description: "Cartera activa, montos recurrentes y salud de cada cuenta.",
+  description: "Perfil de cada cliente. Las cobranzas (recurrente + puntuales) se gestionan en Cobros.",
   itemNoun: "cliente",
   titleKey: "cliente",
+  filterKey: "tipo",
   fields: [
     { key: "cliente", label: "Cliente", type: "text", required: true },
+    {
+      key: "tipo",
+      label: "Tipo",
+      type: "select",
+      options: [
+        { value: "Cliente", color: "blue" },
+        { value: "Producto propio", color: "purple" },
+      ],
+    },
     {
       key: "estado",
       label: "Estado",
@@ -85,19 +87,17 @@ export const CLIENTES_SCHEMA: SectionSchema = {
         { value: "Produccion", color: "green" },
         { value: "En desarrollo", color: "blue" },
         { value: "Pausado", color: "gray" },
+        { value: "Cerrado", color: "red" },
       ],
     },
     {
-      key: "tipo",
-      label: "Tipo",
-      type: "select",
-      options: [
-        { value: "Recurrente", color: "blue" },
-        { value: "Puntual", color: "gray" },
-      ],
+      key: "proximaRevision",
+      label: "Próx. revisión monto",
+      type: "date",
+      showDaysLeft: true,
+      reviewCycle: 3,
+      helpText: "Revisión del monto por inflación. El botón +3 meses agenda la siguiente.",
     },
-    { key: "montoMensual", label: "Monto mensual", type: "currency" },
-    { key: "diaCobro", label: "Día de cobro", type: "number" },
     {
       key: "salud",
       label: "Salud",
@@ -113,34 +113,7 @@ export const CLIENTES_SCHEMA: SectionSchema = {
   ],
 }
 
-export const PROYECTOS_SCHEMA: SectionSchema = {
-  collection: "proyectos",
-  title: "Proyectos",
-  description: "Frentes de desarrollo, producto y comercial en curso.",
-  itemNoun: "proyecto",
-  titleKey: "proyecto",
-  fields: [
-    { key: "proyecto", label: "Proyecto", type: "text", required: true },
-    { key: "cliente", label: "Cliente", type: "text" },
-    { key: "estado", label: "Estado", type: "select", options: ESTADO_PROYECTO },
-    { key: "prioridad", label: "Prioridad", type: "select", options: PRIORIDAD },
-    { key: "dueno", label: "Dueño", type: "text" },
-    { key: "fechaObjetivo", label: "Fecha objetivo", type: "date" },
-    {
-      key: "tipo",
-      label: "Tipo",
-      type: "select",
-      options: [
-        { value: "Comercial", color: "pink" },
-        { value: "Desarrollo", color: "blue" },
-        { value: "Mantenimiento", color: "gray" },
-        { value: "Producto", color: "purple" },
-      ],
-    },
-    { key: "notas", label: "Notas", type: "textarea", inTable: false },
-  ],
-}
-
+// ── Cobros (manuales, cliente como select relacional) ────────────────────
 export const COBROS_SCHEMA: SectionSchema = {
   collection: "cobros",
   title: "Cobros",
@@ -159,19 +132,34 @@ export const COBROS_SCHEMA: SectionSchema = {
         { value: "Fijo desarrollo", color: "blue" },
       ],
     },
-    { key: "cliente", label: "Cliente", type: "text" },
+    { key: "cliente", label: "Cliente", type: "select", dynamicSource: "clientes" },
     { key: "monto", label: "Monto", type: "currency" },
     {
       key: "estado",
       label: "Estado",
       type: "select",
+      showWhen: { field: "categoria", equals: "Fijo desarrollo" },
       options: [
         { value: "Pendiente", color: "yellow" },
-        { value: "Cobrado", color: "green" },
+        { value: "Cobrar", color: "green" },
         { value: "Vencido", color: "red" },
       ],
     },
-    { key: "vencimiento", label: "Vencimiento", type: "date", showDaysLeft: true },
+    {
+      key: "diaCobro",
+      label: "Día de cobro",
+      type: "number",
+      placeholder: "1-31",
+      showWhen: { field: "categoria", equals: "Recurrente mensual" },
+      helpText: "Día del mes en que se cobra (para recurrentes).",
+    },
+    {
+      key: "vencimiento",
+      label: "Vencimiento",
+      type: "date",
+      showDaysLeft: true,
+      showWhen: { field: "categoria", equals: "Fijo desarrollo" },
+    },
     {
       key: "metodo",
       label: "Método",
@@ -188,32 +176,7 @@ export const COBROS_SCHEMA: SectionSchema = {
   ],
 }
 
-export const FUTUROS_SCHEMA: SectionSchema = {
-  collection: "futuros",
-  title: "Futuros",
-  description: "Ideas y oportunidades a futuro: productos propios, nuevas verticales.",
-  itemNoun: "idea",
-  titleKey: "idea",
-  fields: [
-    { key: "idea", label: "Idea / oportunidad", type: "text", required: true },
-    { key: "descripcion", label: "Descripción", type: "textarea", inTable: false },
-    { key: "impacto", label: "Impacto", type: "select", options: IMPACTO_ESFUERZO },
-    { key: "esfuerzo", label: "Esfuerzo", type: "select", options: IMPACTO_ESFUERZO },
-    {
-      key: "estado",
-      label: "Estado",
-      type: "select",
-      options: [
-        { value: "Idea", color: "gray" },
-        { value: "En evaluacion", color: "blue" },
-        { value: "Aprobado", color: "green" },
-        { value: "Descartado", color: "red" },
-      ],
-    },
-    { key: "notas", label: "Notas", type: "textarea", inTable: false },
-  ],
-}
-
+// ── Datos relevantes (secretos) ──────────────────────────────────────────
 export const DATOS_SCHEMA: SectionSchema = {
   collection: "datos_relevantes",
   title: "Datos relevantes",
@@ -235,7 +198,7 @@ export const DATOS_SCHEMA: SectionSchema = {
         { value: "Otro", color: "gray" },
       ],
     },
-    { key: "proyecto", label: "Proyecto / cliente", type: "text" },
+    { key: "cliente", label: "Cliente", type: "select", dynamicSource: "clientes" },
     {
       key: "valor",
       label: "Valor",
@@ -247,22 +210,16 @@ export const DATOS_SCHEMA: SectionSchema = {
   ],
 }
 
-const MIEMBRO_OPTIONS: SelectOption[] = [
-  { value: "Lucas", color: "blue" },
-  { value: "Marcelo", color: "green" },
-  { value: "Mateo", color: "purple" },
-  { value: "Sin asignar", color: "gray" },
-]
-
+// ── Tareas (Kanban + backlog) ────────────────────────────────────────────
 export const TAREAS_SCHEMA: SectionSchema = {
   collection: "tareas",
   title: "Tareas",
-  description: "Tablero + backlog. Cada tarea pertenece a un proyecto y tiene un tipo.",
+  description: "Tablero + backlog. Cada tarea pertenece a un cliente y tiene un tipo.",
   itemNoun: "tarea",
   titleKey: "tarea",
   fields: [
     { key: "tarea", label: "Tarea", type: "text", required: true },
-    { key: "proyecto", label: "Proyecto", type: "select", dynamicSource: "proyectos" },
+    { key: "cliente", label: "Cliente", type: "select", dynamicSource: "clientes" },
     {
       key: "tipo",
       label: "Tipo",
@@ -273,7 +230,7 @@ export const TAREAS_SCHEMA: SectionSchema = {
         { value: "Implementación", color: "purple" },
       ],
     },
-    { key: "asignado", label: "Asignado a", type: "select", options: MIEMBRO_OPTIONS },
+    { key: "asignado", label: "Asignado a", type: "select", options: MIEMBRO_OPTIONS_OPCIONAL },
     {
       key: "estado",
       label: "Estado",
@@ -281,7 +238,7 @@ export const TAREAS_SCHEMA: SectionSchema = {
       options: [
         { value: "To do", color: "gray" },
         { value: "En curso", color: "blue" },
-        { value: "Bloqueado", color: "red" },
+        { value: "Probando", color: "yellow" },
         { value: "Hecho", color: "green" },
       ],
     },
@@ -305,16 +262,16 @@ export const TAREAS_ESTADOS: SelectOption[] = TAREAS_SCHEMA.fields.find(
   (f) => f.key === "estado",
 )!.options!
 
+// ── Vencimientos (servicios y gastos NUESTROS, no cobros a clientes) ─────
 export const VENCIMIENTOS_SCHEMA: SectionSchema = {
   collection: "vencimientos",
   title: "Vencimientos",
-  description:
-    "Servidores y servicios internos, gastos de la empresa, y lo que deben pagar los clientes.",
+  description: "Servicios y gastos internos que pagamos nosotros (hosting, dominios, herramientas).",
   itemNoun: "vencimiento",
   titleKey: "concepto",
   filterKey: "tipo",
   fields: [
-    { key: "concepto", label: "Concepto", type: "text", required: true, placeholder: "Ej: Hosting VPS, dominio, Adobe, cuota cliente X" },
+    { key: "concepto", label: "Concepto", type: "text", required: true, placeholder: "Ej: Hosting VPS, dominio, Adobe, Vercel" },
     {
       key: "tipo",
       label: "Tipo",
@@ -322,10 +279,9 @@ export const VENCIMIENTOS_SCHEMA: SectionSchema = {
       options: [
         { value: "Servidor interno", color: "blue" },
         { value: "Gasto interno", color: "orange" },
-        { value: "Cobro cliente", color: "green" },
       ],
     },
-    { key: "referencia", label: "Proveedor / Cliente", type: "text" },
+    { key: "proveedor", label: "Proveedor", type: "text" },
     { key: "monto", label: "Monto", type: "currency" },
     { key: "vencimiento", label: "Vence", type: "date", showDaysLeft: true },
     {
@@ -338,13 +294,14 @@ export const VENCIMIENTOS_SCHEMA: SectionSchema = {
         { value: "Anual", color: "purple" },
       ],
     },
+    { key: "pagadoPor", label: "Pagado por", type: "select", options: MIEMBRO_OPTIONS_OPCIONAL },
     {
       key: "estado",
       label: "Estado",
       type: "select",
       options: [
         { value: "Pendiente", color: "yellow" },
-        { value: "Pagado", color: "green" },
+        { value: "Pagar", color: "green" },
         { value: "Vencido", color: "red" },
       ],
     },

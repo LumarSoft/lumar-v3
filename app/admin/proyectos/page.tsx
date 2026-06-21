@@ -1,8 +1,6 @@
-"use client"
+import { redirect } from "next/navigation"
 
-import { CrudSection } from "@/components/admin/crud-section"
-import { PROYECTOS_SCHEMA } from "@/lib/admin/schemas"
-
-export default function ProyectosPage() {
-  return <CrudSection schema={PROYECTOS_SCHEMA} />
+// Proyectos se unificó con Clientes (cada cliente es un proyecto).
+export default function ProyectosRedirect() {
+  redirect("/admin/clientes")
 }
