@@ -125,12 +125,28 @@ export async function GET(request: Request) {
   </div>`
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  await resend.emails.send({
-    from: process.env.RESEND_FROM,
+  const result = await resend.emails.send({
+    from: process.env.RESEND_FROM as string,
     to: [...ADMIN_ALLOWLIST],
     subject: `⏰ ${items.length} vencimiento(s) próximos — LumarSoft`,
     html,
   })
 
-  return NextResponse.json({ ok: true, sent: true, count: items.length })
+  // Resend NO tira excepción ante errores de API (dominio sin verificar, etc.):
+  // devuelve { error }. Lo surfaceamos para poder depurar.
+  if (result.error) {
+    console.error("Resend error:", result.error)
+    return NextResponse.json(
+      {
+        ok: false,
+        count: items.length,
+        from: process.env.RESEND_FROM,
+        to: [...ADMIN_ALLOWLIST],
+        resendError: result.error,
+      },
+      { status: 502 },
+    )
+  }
+
+  return NextResponse.json({ ok: true, sent: true, count: items.length, id: result.data?.id })
 }

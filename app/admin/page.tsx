@@ -16,7 +16,7 @@ import {
 import { MemberAvatar } from "@/components/admin/member-avatar"
 import { useCollection } from "@/lib/admin/use-collection"
 import { formatARS, formatUSD, formatDate, dueInfo, daysUntil } from "@/lib/admin/format"
-import { cobroDueDate, cobroPaidForMonth, isRecurrente, monthKey as currentMonthKey } from "@/lib/admin/cobros"
+import { cobroDueDate, cobroPaidForMonth, cobroPeriodo, isRecurrente } from "@/lib/admin/cobros"
 import { OPTION_COLOR_CLASSES } from "@/lib/admin/colors"
 import { MEMBERS } from "@/lib/admin/members"
 import { todayStr } from "@/lib/admin/activity"
@@ -135,7 +135,7 @@ export default function DashboardPage() {
       const days = daysUntil(due)
       if (days === null || days > 7) continue
       const when = days < 0 ? `vencido hace ${Math.abs(days)} día(s)` : days === 0 ? "vence hoy" : `vence en ${days} día(s)`
-      const key = isRecurrente(c) ? `cobro_${c.id}_${currentMonthKey()}` : `cobro_${c.id}`
+      const key = isRecurrente(c) ? `cobro_${c.id}_${cobroPeriodo(c)}` : `cobro_${c.id}`
       ensureNotification(key, existingIds, {
         tipo: "cobro",
         titulo: `Cobro pendiente — ${String(c.concepto ?? c.cliente ?? "")}`,
@@ -186,21 +186,25 @@ export default function DashboardPage() {
 
   const stats = useMemo(() => {
     const { year, month } = selected
-    // Recurrencia = SOLO cobros recurrentes mensuales (no incluye desarrollo puntual).
+    // Recurrencia = SOLO las cuentas recurrentes activas (no instancias pagadas ni puntuales).
     const recurrenciaArs = cobros.data
-      .filter((c) => c.categoria === "Recurrente mensual")
+      .filter((c) => isRecurrente(c))
       .reduce((acc, c) => acc + toNum(c.monto), 0)
     const recurrenciaUsd = Math.round(recurrenciaArs / rate)
     const progress = Math.min(100, Math.round((recurrenciaUsd / META_USD) * 100))
     const brechaUsd = Math.max(0, META_USD - recurrenciaUsd)
 
-    // Recurrentes cuentan todos los meses; puntuales solo en su mes.
+    // Cobrado del mes = pagos reales (instancias + puntuales cobrados) con fecha en el mes.
     const mk = `${year}-${String(month + 1).padStart(2, "0")}`
-    const cobrosMes = cobros.data.filter(
-      (c) => c.categoria === "Recurrente mensual" || inMonth(c.vencimiento, year, month),
+    const cobradoMes = cobros.data
+      .filter((c) => inMonth(c.vencimiento, year, month) && cobroPaidForMonth(c))
+      .reduce((a, c) => a + toNum(c.monto), 0)
+    // Por cobrar = la recurrente activa cuyo período es este mes + puntuales pendientes del mes.
+    const porCobrarMes = cobros.data.filter((c) =>
+      isRecurrente(c)
+        ? cobroPeriodo(c) === mk
+        : inMonth(c.vencimiento, year, month) && !cobroPaidForMonth(c),
     )
-    const cobradoMes = cobrosMes.filter((c) => cobroPaidForMonth(c, mk)).reduce((a, c) => a + toNum(c.monto), 0)
-    const porCobrarMes = cobrosMes.filter((c) => !cobroPaidForMonth(c, mk))
     const sumPorCobrar = porCobrarMes.reduce((a, c) => a + toNum(c.monto), 0)
 
     const vencimientosMes = vencimientos.data.filter((v) => inMonth(v.vencimiento, year, month))

@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { useCollection } from "@/lib/admin/use-collection"
-import { formatARS, formatDate } from "@/lib/admin/format"
+import { formatARS, formatDate, parseLocalDate } from "@/lib/admin/format"
 import { useNotificationsContext } from "@/lib/admin/notifications-context"
 import { ensureNotification } from "@/lib/admin/use-notifications"
 
@@ -89,19 +89,23 @@ export function PaymentsCalendar() {
       ;(marks[day] ??= []).push(mark)
     }
     const dayInView = (dateStr: unknown): number | null => {
-      if (!dateStr) return null
-      const d = new Date(String(dateStr))
-      if (Number.isNaN(d.getTime())) return null
+      const d = parseLocalDate(dateStr as string)
+      if (!d) return null
       if (d.getFullYear() !== year || d.getMonth() !== month) return null
       return d.getDate()
     }
 
-    // Cobros: puntuales por vencimiento; recurrentes por día de cobro (cada mes).
+    // Cobros: puntuales/instancias por vencimiento; recurrente activo por día de cobro
+    // (solo desde su período en adelante, para no duplicar con los pagos ya registrados).
+    const viewMk = `${year}-${String(month + 1).padStart(2, "0")}`
     for (const c of cobros.data) {
       let day = dayInView(c.vencimiento)
       if (!day) {
         const dc = Number(c.diaCobro)
-        if (Number.isFinite(dc) && dc >= 1 && dc <= 31) day = Math.min(dc, daysInMonth)
+        const periodoMk = c.periodo ? String(c.periodo) : viewMk
+        if (Number.isFinite(dc) && dc >= 1 && dc <= 31 && viewMk >= periodoMk) {
+          day = Math.min(dc, daysInMonth)
+        }
       }
       if (day) push(day, { label: String(c.concepto ?? c.cliente ?? "Cobro"), amount: toNum(c.monto), tone: estadoTone(c.estado) })
     }

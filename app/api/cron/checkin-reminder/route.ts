@@ -52,7 +52,7 @@ export async function GET(request: Request) {
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  await Promise.all(
+  const results = await Promise.all(
     missing.map((m) =>
       resend.emails.send({
         from: process.env.RESEND_FROM as string,
@@ -66,6 +66,15 @@ export async function GET(request: Request) {
       }),
     ),
   )
+
+  const errors = results.map((r) => r.error).filter(Boolean)
+  if (errors.length) {
+    console.error("Resend errors:", errors)
+    return NextResponse.json(
+      { ok: false, from: process.env.RESEND_FROM, missing: missing.map((m) => m.name), resendErrors: errors },
+      { status: 502 },
+    )
+  }
 
   return NextResponse.json({ ok: true, sent: true, missing: missing.map((m) => m.name) })
 }

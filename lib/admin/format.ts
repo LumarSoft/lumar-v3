@@ -29,10 +29,22 @@ export function arsToUsd(valueArs: number, rate = REFERENCE_USD_RATE): number {
   return Math.round(valueArs / rate)
 }
 
+/**
+ * Parsea una fecha como LOCAL (no UTC). "YYYY-MM-DD" con new Date() se interpreta
+ * como medianoche UTC y en husos negativos (Argentina) cae el día anterior.
+ */
+export function parseLocalDate(value: string | null | undefined): Date | null {
+  if (!value) return null
+  const s = String(value)
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  const d = new Date(s)
+  return Number.isNaN(d.getTime()) ? null : d
+}
+
 export function formatDate(value: string | null | undefined): string {
-  if (!value) return "—"
-  const d = new Date(value)
-  if (Number.isNaN(d.getTime())) return "—"
+  const d = parseLocalDate(value)
+  if (!d) return "—"
   return d.toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })
 }
 
@@ -70,9 +82,8 @@ export function nextMonthlyDate(day: number): string {
 
 /** Whole days from today (local) until the given date. Negative = past. */
 export function daysUntil(value: string | null | undefined): number | null {
-  if (!value) return null
-  const d = new Date(value)
-  if (Number.isNaN(d.getTime())) return null
+  const d = parseLocalDate(value)
+  if (!d) return null
   const today = new Date()
   const a = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
   const b = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())
