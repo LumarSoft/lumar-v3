@@ -224,6 +224,18 @@
   -webkit-text-stroke-color: rgba(218, 128, 55, 0.55);
 }
 
+/* Navbar wordmark — mismo comportamiento que el footer (outline → naranja en hover),
+   con un stroke más marcado para que sea legible al tamaño chico. */
+.nav-wordmark {
+  color: transparent;
+  -webkit-text-stroke: 0.7px rgba(228, 228, 231, 0.55);
+  transition: color 0.35s ease, -webkit-text-stroke-color 0.35s ease;
+}
+.nav-wordmark:hover {
+  color: rgba(218, 128, 55, 0.95);
+  -webkit-text-stroke-color: rgba(218, 128, 55, 0.95);
+}
+
 /* Animated underline for footer links */
 .link-underline {
   position: relative;

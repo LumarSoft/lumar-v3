@@ -72,14 +72,25 @@ export function EquipoSection() {
     <section id="equipo" className="px-6 py-24">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <SectionHeading
-          eyebrow="El equipo"
-          index="04"
-          className="mb-12 max-w-2xl"
-          description="Ingenieros en Sistemas de Rosario. Cuando contratás LumarSoft, no hay un equipo de ventas que te pasa a un equipo de desarrollo. Hablás directamente con quien construye tu proyecto, de principio a fin."
-        >
-          Somos los tres que fundamos LumarSoft. También somos los tres que escriben el código.
-        </SectionHeading>
+        <div className="relative">
+          <SectionHeading
+            eyebrow="El equipo"
+            index="04"
+            className="mb-12 max-w-2xl"
+            description="Ingenieros en Sistemas de Rosario. Cuando contratás LumarSoft, no hay un equipo de ventas que te pasa a un equipo de desarrollo. Hablás directamente con quien construye tu proyecto, de principio a fin."
+          >
+            Somos los tres que fundamos LumarSoft. También somos los tres que escriben el código.
+          </SectionHeading>
+
+          {/* Logo — arriba a la derecha */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-ls.png"
+            alt="LumarSoft"
+            aria-hidden="true"
+            className="pointer-events-none absolute right-0 top-0 hidden h-28 w-auto select-none object-contain opacity-90 md:block lg:h-36"
+          />
+        </div>
 
         {/* ── Desktop: annotated photo ── */}
         <div className="hidden md:block">

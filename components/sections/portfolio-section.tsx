@@ -7,6 +7,27 @@ import Image from 'next/image'
 const projects = [
   {
     number: '01',
+    client: 'John Pellegrini',
+    industry: 'Seguros · Productor Asesor',
+    category: 'Web + Bot con IA',
+    tags: ['Next.js', 'WhatsApp Bot', 'IA'],
+    problem:
+      'Una trayectoria de más de 50 años en seguros, pero una presencia digital que no la reflejaba — y consultas de clientes dispersas entre llamados y WhatsApp que se perdían.',
+    solution:
+      'Le construimos el sitio web completo con cotizador de seguros, más un bot de WhatsApp con inteligencia artificial que atiende, cotiza y deriva 24/7, todo integrado a un panel de administración.',
+    image: '/JohnPellegriniPng.png',
+    accent: '#FBBF24',
+    accentRgb: '251,191,36',
+    impact: [
+      'Sitio web a medida con cotizador de seguros online',
+      'Bot de WhatsApp con IA que atiende y cotiza 24/7',
+      'Panel de administración integrado con el bot',
+      'Cada consulta queda registrada y derivada, sin perderse',
+    ],
+    stack: ['Next.js 16', 'React 19', 'NestJS', 'WhatsApp Cloud API', 'OpenAI', 'MySQL'],
+  },
+  {
+    number: '02',
     client: 'FULL E-commerce',
     industry: 'Retail & Tecnología',
     category: 'Tienda online',
@@ -24,7 +45,7 @@ const projects = [
     stack: [] as string[],
   },
   {
-    number: '02',
+    number: '03',
     client: 'Heroica',
     industry: 'Hospitalidad & Gastronomía',
     category: 'Plataforma Interna',
@@ -45,7 +66,7 @@ const projects = [
     stack: ['Next.js 16', 'React 19', 'TypeScript', 'MySQL', 'JWT + 2FA', 'Vercel Blob', 'Resend'],
   },
   {
-    number: '03',
+    number: '04',
     client: 'UESEVI',
     industry: 'Sindicato · Seguridad Privada',
     category: 'Sistema Administrativo',
@@ -105,10 +126,11 @@ export function PortfolioSection() {
   })
 
   const p = projects[activeIdx]
+  const total = String(projects.length).padStart(2, '0')
 
   return (
     <section id="portfolio">
-      <div ref={containerRef} className="relative h-[300vh]">
+      <div ref={containerRef} className="relative" style={{ height: `${projects.length * 100}vh` }}>
         <div className="sticky top-0 h-screen bg-zinc-950 overflow-hidden">
 
           {/* Per-project color atmosphere — right half glow */}
@@ -154,7 +176,7 @@ export function PortfolioSection() {
                   animate={{ color: p.accent }}
                   transition={{ duration: 0.6 }}
                 >
-                  {p.number} / 03
+                  {p.number} / {total}
                 </motion.span>
                 <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{p.category}</span>
               </div>
@@ -221,7 +243,7 @@ export function PortfolioSection() {
                   animate={{ color: p.accent }}
                   transition={{ duration: 0.6 }}
                 >
-                  {p.number} / 03
+                  {p.number} / {total}
                 </motion.span>
                 <div className="flex gap-1.5 flex-wrap">
                   {[p.category, ...p.tags.slice(0, 2)].map((t) => (

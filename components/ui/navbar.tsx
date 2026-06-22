@@ -89,8 +89,10 @@ export function Navbar() {
             : "bg-zinc-900/20 border-zinc-800/20"
         }`}
       >
-        <Link href="/" className="font-display text-lg font-semibold text-zinc-100 tracking-tight">
-          LumarSoft
+        <Link href="/" className="flex items-center">
+          <span className="nav-wordmark font-display text-lg font-black tracking-tight">
+            LumarSoft
+          </span>
         </Link>
 
         {/* Desktop links */}
