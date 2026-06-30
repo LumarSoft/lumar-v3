@@ -4,18 +4,9 @@ import { SITE } from "@/lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
 
-  // Single-page site con secciones ancladas. Listamos la home y las
-  // anclas principales para ayudar a buscadores y motores de IA.
-  const sections = [
-    "servicios",
-    "portfolio",
-    "valores",
-    "equipo",
-    "testimonios",
-    "faq",
-    "contacto",
-  ];
-
+  // Single-page site: solo la home es una URL indexable. Los anclajes (#seccion)
+  // no se listan porque los buscadores ignoran los fragmentos de URL. Cuando se
+  // agreguen páginas reales (servicios, casos, blog) se suman acá.
   return [
     {
       url: SITE.url,
@@ -23,11 +14,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
-    ...sections.map((id) => ({
-      url: `${SITE.url}/#${id}`,
-      lastModified,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
   ];
 }

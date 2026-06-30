@@ -23,7 +23,7 @@ export function buildJsonLd() {
     logo: `${url}/icon.svg`,
     image: `${url}/opengraph-image`,
     telephone: SITE.phone,
-    slogan: "Software que se entrega. No que se promete.",
+    slogan: "Eso que imaginás para tu empresa, lo construimos.",
     description:
       "Estudio de desarrollo web y software a medida con base en Rosario, Argentina. Especialistas en ecommerce, landing pages, aplicaciones web y sistemas de gestión. Trabajo remoto para clientes de Argentina y el mundo.",
     address: {
