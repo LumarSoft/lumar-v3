@@ -1,79 +1,81 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { toast } from "sonner"
-import { Flame, Check, Trash2, Send } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Spinner } from "@/components/ui/spinner"
-import { MemberAvatar } from "@/components/admin/member-avatar"
-import { useCollection } from "@/lib/admin/use-collection"
-import { useAuth } from "@/lib/admin/auth-context"
-import { MEMBERS, memberByEmail } from "@/lib/admin/members"
-import { todayStr, computeStreak } from "@/lib/admin/activity"
-import { formatDate } from "@/lib/admin/format"
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import { Flame, Check, Trash2, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { MemberAvatar } from "@/components/admin/member-avatar";
+import { useCollection } from "@/lib/admin/use-collection";
+import { useAuth } from "@/lib/admin/auth-context";
+import { MEMBERS, memberByEmail } from "@/lib/admin/members";
+import { todayStr, computeStreak } from "@/lib/admin/activity";
+import { formatDate } from "@/lib/admin/format";
 
 export function ActivityFeed() {
-  const { user } = useAuth()
-  const { data, loading, add, remove } = useCollection("checkins")
-  const [text, setText] = useState("")
-  const [saving, setSaving] = useState(false)
+  const { user } = useAuth();
+  const { data, loading, add, remove } = useCollection("checkins");
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const me = memberByEmail(user?.email)
-  const today = todayStr()
+  const me = memberByEmail(user?.email);
+  const today = todayStr();
 
   const streaks = useMemo(() => {
-    const map: Record<string, Set<string>> = {}
+    const map: Record<string, Set<string>> = {};
     for (const c of data) {
-      const name = String(c.miembro ?? "")
-      const fecha = String(c.fecha ?? "")
-      if (!name || !fecha) continue
-      ;(map[name] ??= new Set()).add(fecha)
+      const name = String(c.miembro ?? "");
+      const fecha = String(c.fecha ?? "");
+      if (!name || !fecha) continue;
+      (map[name] ??= new Set()).add(fecha);
     }
-    const out: Record<string, { streak: number; today: boolean }> = {}
+    const out: Record<string, { streak: number; today: boolean }> = {};
     for (const m of MEMBERS) {
-      const set = map[m.name] ?? new Set()
-      out[m.name] = { streak: computeStreak(set), today: set.has(today) }
+      const set = map[m.name] ?? new Set();
+      out[m.name] = { streak: computeStreak(set), today: set.has(today) };
     }
-    return out
-  }, [data, today])
+    return out;
+  }, [data, today]);
 
   const grouped = useMemo(() => {
-    const byDate: Record<string, typeof data> = {}
+    const byDate: Record<string, typeof data> = {};
     for (const c of data) {
-      const fecha = String(c.fecha ?? "")
-      ;(byDate[fecha] ??= []).push(c)
+      const fecha = String(c.fecha ?? "");
+      (byDate[fecha] ??= []).push(c);
     }
-    return Object.entries(byDate).sort((a, b) => (a[0] < b[0] ? 1 : -1))
-  }, [data])
+    return Object.entries(byDate).sort((a, b) => (a[0] < b[0] ? 1 : -1));
+  }, [data]);
 
   async function submit() {
     if (!me) {
-      toast.error("No identificamos tu usuario en el equipo.")
-      return
+      toast.error("No identificamos tu usuario en el equipo.");
+      return;
     }
     if (!text.trim()) {
-      toast.error("Escribí qué hiciste hoy.")
-      return
+      toast.error("Escribí qué hiciste hoy.");
+      return;
     }
-    setSaving(true)
+    setSaving(true);
     try {
-      await add({ miembro: me.name, texto: text.trim(), fecha: today })
-      setText("")
-      toast.success("Check-in registrado 🔥")
+      await add({ miembro: me.name, texto: text.trim(), fecha: today });
+      setText("");
+      toast.success("Check-in registrado 🔥");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error al guardar")
+      toast.error(err instanceof Error ? err.message : "Error al guardar");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Actividad diaria</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Actividad diaria
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Check-in diario. 1 línea de qué moviste hoy. No zero days.
         </p>
@@ -82,7 +84,7 @@ export function ActivityFeed() {
       {/* Rachas */}
       <div className="grid gap-3 sm:grid-cols-3">
         {MEMBERS.map((m) => {
-          const s = streaks[m.name]
+          const s = streaks[m.name];
           return (
             <Card key={m.email} className="border-border/60">
               <CardContent className="flex items-center justify-between gap-3 py-4">
@@ -101,12 +103,17 @@ export function ActivityFeed() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1 text-sm font-semibold">
-                  <Flame className={cn("size-4", s?.streak ? "text-orange-400" : "text-muted-foreground")} />
+                  <Flame
+                    className={cn(
+                      "size-4",
+                      s?.streak ? "text-orange-400" : "text-muted-foreground",
+                    )}
+                  />
                   {s?.streak ?? 0}
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -139,7 +146,9 @@ export function ActivityFeed() {
             <Spinner className="size-5 text-muted-foreground" />
           </div>
         ) : grouped.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Todavía no hay check-ins.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Todavía no hay check-ins.
+          </p>
         ) : (
           grouped.map(([fecha, items]) => (
             <div key={fecha} className="space-y-2">
@@ -157,7 +166,9 @@ export function ActivityFeed() {
                   <MemberAvatar name={String(c.miembro)} className="mt-0.5" />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-medium">{String(c.miembro)}</p>
-                    <p className="text-sm text-muted-foreground">{String(c.texto)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {String(c.texto)}
+                    </p>
                   </div>
                   {me && c.miembro === me.name ? (
                     <Button
@@ -178,5 +189,5 @@ export function ActivityFeed() {
         )}
       </div>
     </div>
-  )
+  );
 }

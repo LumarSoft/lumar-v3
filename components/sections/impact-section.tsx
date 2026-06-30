@@ -20,13 +20,15 @@ const objections: Objection[] = [
   },
   {
     tag: "Soluciones genéricas",
-    problem: "Me entregaron un template con mi nombre. No tenía nada que ver con mi negocio.",
+    problem:
+      "Me entregaron un template con mi nombre. No tenía nada que ver con mi negocio.",
     solution:
       "Cada proyecto arranca desde cero. Antes de escribir una línea de código, entendemos cómo funcionás y qué querés lograr.",
   },
   {
     tag: "Comunicación poco clara",
-    problem: "Me explicaron todo con tecnicismos y nunca entendí qué se estaba haciendo.",
+    problem:
+      "Me explicaron todo con tecnicismos y nunca entendí qué se estaba haciendo.",
     solution:
       "Si algo no se entiende, es nuestro problema explicarlo mejor. Te contamos qué se construye, para qué y cuándo — en castellano.",
   },
@@ -106,8 +108,9 @@ export function ImpactSection() {
           className="mt-12 flex flex-col items-center text-center gap-5"
         >
           <p className="text-zinc-300 text-base md:text-lg max-w-xl leading-relaxed text-balance">
-            Todo empieza con una conversación. Nos contás tu problema y te decimos
-            con honestidad si podemos ayudarte y de qué forma. Sin presupuestos apurados.
+            Todo empieza con una conversación. Nos contás tu problema y te
+            decimos con honestidad si podemos ayudarte y de qué forma. Sin
+            presupuestos apurados.
           </p>
           <a
             href={whatsappUrl("Hola, quiero contarles mi proyecto.")}

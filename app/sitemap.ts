@@ -1,12 +1,20 @@
-import type { MetadataRoute } from "next"
-import { SITE } from "@/lib/site"
+import type { MetadataRoute } from "next";
+import { SITE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date()
+  const lastModified = new Date();
 
   // Single-page site con secciones ancladas. Listamos la home y las
   // anclas principales para ayudar a buscadores y motores de IA.
-  const sections = ["servicios", "portfolio", "valores", "equipo", "testimonios", "faq", "contacto"]
+  const sections = [
+    "servicios",
+    "portfolio",
+    "valores",
+    "equipo",
+    "testimonios",
+    "faq",
+    "contacto",
+  ];
 
   return [
     {
@@ -21,5 +29,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
-  ]
+  ];
 }

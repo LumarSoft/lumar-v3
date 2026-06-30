@@ -9,16 +9,16 @@
 
 export type Testimonial = {
   /** El testimonio, en primera persona. */
-  text: string
+  text: string;
   /** Nombre de quien lo dice (persona o empresa). */
-  name: string
+  name: string;
   /** Cargo/sector + empresa, p.ej. "Talleres aeronáuticos". */
-  role: string
+  role: string;
   /** Foto opcional (ruta en /public). Si falta, se usan iniciales. */
-  image?: string
+  image?: string;
   /** Estrellas opcionales, 1–5. */
-  rating?: number
-}
+  rating?: number;
+};
 
 export const testimonials: Testimonial[] = [
   {
@@ -57,4 +57,4 @@ export const testimonials: Testimonial[] = [
     role: "John Pellegrini Management Group",
     rating: 5,
   },
-]
+];

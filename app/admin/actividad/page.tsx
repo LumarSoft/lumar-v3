@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { ActivityFeed } from "@/components/admin/activity-feed"
+import { ActivityFeed } from "@/components/admin/activity-feed";
 
 export default function ActividadPage() {
-  return <ActivityFeed />
+  return <ActivityFeed />;
 }

@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useMemo, useState, type ReactNode } from "react"
-import { toast } from "sonner"
-import { Plus, Pencil, Trash2, Eye, EyeOff, Copy, Inbox } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
+import { useMemo, useState, type ReactNode } from "react";
+import { toast } from "sonner";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Copy, Inbox } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -16,14 +16,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +33,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -41,18 +41,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Spinner } from "@/components/ui/spinner"
-import { useCollection, type DocRecord } from "@/lib/admin/use-collection"
-import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors"
-import { formatARS, formatUSD, arsToUsd, formatDate, dueInfo, addMonths } from "@/lib/admin/format"
-import type { FieldDef, SectionSchema } from "@/lib/admin/schemas"
+} from "@/components/ui/table";
+import { Spinner } from "@/components/ui/spinner";
+import { useCollection, type DocRecord } from "@/lib/admin/use-collection";
+import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors";
+import {
+  formatARS,
+  formatUSD,
+  arsToUsd,
+  formatDate,
+  dueInfo,
+  addMonths,
+} from "@/lib/admin/format";
+import type { FieldDef, SectionSchema } from "@/lib/admin/schemas";
 
-type FormState = Record<string, string | number | undefined>
+type FormState = Record<string, string | number | undefined>;
 
 function SecretCell({ value }: { value: string }) {
-  const [shown, setShown] = useState(false)
-  if (!value) return <span className="text-muted-foreground">—</span>
+  const [shown, setShown] = useState(false);
+  if (!value) return <span className="text-muted-foreground">—</span>;
   return (
     <div className="flex items-center gap-1.5">
       <code className="max-w-[220px] truncate font-mono text-xs">
@@ -74,30 +81,33 @@ function SecretCell({ value }: { value: string }) {
         size="icon"
         className="size-6"
         onClick={() => {
-          navigator.clipboard.writeText(value)
-          toast.success("Copiado")
+          navigator.clipboard.writeText(value);
+          toast.success("Copiado");
         }}
         title="Copiar"
       >
         <Copy className="size-3.5" />
       </Button>
     </div>
-  )
+  );
 }
 
 function renderCell(field: FieldDef, row: DocRecord) {
-  const value = row[field.key]
+  const value = row[field.key];
   if (value === undefined || value === null || value === "") {
-    if (field.type === "secret") return <SecretCell value="" />
-    return <span className="text-muted-foreground">—</span>
+    if (field.type === "secret") return <SecretCell value="" />;
+    return <span className="text-muted-foreground">—</span>;
   }
   switch (field.type) {
     case "select":
       return (
-        <Badge variant="outline" className={cn("border", colorForOption(field.options, String(value)))}>
+        <Badge
+          variant="outline"
+          className={cn("border", colorForOption(field.options, String(value)))}
+        >
           {String(value)}
         </Badge>
-      )
+      );
     case "currency":
       return (
         <div className="whitespace-nowrap">
@@ -106,31 +116,34 @@ function renderCell(field: FieldDef, row: DocRecord) {
             ≈ {formatUSD(arsToUsd(Number(value)))}
           </span>
         </div>
-      )
+      );
     case "date": {
-      const di = field.showDaysLeft ? dueInfo(String(value)) : null
+      const di = field.showDaysLeft ? dueInfo(String(value)) : null;
       return (
         <div className="flex items-center gap-2 whitespace-nowrap">
           <span>{formatDate(String(value))}</span>
           {di ? (
-            <Badge variant="outline" className={cn("border", OPTION_COLOR_CLASSES[di.color])}>
+            <Badge
+              variant="outline"
+              className={cn("border", OPTION_COLOR_CLASSES[di.color])}
+            >
               {di.label}
             </Badge>
           ) : null}
         </div>
-      )
+      );
     }
     case "secret":
-      return <SecretCell value={String(value)} />
+      return <SecretCell value={String(value)} />;
     default:
-      return <span className="line-clamp-2">{String(value)}</span>
+      return <span className="line-clamp-2">{String(value)}</span>;
   }
 }
 
 export interface ExtraColumn {
-  key: string
-  label: string
-  render: (row: DocRecord) => ReactNode
+  key: string;
+  label: string;
+  render: (row: DocRecord) => ReactNode;
 }
 
 export function CrudSection({
@@ -138,104 +151,112 @@ export function CrudSection({
   extraColumns = [],
   sortRows,
 }: {
-  schema: SectionSchema
-  extraColumns?: ExtraColumn[]
-  sortRows?: (a: DocRecord, b: DocRecord) => number
+  schema: SectionSchema;
+  extraColumns?: ExtraColumn[];
+  sortRows?: (a: DocRecord, b: DocRecord) => number;
 }) {
-  const { data, loading, error, add, update, remove } = useCollection(schema.collection)
+  const { data, loading, error, add, update, remove } = useCollection(
+    schema.collection,
+  );
   // Para campos con dynamicSource "clientes": opciones en vivo de la colección clientes.
-  const clientesCol = useCollection("clientes")
+  const clientesCol = useCollection("clientes");
   const clientOptions = useMemo(
     () =>
-      Array.from(new Set(clientesCol.data.map((c) => String(c.cliente ?? "")).filter(Boolean))).map(
-        (v) => ({ value: v }) as { value: string },
-      ),
+      Array.from(
+        new Set(
+          clientesCol.data.map((c) => String(c.cliente ?? "")).filter(Boolean),
+        ),
+      ).map((v) => ({ value: v }) as { value: string }),
     [clientesCol.data],
-  )
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editing, setEditing] = useState<DocRecord | null>(null)
-  const [form, setForm] = useState<FormState>({})
-  const [deleteTarget, setDeleteTarget] = useState<DocRecord | null>(null)
-  const [saving, setSaving] = useState(false)
+  );
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<DocRecord | null>(null);
+  const [form, setForm] = useState<FormState>({});
+  const [deleteTarget, setDeleteTarget] = useState<DocRecord | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const tableFields = useMemo(
     () => schema.fields.filter((f) => f.inTable !== false),
     [schema.fields],
-  )
+  );
 
   const filterField = useMemo(
-    () => (schema.filterKey ? schema.fields.find((f) => f.key === schema.filterKey) : undefined),
+    () =>
+      schema.filterKey
+        ? schema.fields.find((f) => f.key === schema.filterKey)
+        : undefined,
     [schema],
-  )
-  const [filter, setFilter] = useState<string>("all")
+  );
+  const [filter, setFilter] = useState<string>("all");
   const visible = useMemo(() => {
     let rows =
       filter === "all" || !schema.filterKey
         ? data
-        : data.filter((r) => String(r[schema.filterKey as string]) === filter)
-    if (sortRows) rows = [...rows].sort(sortRows)
-    return rows
-  }, [data, filter, schema.filterKey, sortRows])
+        : data.filter((r) => String(r[schema.filterKey as string]) === filter);
+    if (sortRows) rows = [...rows].sort(sortRows);
+    return rows;
+  }, [data, filter, schema.filterKey, sortRows]);
 
   function openCreate() {
-    setEditing(null)
-    setForm({})
-    setDialogOpen(true)
+    setEditing(null);
+    setForm({});
+    setDialogOpen(true);
   }
 
   function openEdit(row: DocRecord) {
-    setEditing(row)
-    const next: FormState = {}
-    for (const f of schema.fields) next[f.key] = row[f.key]
-    setForm(next)
-    setDialogOpen(true)
+    setEditing(row);
+    const next: FormState = {};
+    for (const f of schema.fields) next[f.key] = row[f.key];
+    setForm(next);
+    setDialogOpen(true);
   }
 
   function setField(key: string, value: string | number | undefined) {
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setForm((prev) => ({ ...prev, [key]: value }));
   }
 
   async function handleSave() {
     // Validate required fields.
     for (const f of schema.fields) {
       if (f.required && !String(form[f.key] ?? "").trim()) {
-        toast.error(`Falta completar: ${f.label}`)
-        return
+        toast.error(`Falta completar: ${f.label}`);
+        return;
       }
     }
     // Build clean payload (drop undefined).
-    const payload: Record<string, unknown> = {}
+    const payload: Record<string, unknown> = {};
     for (const f of schema.fields) {
-      const v = form[f.key]
-      if (v === undefined || v === "") continue
-      payload[f.key] = f.type === "currency" || f.type === "number" ? Number(v) : v
+      const v = form[f.key];
+      if (v === undefined || v === "") continue;
+      payload[f.key] =
+        f.type === "currency" || f.type === "number" ? Number(v) : v;
     }
-    setSaving(true)
+    setSaving(true);
     try {
       if (editing) {
-        await update(editing.id, payload)
-        toast.success("Guardado")
+        await update(editing.id, payload);
+        toast.success("Guardado");
       } else {
-        await add(payload)
-        toast.success(`${schema.itemNoun} creado`)
+        await add(payload);
+        toast.success(`${schema.itemNoun} creado`);
       }
-      setDialogOpen(false)
+      setDialogOpen(false);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error al guardar")
+      toast.error(err instanceof Error ? err.message : "Error al guardar");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function handleDelete() {
-    if (!deleteTarget) return
+    if (!deleteTarget) return;
     try {
-      await remove(deleteTarget.id)
-      toast.success("Eliminado")
+      await remove(deleteTarget.id);
+      toast.success("Eliminado");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error al eliminar")
+      toast.error(err instanceof Error ? err.message : "Error al eliminar");
     } finally {
-      setDeleteTarget(null)
+      setDeleteTarget(null);
     }
   }
 
@@ -243,9 +264,13 @@ export function CrudSection({
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{schema.title}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {schema.title}
+          </h1>
           {schema.description ? (
-            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{schema.description}</p>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+              {schema.description}
+            </p>
           ) : null}
         </div>
         <Button onClick={openCreate}>
@@ -301,13 +326,17 @@ export function CrudSection({
             <div className="flex size-12 items-center justify-center rounded-xl bg-secondary">
               <Inbox className="size-5 text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground">Todavía no hay {schema.title.toLowerCase()}.</p>
+            <p className="text-sm text-muted-foreground">
+              Todavía no hay {schema.title.toLowerCase()}.
+            </p>
             <Button variant="secondary" size="sm" onClick={openCreate}>
               <Plus className="size-4" /> Agregar el primero
             </Button>
           </div>
         ) : visible.length === 0 ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">Nada en este filtro.</div>
+          <div className="py-12 text-center text-sm text-muted-foreground">
+            Nada en este filtro.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
@@ -333,7 +362,12 @@ export function CrudSection({
                     ))}
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="size-8" onClick={() => openEdit(row)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8"
+                          onClick={() => openEdit(row)}
+                        >
                           <Pencil className="size-4" />
                         </Button>
                         <Button
@@ -359,7 +393,9 @@ export function CrudSection({
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editing ? `Editar ${schema.itemNoun}` : `Nuevo ${schema.itemNoun}`}
+              {editing
+                ? `Editar ${schema.itemNoun}`
+                : `Nuevo ${schema.itemNoun}`}
             </DialogTitle>
             <DialogDescription className="sr-only">
               Formulario de {schema.itemNoun}
@@ -368,82 +404,104 @@ export function CrudSection({
 
           <div className="space-y-4 py-2">
             {schema.fields.map((f) => {
-              if (f.showWhen && String(form[f.showWhen.field] ?? "") !== f.showWhen.equals) {
-                return null
+              if (
+                f.showWhen &&
+                String(form[f.showWhen.field] ?? "") !== f.showWhen.equals
+              ) {
+                return null;
               }
               return (
-              <div key={f.key} className="space-y-1.5">
-                <Label htmlFor={f.key}>
-                  {f.label}
-                  {f.required ? <span className="ml-0.5 text-destructive">*</span> : null}
-                </Label>
-                {f.type === "select" ? (
-                  <Select
-                    value={form[f.key] ? String(form[f.key]) : undefined}
-                    onValueChange={(v) => setField(f.key, v)}
-                  >
-                    <SelectTrigger id={f.key}>
-                      <SelectValue
-                        placeholder={
-                          f.dynamicSource && clientOptions.length === 0
-                            ? "Creá un cliente primero"
-                            : "Elegí una opción"
-                        }
+                <div key={f.key} className="space-y-1.5">
+                  <Label htmlFor={f.key}>
+                    {f.label}
+                    {f.required ? (
+                      <span className="ml-0.5 text-destructive">*</span>
+                    ) : null}
+                  </Label>
+                  {f.type === "select" ? (
+                    <Select
+                      value={form[f.key] ? String(form[f.key]) : undefined}
+                      onValueChange={(v) => setField(f.key, v)}
+                    >
+                      <SelectTrigger id={f.key}>
+                        <SelectValue
+                          placeholder={
+                            f.dynamicSource && clientOptions.length === 0
+                              ? "Creá un cliente primero"
+                              : "Elegí una opción"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(f.dynamicSource ? clientOptions : f.options)?.map(
+                          (o) => (
+                            <SelectItem key={o.value} value={o.value}>
+                              {o.value}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+                  ) : f.type === "textarea" ? (
+                    <Textarea
+                      id={f.key}
+                      value={(form[f.key] as string) ?? ""}
+                      placeholder={f.placeholder}
+                      onChange={(e) => setField(f.key, e.target.value)}
+                      rows={3}
+                    />
+                  ) : f.type === "secret" ? (
+                    <Textarea
+                      id={f.key}
+                      value={(form[f.key] as string) ?? ""}
+                      placeholder={f.placeholder}
+                      onChange={(e) => setField(f.key, e.target.value)}
+                      rows={2}
+                      className="font-mono text-xs"
+                    />
+                  ) : f.type === "date" && f.reviewCycle ? (
+                    <div className="flex gap-2">
+                      <Input
+                        id={f.key}
+                        type="date"
+                        value={(form[f.key] as string | undefined) ?? ""}
+                        onChange={(e) => setField(f.key, e.target.value)}
                       />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(f.dynamicSource ? clientOptions : f.options)?.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                          {o.value}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : f.type === "textarea" ? (
-                  <Textarea
-                    id={f.key}
-                    value={(form[f.key] as string) ?? ""}
-                    placeholder={f.placeholder}
-                    onChange={(e) => setField(f.key, e.target.value)}
-                    rows={3}
-                  />
-                ) : f.type === "secret" ? (
-                  <Textarea
-                    id={f.key}
-                    value={(form[f.key] as string) ?? ""}
-                    placeholder={f.placeholder}
-                    onChange={(e) => setField(f.key, e.target.value)}
-                    rows={2}
-                    className="font-mono text-xs"
-                  />
-                ) : f.type === "date" && f.reviewCycle ? (
-                  <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() =>
+                          setField(
+                            f.key,
+                            addMonths(form[f.key] as string, f.reviewCycle!),
+                          )
+                        }
+                      >
+                        +{f.reviewCycle} meses
+                      </Button>
+                    </div>
+                  ) : (
                     <Input
                       id={f.key}
-                      type="date"
-                      value={(form[f.key] as string | undefined) ?? ""}
+                      type={
+                        f.type === "currency" || f.type === "number"
+                          ? "number"
+                          : f.type === "date"
+                            ? "date"
+                            : "text"
+                      }
+                      value={(form[f.key] as string | number | undefined) ?? ""}
+                      placeholder={f.placeholder}
                       onChange={(e) => setField(f.key, e.target.value)}
                     />
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setField(f.key, addMonths(form[f.key] as string, f.reviewCycle!))}
-                    >
-                      +{f.reviewCycle} meses
-                    </Button>
-                  </div>
-                ) : (
-                  <Input
-                    id={f.key}
-                    type={f.type === "currency" || f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}
-                    value={(form[f.key] as string | number | undefined) ?? ""}
-                    placeholder={f.placeholder}
-                    onChange={(e) => setField(f.key, e.target.value)}
-                  />
-                )}
-                {f.helpText ? <p className="text-xs text-muted-foreground">{f.helpText}</p> : null}
-              </div>
-              )
+                  )}
+                  {f.helpText ? (
+                    <p className="text-xs text-muted-foreground">
+                      {f.helpText}
+                    </p>
+                  ) : null}
+                </div>
+              );
             })}
           </div>
 
@@ -459,10 +517,15 @@ export function CrudSection({
       </Dialog>
 
       {/* Delete confirm */}
-      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+      <AlertDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este {schema.itemNoun}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              ¿Eliminar este {schema.itemNoun}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               Esta acción no se puede deshacer.
             </AlertDialogDescription>
@@ -479,5 +542,5 @@ export function CrudSection({
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }

@@ -8,7 +8,8 @@ export const SEED_CLIENTES: Record<string, unknown>[] = [
     tipo: "Recurrente",
     montoMensual: 50000,
     salud: "Estable",
-    notas: "0 trabajo. Ingreso pasivo. Sin módulos nuevos pendientes ni planeados.",
+    notas:
+      "0 trabajo. Ingreso pasivo. Sin módulos nuevos pendientes ni planeados.",
   },
   {
     cliente: "Uesevi",
@@ -33,7 +34,8 @@ export const SEED_CLIENTES: Record<string, unknown>[] = [
     tipo: "Recurrente",
     montoMensual: 101000,
     salud: "Crecimiento",
-    notas: "Bot WhatsApp + IA. 1 número hoy, escala a 4. Base del SaaS para PAS.",
+    notas:
+      "Bot WhatsApp + IA. 1 número hoy, escala a 4. Base del SaaS para PAS.",
   },
   {
     cliente: "John - Web",
@@ -43,7 +45,7 @@ export const SEED_CLIENTES: Record<string, unknown>[] = [
     salud: "Estable",
     notas: "Pocas consultas y arreglos.",
   },
-]
+];
 
 export const SEED_PROYECTOS: Record<string, unknown>[] = [
   {
@@ -61,7 +63,8 @@ export const SEED_PROYECTOS: Record<string, unknown>[] = [
     estado: "En pruebas",
     prioridad: "Alta",
     tipo: "Desarrollo",
-    notas: "Terminado, esperando devolución. Al pasar a prod sube hosting + mantenimiento.",
+    notas:
+      "Terminado, esperando devolución. Al pasar a prod sube hosting + mantenimiento.",
   },
   {
     proyecto: "John - BOT escala a 4 números",
@@ -84,7 +87,8 @@ export const SEED_PROYECTOS: Record<string, unknown>[] = [
     estado: "Pendiente",
     prioridad: "Alta",
     tipo: "Producto",
-    notas: "Empaquetar el bot multi-tenant para vender a otros PAS. Motor de recurrencia.",
+    notas:
+      "Empaquetar el bot multi-tenant para vender a otros PAS. Motor de recurrencia.",
   },
   {
     proyecto: "Bot para complejos de pádel",
@@ -93,12 +97,42 @@ export const SEED_PROYECTOS: Record<string, unknown>[] = [
     tipo: "Producto",
     notas: "Misma lógica de vertical. Después de validar PAS.",
   },
-]
+];
 
 export const SEED_COBROS: Record<string, unknown>[] = [
-  { concepto: "Mensual · Mutual de Gendarmería", categoria: "Recurrente mensual", cliente: "Mutual de Gendarmería", monto: 50000, estado: "Pendiente" },
-  { concepto: "Mensual · Uesevi", categoria: "Recurrente mensual", cliente: "Uesevi", monto: 264000, estado: "Pendiente" },
-  { concepto: "Mensual · Heroica", categoria: "Recurrente mensual", cliente: "Heroica", monto: 450000, estado: "Pendiente" },
-  { concepto: "Mensual · John BOT", categoria: "Recurrente mensual", cliente: "John - BOT", monto: 101000, estado: "Pendiente" },
-  { concepto: "Mensual · John Web", categoria: "Recurrente mensual", cliente: "John - Web", monto: 59000, estado: "Pendiente" },
-]
+  {
+    concepto: "Mensual · Mutual de Gendarmería",
+    categoria: "Recurrente mensual",
+    cliente: "Mutual de Gendarmería",
+    monto: 50000,
+    estado: "Pendiente",
+  },
+  {
+    concepto: "Mensual · Uesevi",
+    categoria: "Recurrente mensual",
+    cliente: "Uesevi",
+    monto: 264000,
+    estado: "Pendiente",
+  },
+  {
+    concepto: "Mensual · Heroica",
+    categoria: "Recurrente mensual",
+    cliente: "Heroica",
+    monto: 450000,
+    estado: "Pendiente",
+  },
+  {
+    concepto: "Mensual · John BOT",
+    categoria: "Recurrente mensual",
+    cliente: "John - BOT",
+    monto: 101000,
+    estado: "Pendiente",
+  },
+  {
+    concepto: "Mensual · John Web",
+    categoria: "Recurrente mensual",
+    cliente: "John - Web",
+    monto: 59000,
+    estado: "Pendiente",
+  },
+];

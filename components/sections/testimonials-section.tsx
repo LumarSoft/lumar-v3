@@ -1,14 +1,17 @@
-"use client"
+"use client";
 
-import { SectionHeading } from "@/components/ui/section-heading"
-import { TestimonialCard } from "@/components/ui/testimonial-card"
-import { testimonials, type Testimonial } from "@/lib/data/testimonials"
+import { SectionHeading } from "@/components/ui/section-heading";
+import { TestimonialCard } from "@/components/ui/testimonial-card";
+import { testimonials, type Testimonial } from "@/lib/data/testimonials";
 
 /** Round-robin split so columns stay balanced as testimonials are added. */
-function splitIntoColumns(items: Testimonial[], count: number): Testimonial[][] {
-  const cols: Testimonial[][] = Array.from({ length: count }, () => [])
-  items.forEach((item, i) => cols[i % count].push(item))
-  return cols
+function splitIntoColumns(
+  items: Testimonial[],
+  count: number,
+): Testimonial[][] {
+  const cols: Testimonial[][] = Array.from({ length: count }, () => []);
+  items.forEach((item, i) => cols[i % count].push(item));
+  return cols;
 }
 
 function MarqueeColumn({
@@ -16,9 +19,9 @@ function MarqueeColumn({
   duration,
   reverse = false,
 }: {
-  items: Testimonial[]
-  duration: number
-  reverse?: boolean
+  items: Testimonial[];
+  duration: number;
+  reverse?: boolean;
 }) {
   return (
     <div className="relative h-full overflow-hidden">
@@ -37,14 +40,17 @@ function MarqueeColumn({
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function TestimonialsSection() {
-  const columns = splitIntoColumns(testimonials, 3)
+  const columns = splitIntoColumns(testimonials, 3);
 
   return (
-    <section id="testimonios" className="px-6 py-24 overflow-hidden bg-zinc-900/20">
+    <section
+      id="testimonios"
+      className="px-6 py-24 overflow-hidden bg-zinc-900/20"
+    >
       <div className="max-w-5xl mx-auto">
         <SectionHeading
           eyebrow="Testimonios"
@@ -70,5 +76,5 @@ export function TestimonialsSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

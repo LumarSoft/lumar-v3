@@ -1,10 +1,10 @@
 // Structured data (JSON-LD) para SEO tradicional y GEO/AIO (motores de IA).
 // Se construye desde una sola fuente de datos para mantenerse en sincronía.
 
-import { SITE, FOUNDERS } from "./site"
-import { faqs } from "./data/faq"
+import { SITE, FOUNDERS } from "./site";
+import { faqs } from "./data/faq";
 
-const url = SITE.url
+const url = SITE.url;
 
 const services = [
   "Ecommerce a Medida",
@@ -12,7 +12,7 @@ const services = [
   "Aplicaciones Web a Medida",
   "Sistemas de Gestión",
   "Rediseño Web",
-]
+];
 
 export function buildJsonLd() {
   const organization = {
@@ -66,7 +66,7 @@ export function buildJsonLd() {
       "TypeScript",
       "Node.js",
     ],
-  }
+  };
 
   const website = {
     "@type": "WebSite",
@@ -75,7 +75,7 @@ export function buildJsonLd() {
     name: SITE.name,
     publisher: { "@id": `${url}/#organization` },
     inLanguage: "es-AR",
-  }
+  };
 
   const professionalService = {
     "@type": "ProfessionalService",
@@ -92,7 +92,7 @@ export function buildJsonLd() {
         itemOffered: { "@type": "Service", name },
       })),
     },
-  }
+  };
 
   const faqPage = {
     "@type": "FAQPage",
@@ -102,7 +102,7 @@ export function buildJsonLd() {
       name: f.question,
       acceptedAnswer: { "@type": "Answer", text: f.answer },
     })),
-  }
+  };
 
   const webPage = {
     "@type": "WebPage",
@@ -118,10 +118,10 @@ export function buildJsonLd() {
       "@type": "SpeakableSpecification",
       cssSelector: ["h1", "h2"],
     },
-  }
+  };
 
   return {
     "@context": "https://schema.org",
     "@graph": [organization, website, professionalService, faqPage, webPage],
-  }
+  };
 }

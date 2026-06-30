@@ -12,7 +12,7 @@ pnpm install   # firebase ya está agregado en package.json
 
 1. [console.firebase.google.com](https://console.firebase.google.com) → **Add project**.
 2. **Build → Authentication → Get started → Sign-in method → Google → Enable.**
-3. **Build → Firestore Database → Create database** (modo *production*).
+3. **Build → Firestore Database → Create database** (modo _production_).
 4. **Project settings → General → Your apps → Web (`</>`)** → registrá la app y copiá el objeto `firebaseConfig`.
 
 ## 3. Variables de entorno

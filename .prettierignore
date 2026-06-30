@@ -1,0 +1,12 @@
+# Dependencies & build output
+node_modules
+.next
+out
+build
+dist
+
+# Lockfiles & generated
+pnpm-lock.yaml
+
+# Assets
+public

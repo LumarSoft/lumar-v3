@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { KanbanBoard } from "@/components/admin/kanban-board"
+import { KanbanBoard } from "@/components/admin/kanban-board";
 
 export default function TareasPage() {
-  return <KanbanBoard />
+  return <KanbanBoard />;
 }

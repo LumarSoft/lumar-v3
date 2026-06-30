@@ -77,7 +77,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-manrope), "Geist", "Geist Fallback", system-ui, sans-serif;
+  --font-sans:
+    var(--font-manrope), "Geist", "Geist Fallback", system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
   --font-display: "Cal Sans", var(--font-manrope), system-ui, sans-serif;
   --font-heading: "Instrument Sans", var(--font-manrope), system-ui, sans-serif;
@@ -156,8 +157,12 @@
 
 /* Infinite marquee */
 @keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 .animate-marquee {
   animation: marquee 38s linear infinite;
@@ -166,22 +171,50 @@
   animation-play-state: paused;
 }
 .marquee-mask {
-  -webkit-mask-image: linear-gradient(to right, transparent, black 14%, black 86%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 14%, black 86%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 14%,
+    black 86%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 14%,
+    black 86%,
+    transparent
+  );
 }
 
 /* Vertical marquee — used by the testimonials columns */
 @keyframes marquee-vertical {
-  from { transform: translateY(0); }
-  to { transform: translateY(-50%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
 }
 .animate-marquee-vertical {
   animation: marquee-vertical 40s linear infinite;
   will-change: transform;
 }
 .marquee-mask-y {
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
 }
 
 /* Rotating border beam */
@@ -191,7 +224,9 @@
   initial-value: 0deg;
 }
 @keyframes beam-spin {
-  to { --beam-angle: 360deg; }
+  to {
+    --beam-angle: 360deg;
+  }
 }
 .beam-border {
   position: absolute;
@@ -206,9 +241,13 @@
     rgba(218, 128, 55, 0.65) 86%,
     transparent 100%
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
   animation: beam-spin 7s linear infinite;
 }
@@ -217,7 +256,9 @@
 .wordmark-outline {
   color: transparent;
   -webkit-text-stroke: 1px rgba(161, 161, 170, 0.22);
-  transition: color 0.4s ease, -webkit-text-stroke-color 0.4s ease;
+  transition:
+    color 0.4s ease,
+    -webkit-text-stroke-color 0.4s ease;
 }
 .wordmark-outline:hover {
   color: rgba(218, 128, 55, 0.1);
@@ -229,7 +270,9 @@
 .nav-wordmark {
   color: transparent;
   -webkit-text-stroke: 0.7px rgba(228, 228, 231, 0.55);
-  transition: color 0.35s ease, -webkit-text-stroke-color 0.35s ease;
+  transition:
+    color 0.35s ease,
+    -webkit-text-stroke-color 0.35s ease;
 }
 .nav-wordmark:hover {
   color: rgba(218, 128, 55, 0.95);

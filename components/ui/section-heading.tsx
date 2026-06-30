@@ -36,7 +36,9 @@ export function SectionHeading({
   const isCenter = align === "center";
 
   return (
-    <div className={`${isCenter ? "flex flex-col items-center text-center" : ""} ${className}`}>
+    <div
+      className={`${isCenter ? "flex flex-col items-center text-center" : ""} ${className}`}
+    >
       {/* Eyebrow row: drawn rule + index + label */}
       <motion.div
         initial={{ opacity: 0 }}

@@ -1,23 +1,23 @@
-import type React from "react"
-import type { Metadata, Viewport } from "next"
-import { Manrope } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { LenisProvider } from "@/components/providers/lenis-provider"
-import { SITE } from "@/lib/site"
-import { buildJsonLd } from "@/lib/structured-data"
-import "./globals.css"
+import type React from "react";
+import type { Metadata, Viewport } from "next";
+import { Manrope } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { LenisProvider } from "@/components/providers/lenis-provider";
+import { SITE } from "@/lib/site";
+import { buildJsonLd } from "@/lib/structured-data";
+import "./globals.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope",
-})
+});
 
-const siteUrl = SITE.url
+const siteUrl = SITE.url;
 
 export const viewport: Viewport = {
   themeColor: "#09090b",
   colorScheme: "dark",
-}
+};
 
 export const metadata: Metadata = {
   title: {
@@ -93,14 +93,14 @@ export const metadata: Metadata = {
     shortcut: "/logo-ls.png",
     apple: "/logo-ls.png",
   },
-}
+};
 
-const jsonLd = buildJsonLd()
+const jsonLd = buildJsonLd();
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="es" className="dark">
@@ -114,12 +114,14 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${manrope.variable} font-sans antialiased bg-zinc-950 text-zinc-100`}>
+      <body
+        className={`${manrope.variable} font-sans antialiased bg-zinc-950 text-zinc-100`}
+      >
         {/* Film grain — subtle premium texture across the whole site */}
         <div className="noise-overlay" aria-hidden="true" />
         <LenisProvider>{children}</LenisProvider>
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import React from "react"
-import { motion } from "motion/react"
+import React from "react";
+import { motion } from "motion/react";
 
 interface Testimonial {
-  text: string
-  image: string
-  name: string
-  role: string
+  text: string;
+  image: string;
+  name: string;
+  role: string;
 }
 
 export const TestimonialsColumn = (props: {
-  className?: string
-  testimonials: Testimonial[]
-  duration?: number
+  className?: string;
+  testimonials: Testimonial[];
+  duration?: number;
 }) => {
   return (
     <div className={props.className}>
@@ -47,8 +47,12 @@ export const TestimonialsColumn = (props: {
                       className="h-10 w-10 rounded-full object-cover ring-2 ring-zinc-800"
                     />
                     <div className="flex flex-col">
-                      <span className="font-medium text-zinc-100 tracking-tight leading-5">{name}</span>
-                      <span className="text-sm text-zinc-500 leading-5">{role}</span>
+                      <span className="font-medium text-zinc-100 tracking-tight leading-5">
+                        {name}
+                      </span>
+                      <span className="text-sm text-zinc-500 leading-5">
+                        {role}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -58,5 +62,5 @@ export const TestimonialsColumn = (props: {
         ]}
       </motion.div>
     </div>
-  )
-}
+  );
+};

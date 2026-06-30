@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Plus } from "lucide-react"
-import { SectionHeading } from "@/components/ui/section-heading"
-import { faqs } from "@/lib/data/faq"
-import { whatsappUrl } from "@/lib/site"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { faqs } from "@/lib/data/faq";
+import { whatsappUrl } from "@/lib/site";
 
-const ease = [0.22, 1, 0.36, 1] as const
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export function FaqSection() {
-  const [open, setOpen] = useState<number | null>(0)
+  const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section id="faq" className="px-6 py-24">
@@ -26,7 +26,7 @@ export function FaqSection() {
 
         <div className="flex flex-col divide-y divide-zinc-800/60 border-y border-zinc-800/60">
           {faqs.map((faq, i) => {
-            const isOpen = open === i
+            const isOpen = open === i;
             return (
               <div key={faq.question}>
                 <button
@@ -36,7 +36,9 @@ export function FaqSection() {
                 >
                   <span
                     className={`font-display text-base md:text-lg font-semibold transition-colors duration-200 ${
-                      isOpen ? "text-zinc-100" : "text-zinc-300 group-hover:text-zinc-100"
+                      isOpen
+                        ? "text-zinc-100"
+                        : "text-zinc-300 group-hover:text-zinc-100"
                     }`}
                   >
                     {faq.question}
@@ -45,7 +47,9 @@ export function FaqSection() {
                     animate={{ rotate: isOpen ? 45 : 0 }}
                     transition={{ duration: 0.25, ease }}
                     className={`shrink-0 transition-colors duration-200 ${
-                      isOpen ? "text-brand" : "text-zinc-500 group-hover:text-zinc-300"
+                      isOpen
+                        ? "text-brand"
+                        : "text-zinc-500 group-hover:text-zinc-300"
                     }`}
                   >
                     <Plus className="w-5 h-5" />
@@ -68,7 +72,7 @@ export function FaqSection() {
                   )}
                 </AnimatePresence>
               </div>
-            )
+            );
           })}
         </div>
 
@@ -87,5 +91,5 @@ export function FaqSection() {
         </p>
       </div>
     </section>
-  )
+  );
 }

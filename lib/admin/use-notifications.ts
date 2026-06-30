@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
 import {
   arrayUnion,
   collection,
@@ -13,31 +13,35 @@ import {
   updateDoc,
   type DocumentData,
   type QueryDocumentSnapshot,
-} from "firebase/firestore"
-import { db } from "@/lib/firebase/client"
+} from "firebase/firestore";
+import { db } from "@/lib/firebase/client";
 
-export type NotifTipo = "vencimiento" | "cobro" | "tarea" | "revision" | "checkin" | "evento"
+export type NotifTipo =
+  "vencimiento" | "cobro" | "tarea" | "revision" | "checkin" | "evento";
 
 export interface Notificacion {
-  id: string
-  tipo: NotifTipo
-  titulo: string
-  cuerpo: string
-  href?: string
-  creadoEn: Date | null
-  leidoPor: string[]
+  id: string;
+  tipo: NotifTipo;
+  titulo: string;
+  cuerpo: string;
+  href?: string;
+  creadoEn: Date | null;
+  leidoPor: string[];
 }
 
 export function useNotifications(userEmail: string | null | undefined) {
-  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([])
-  const [loading, setLoading] = useState(true)
+  const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "notificaciones"), orderBy("creadoEn", "desc"))
+    const q = query(
+      collection(db, "notificaciones"),
+      orderBy("creadoEn", "desc"),
+    );
     const unsub = onSnapshot(q, (snap) => {
       setNotificaciones(
         snap.docs.map((d: QueryDocumentSnapshot<DocumentData>) => {
-          const data = d.data()
+          const data = d.data();
           return {
             id: d.id,
             tipo: (data.tipo ?? "vencimiento") as NotifTipo,
@@ -47,41 +51,43 @@ export function useNotifications(userEmail: string | null | undefined) {
             // Firestore Timestamp → JS Date
             creadoEn: data.creadoEn?.toDate?.() ?? null,
             leidoPor: (data.leidoPor ?? []) as string[],
-          }
+          };
         }),
-      )
-      setLoading(false)
-    })
-    return () => unsub()
-  }, [])
+      );
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
 
   const unreadCount = userEmail
     ? notificaciones.filter((n) => !n.leidoPor.includes(userEmail)).length
-    : 0
+    : 0;
 
   const markRead = useCallback(
     async (id: string) => {
-      if (!userEmail) return
+      if (!userEmail) return;
       await updateDoc(doc(db, "notificaciones", id), {
         leidoPor: arrayUnion(userEmail),
-      })
+      });
     },
     [userEmail],
-  )
+  );
 
   const markAllRead = useCallback(async () => {
-    if (!userEmail) return
-    const unread = notificaciones.filter((n) => !n.leidoPor.includes(userEmail))
+    if (!userEmail) return;
+    const unread = notificaciones.filter(
+      (n) => !n.leidoPor.includes(userEmail),
+    );
     await Promise.all(
       unread.map((n) =>
         updateDoc(doc(db, "notificaciones", n.id), {
           leidoPor: arrayUnion(userEmail),
         }),
       ),
-    )
-  }, [notificaciones, userEmail])
+    );
+  }, [notificaciones, userEmail]);
 
-  return { notificaciones, loading, unreadCount, markRead, markAllRead }
+  return { notificaciones, loading, unreadCount, markRead, markAllRead };
 }
 
 /**
@@ -93,10 +99,10 @@ export async function ensureNotification(
   existingIds: Set<string>,
   data: { tipo: NotifTipo; titulo: string; cuerpo: string; href?: string },
 ) {
-  if (existingIds.has(dedupeKey)) return
+  if (existingIds.has(dedupeKey)) return;
   await setDoc(doc(db, "notificaciones", dedupeKey), {
     ...data,
     leidoPor: [],
     creadoEn: serverTimestamp(),
-  })
+  });
 }

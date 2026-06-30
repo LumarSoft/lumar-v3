@@ -7,9 +7,11 @@ export const ADMIN_ALLOWLIST: readonly string[] = [
   "lucas.quaroni@gmail.com",
   "marcebenitez0607@gmail.com",
   "bodinidev@gmail.com",
-] as const
+] as const;
 
 export function isAllowedEmail(email: string | null | undefined): boolean {
-  if (!email) return false
-  return ADMIN_ALLOWLIST.map((e) => e.toLowerCase()).includes(email.toLowerCase())
+  if (!email) return false;
+  return ADMIN_ALLOWLIST.map((e) => e.toLowerCase()).includes(
+    email.toLowerCase(),
+  );
 }

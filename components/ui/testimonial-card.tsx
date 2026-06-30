@@ -1,22 +1,31 @@
-import { Star } from "lucide-react"
-import Image from "next/image"
-import type { Testimonial } from "@/lib/data/testimonials"
+import { Star } from "lucide-react";
+import Image from "next/image";
+import type { Testimonial } from "@/lib/data/testimonials";
 
 function initialsOf(name: string) {
-  const words = name.trim().split(/\s+/).filter(Boolean)
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
   return words
     .slice(0, 2)
     .map((w) => w[0])
     .join("")
-    .toUpperCase()
+    .toUpperCase();
 }
 
-export function TestimonialCard({ text, name, role, image, rating }: Testimonial) {
+export function TestimonialCard({
+  text,
+  name,
+  role,
+  image,
+  rating,
+}: Testimonial) {
   return (
     <figure className="rounded-2xl border border-zinc-800/60 bg-zinc-900/40 backdrop-blur-sm p-6 shadow-lg shadow-black/20">
       {typeof rating === "number" && (
-        <div className="flex items-center gap-0.5 mb-4" aria-label={`${rating} de 5`}>
+        <div
+          className="flex items-center gap-0.5 mb-4"
+          aria-label={`${rating} de 5`}
+        >
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
@@ -45,14 +54,18 @@ export function TestimonialCard({ text, name, role, image, rating }: Testimonial
           />
         ) : (
           <span className="h-10 w-10 rounded-full bg-brand/15 border border-brand/30 flex items-center justify-center shrink-0">
-            <span className="text-xs font-bold text-brand">{initialsOf(name)}</span>
+            <span className="text-xs font-bold text-brand">
+              {initialsOf(name)}
+            </span>
           </span>
         )}
         <div className="flex flex-col">
-          <span className="text-sm font-semibold text-zinc-100 leading-tight">{name}</span>
+          <span className="text-sm font-semibold text-zinc-100 leading-tight">
+            {name}
+          </span>
           <span className="text-xs text-zinc-500 leading-tight">{role}</span>
         </div>
       </figcaption>
     </figure>
-  )
+  );
 }

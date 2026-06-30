@@ -1,24 +1,32 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useState, type ReactNode } from "react"
-import { Menu, LogOut } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { useAuth } from "@/lib/admin/auth-context"
-import { NAV_ITEMS } from "@/components/admin/nav-items"
-import { NotificationBell } from "@/components/admin/notification-bell"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, type ReactNode } from "react";
+import { Menu, LogOut } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useAuth } from "@/lib/admin/auth-context";
+import { NAV_ITEMS } from "@/components/admin/nav-items";
+import { NotificationBell } from "@/components/admin/notification-bell";
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-1">
       {NAV_ITEMS.map((item) => {
-        const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href)
-        const Icon = item.icon
+        const active =
+          item.href === "/admin"
+            ? pathname === "/admin"
+            : pathname.startsWith(item.href);
+        const Icon = item.icon;
         return (
           <Link
             key={item.href}
@@ -34,10 +42,10 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             <Icon className="size-4 shrink-0" />
             {item.label}
           </Link>
-        )
+        );
       })}
     </nav>
-  )
+  );
 }
 
 function Brand() {
@@ -48,37 +56,46 @@ function Brand() {
         admin
       </span>
     </Link>
-  )
+  );
 }
 
 function UserMenu() {
-  const { user, logout } = useAuth()
-  if (!user) return null
+  const { user, logout } = useAuth();
+  if (!user) return null;
   const initials = (user.displayName || user.email || "?")
     .split(" ")
     .map((p: string) => p[0])
     .slice(0, 2)
     .join("")
-    .toUpperCase()
+    .toUpperCase();
   return (
     <div className="flex items-center gap-3">
       <Avatar className="size-8">
-        {user.photoURL ? <AvatarImage src={user.photoURL} alt={user.displayName ?? ""} /> : null}
+        {user.photoURL ? (
+          <AvatarImage src={user.photoURL} alt={user.displayName ?? ""} />
+        ) : null}
         <AvatarFallback className="text-xs">{initials}</AvatarFallback>
       </Avatar>
       <div className="hidden min-w-0 sm:block">
-        <p className="truncate text-sm font-medium">{user.displayName ?? "Equipo"}</p>
+        <p className="truncate text-sm font-medium">
+          {user.displayName ?? "Equipo"}
+        </p>
         <p className="truncate text-xs text-muted-foreground">{user.email}</p>
       </div>
-      <Button variant="ghost" size="icon" onClick={() => logout()} title="Salir">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => logout()}
+        title="Salir"
+      >
         <LogOut className="size-4" />
       </Button>
     </div>
-  )
+  );
 }
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Sidebar — desktop */}
@@ -118,5 +135,5 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
-  )
+  );
 }

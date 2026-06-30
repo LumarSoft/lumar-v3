@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect, useRef } from "react"
-import { LiquidMetal } from "@paper-design/shaders-react"
-import { cn } from "@/lib/utils"
+import type React from "react";
+import { useState, useEffect, useRef } from "react";
+import { LiquidMetal } from "@paper-design/shaders-react";
+import { cn } from "@/lib/utils";
 
 interface LiquidMetalBorderProps {
-  children: React.ReactNode
-  className?: string
-  borderRadius?: number
-  borderWidth?: number
-  colorBack?: string
-  colorTint?: string
-  repetition?: number
-  softness?: number
-  shiftRed?: number
-  shiftBlue?: number
-  distortion?: number
-  contour?: number
-  angle?: number
-  speed?: number
-  scale?: number
-  opacity?: number
-  theme?: "light" | "dark"
+  children: React.ReactNode;
+  className?: string;
+  borderRadius?: number;
+  borderWidth?: number;
+  colorBack?: string;
+  colorTint?: string;
+  repetition?: number;
+  softness?: number;
+  shiftRed?: number;
+  shiftBlue?: number;
+  distortion?: number;
+  contour?: number;
+  angle?: number;
+  speed?: number;
+  scale?: number;
+  opacity?: number;
+  theme?: "light" | "dark";
 }
 
 export function LiquidMetalBorder({
@@ -44,29 +44,29 @@ export function LiquidMetalBorder({
   opacity = 0.7,
   theme = "dark",
 }: LiquidMetalBorderProps) {
-  const defaultColorBack = theme === "light" ? "#888888" : "#aaaaac"
-  const defaultColorTint = theme === "light" ? "#ffffff" : "#ffffff"
+  const defaultColorBack = theme === "light" ? "#888888" : "#aaaaac";
+  const defaultColorTint = theme === "light" ? "#ffffff" : "#ffffff";
 
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const element = containerRef.current
-    if (!element) return
+    const element = containerRef.current;
+    if (!element) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsVisible(entry.isIntersecting)
+        setIsVisible(entry.isIntersecting);
       },
       {
         rootMargin: "100px",
         threshold: 0,
       },
-    )
+    );
 
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
@@ -77,7 +77,10 @@ export function LiquidMetalBorder({
         padding: borderWidth,
       }}
     >
-      <div className="absolute inset-0 z-0 overflow-hidden" style={{ borderRadius, opacity }}>
+      <div
+        className="absolute inset-0 z-0 overflow-hidden"
+        style={{ borderRadius, opacity }}
+      >
         {isVisible ? (
           <LiquidMetal
             style={{ width: "100%", height: "100%" }}
@@ -117,5 +120,5 @@ export function LiquidMetalBorder({
         {children}
       </div>
     </div>
-  )
+  );
 }

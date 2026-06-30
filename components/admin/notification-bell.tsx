@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Bell } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useNotificationsContext } from "@/lib/admin/notifications-context"
-import { NotificationPanel } from "@/components/admin/notification-panel"
+import { useState } from "react";
+import { Bell } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNotificationsContext } from "@/lib/admin/notifications-context";
+import { NotificationPanel } from "@/components/admin/notification-panel";
 
 export function NotificationBell() {
-  const [open, setOpen] = useState(false)
-  const { unreadCount } = useNotificationsContext()
+  const [open, setOpen] = useState(false);
+  const { unreadCount } = useNotificationsContext();
 
   return (
     <>
@@ -32,5 +32,5 @@ export function NotificationBell() {
       </Button>
       <NotificationPanel open={open} onOpenChange={setOpen} />
     </>
-  )
+  );
 }

@@ -1,70 +1,68 @@
 // Schema definitions that drive the generic CRUD sections.
 // Plain data only (no JSX) so it can be imported anywhere.
 
-export type FieldType = "text" | "textarea" | "number" | "currency" | "date" | "select" | "secret"
+export type FieldType =
+  "text" | "textarea" | "number" | "currency" | "date" | "select" | "secret";
 
 export type OptionColor =
-  | "gray"
-  | "blue"
-  | "green"
-  | "yellow"
-  | "orange"
-  | "red"
-  | "purple"
-  | "pink"
+  "gray" | "blue" | "green" | "yellow" | "orange" | "red" | "purple" | "pink";
 
 export interface SelectOption {
-  value: string
-  color?: OptionColor
+  value: string;
+  color?: OptionColor;
 }
 
 export interface FieldDef {
-  key: string
-  label: string
-  type: FieldType
-  options?: SelectOption[]
-  placeholder?: string
-  required?: boolean
+  key: string;
+  label: string;
+  type: FieldType;
+  options?: SelectOption[];
+  placeholder?: string;
+  required?: boolean;
   /** Show as a column in the table. Defaults to true. */
-  inTable?: boolean
-  helpText?: string
+  inTable?: boolean;
+  helpText?: string;
   /** For date fields: show a "vence en X días" badge next to the date. */
-  showDaysLeft?: boolean
+  showDaysLeft?: boolean;
   /** For select fields: resolve options at runtime from another collection. */
-  dynamicSource?: "clientes"
+  dynamicSource?: "clientes";
   /** For date fields: show a quick "+N meses" button (e.g. revisión cada 3 meses). */
-  reviewCycle?: number
+  reviewCycle?: number;
   /** For the form: only show this field when another field equals a value. */
-  showWhen?: { field: string; equals: string }
+  showWhen?: { field: string; equals: string };
 }
 
 export interface SectionSchema {
   /** Firestore collection name. */
-  collection: string
-  title: string
-  description?: string
+  collection: string;
+  title: string;
+  description?: string;
   /** Singular noun for buttons, e.g. "cliente". */
-  itemNoun: string
+  itemNoun: string;
   /** The field used as the row title (first column, required). */
-  titleKey: string
-  fields: FieldDef[]
+  titleKey: string;
+  fields: FieldDef[];
   /** If set, the section shows filter tabs by this select field's options. */
-  filterKey?: string
+  filterKey?: string;
 }
 
 export const MIEMBRO_OPTIONS: SelectOption[] = [
   { value: "Lucas", color: "blue" },
   { value: "Marcelo", color: "green" },
   { value: "Mateo", color: "purple" },
-]
+];
 
-const MIEMBRO_OPTIONS_OPCIONAL: SelectOption[] = [...MIEMBRO_OPTIONS, { value: "Sin asignar", color: "gray" }]
+const MIEMBRO_OPTIONS_OPCIONAL: SelectOption[] = [
+  ...MIEMBRO_OPTIONS,
+  { value: "Sin asignar", color: "gray" },
+];
 
 // ── Clientes (cada cliente ES el proyecto) ───────────────────────────────
 export const CLIENTES_SCHEMA: SectionSchema = {
   collection: "clientes",
   title: "Clientes",
-  description: "Perfil de cada cliente. Las cobranzas (recurrente + puntuales) se gestionan en Cobros.",
+  description:
+    "Perfil de cada cliente. Las cobranzas (recurrente + puntuales) se gestionan en Cobros.",
   itemNoun: "cliente",
   titleKey: "cliente",
   filterKey: "tipo",
@@ -96,7 +94,8 @@ export const CLIENTES_SCHEMA: SectionSchema = {
       type: "date",
       showDaysLeft: true,
       reviewCycle: 3,
-      helpText: "Revisión del monto por inflación. El botón +3 meses agenda la siguiente.",
+      helpText:
+        "Revisión del monto por inflación. El botón +3 meses agenda la siguiente.",
     },
     {
       key: "salud",
@@ -111,7 +110,7 @@ export const CLIENTES_SCHEMA: SectionSchema = {
     },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],
-}
+};
 
 // ── Cobros (manuales, cliente como select relacional) ────────────────────
 export const COBROS_SCHEMA: SectionSchema = {
@@ -132,7 +131,12 @@ export const COBROS_SCHEMA: SectionSchema = {
         { value: "Fijo desarrollo", color: "blue" },
       ],
     },
-    { key: "cliente", label: "Cliente", type: "select", dynamicSource: "clientes" },
+    {
+      key: "cliente",
+      label: "Cliente",
+      type: "select",
+      dynamicSource: "clientes",
+    },
     { key: "monto", label: "Monto", type: "currency" },
     {
       key: "estado",
@@ -174,7 +178,7 @@ export const COBROS_SCHEMA: SectionSchema = {
     },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],
-}
+};
 
 // ── Datos relevantes (secretos) ──────────────────────────────────────────
 export const DATOS_SCHEMA: SectionSchema = {
@@ -185,7 +189,13 @@ export const DATOS_SCHEMA: SectionSchema = {
   itemNoun: "dato",
   titleKey: "nombre",
   fields: [
-    { key: "nombre", label: "Nombre", type: "text", required: true, placeholder: "Ej: API Key Triunfo" },
+    {
+      key: "nombre",
+      label: "Nombre",
+      type: "text",
+      required: true,
+      placeholder: "Ej: API Key Triunfo",
+    },
     {
       key: "categoria",
       label: "Categoría",
@@ -198,28 +208,40 @@ export const DATOS_SCHEMA: SectionSchema = {
         { value: "Otro", color: "gray" },
       ],
     },
-    { key: "cliente", label: "Cliente", type: "select", dynamicSource: "clientes" },
+    {
+      key: "cliente",
+      label: "Cliente",
+      type: "select",
+      dynamicSource: "clientes",
+    },
     {
       key: "valor",
       label: "Valor",
       type: "secret",
       placeholder: "Pegá acá el valor (clave, token, .env, etc.)",
-      helpText: "Se guarda en Firestore. Solo los mails del allowlist pueden leerlo.",
+      helpText:
+        "Se guarda en Firestore. Solo los mails del allowlist pueden leerlo.",
     },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],
-}
+};
 
 // ── Tareas (Kanban + backlog) ────────────────────────────────────────────
 export const TAREAS_SCHEMA: SectionSchema = {
   collection: "tareas",
   title: "Tareas",
-  description: "Tablero + backlog. Cada tarea pertenece a un cliente y tiene un tipo.",
+  description:
+    "Tablero + backlog. Cada tarea pertenece a un cliente y tiene un tipo.",
   itemNoun: "tarea",
   titleKey: "tarea",
   fields: [
     { key: "tarea", label: "Tarea", type: "text", required: true },
-    { key: "cliente", label: "Cliente", type: "select", dynamicSource: "clientes" },
+    {
+      key: "cliente",
+      label: "Cliente",
+      type: "select",
+      dynamicSource: "clientes",
+    },
     {
       key: "tipo",
       label: "Tipo",
@@ -230,7 +252,12 @@ export const TAREAS_SCHEMA: SectionSchema = {
         { value: "Implementación", color: "purple" },
       ],
     },
-    { key: "asignado", label: "Asignado a", type: "select", options: MIEMBRO_OPTIONS_OPCIONAL },
+    {
+      key: "asignado",
+      label: "Asignado a",
+      type: "select",
+      options: MIEMBRO_OPTIONS_OPCIONAL,
+    },
     {
       key: "estado",
       label: "Estado",
@@ -255,23 +282,30 @@ export const TAREAS_SCHEMA: SectionSchema = {
     { key: "vence", label: "Vence", type: "date", showDaysLeft: true },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],
-}
+};
 
 /** Estados del tablero Kanban, en orden de columnas. */
 export const TAREAS_ESTADOS: SelectOption[] = TAREAS_SCHEMA.fields.find(
   (f) => f.key === "estado",
-)!.options!
+)!.options!;
 
 // ── Vencimientos (servicios y gastos NUESTROS, no cobros a clientes) ─────
 export const VENCIMIENTOS_SCHEMA: SectionSchema = {
   collection: "vencimientos",
   title: "Vencimientos",
-  description: "Servicios y gastos internos que pagamos nosotros (hosting, dominios, herramientas).",
+  description:
+    "Servicios y gastos internos que pagamos nosotros (hosting, dominios, herramientas).",
   itemNoun: "vencimiento",
   titleKey: "concepto",
   filterKey: "tipo",
   fields: [
-    { key: "concepto", label: "Concepto", type: "text", required: true, placeholder: "Ej: Hosting VPS, dominio, Adobe, Vercel" },
+    {
+      key: "concepto",
+      label: "Concepto",
+      type: "text",
+      required: true,
+      placeholder: "Ej: Hosting VPS, dominio, Adobe, Vercel",
+    },
     {
       key: "tipo",
       label: "Tipo",
@@ -294,7 +328,12 @@ export const VENCIMIENTOS_SCHEMA: SectionSchema = {
         { value: "Anual", color: "purple" },
       ],
     },
-    { key: "pagadoPor", label: "Pagado por", type: "select", options: MIEMBRO_OPTIONS_OPCIONAL },
+    {
+      key: "pagadoPor",
+      label: "Pagado por",
+      type: "select",
+      options: MIEMBRO_OPTIONS_OPCIONAL,
+    },
     {
       key: "estado",
       label: "Estado",
@@ -307,4 +346,4 @@ export const VENCIMIENTOS_SCHEMA: SectionSchema = {
     },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],
-}
+};

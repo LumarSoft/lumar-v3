@@ -1,17 +1,24 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { toast } from "sonner"
-import { db } from "@/lib/firebase/client"
-import { doc, serverTimestamp, setDoc } from "firebase/firestore"
-import { Plus, Pencil, Trash2, MoreVertical, LayoutGrid, List } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Spinner } from "@/components/ui/spinner"
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
+import { db } from "@/lib/firebase/client";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  MoreVertical,
+  LayoutGrid,
+  List,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
   DialogContent,
@@ -19,21 +26,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -41,20 +48,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { MemberAvatar } from "@/components/admin/member-avatar"
-import { useCollection, type DocRecord } from "@/lib/admin/use-collection"
-import { TAREAS_SCHEMA, TAREAS_ESTADOS } from "@/lib/admin/schemas"
-import { MEMBERS } from "@/lib/admin/members"
-import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors"
-import { dueInfo, formatDate } from "@/lib/admin/format"
-import { useNotificationsContext } from "@/lib/admin/notifications-context"
+} from "@/components/ui/table";
+import { MemberAvatar } from "@/components/admin/member-avatar";
+import { useCollection, type DocRecord } from "@/lib/admin/use-collection";
+import { TAREAS_SCHEMA, TAREAS_ESTADOS } from "@/lib/admin/schemas";
+import { MEMBERS } from "@/lib/admin/members";
+import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors";
+import { dueInfo, formatDate } from "@/lib/admin/format";
+import { useNotificationsContext } from "@/lib/admin/notifications-context";
 
-type FormState = Record<string, string | undefined>
+type FormState = Record<string, string | undefined>;
 
-const PRIORIDAD_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "prioridad")!
-const ASIGNADO_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "asignado")!
-const TIPO_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "tipo")!
+const PRIORIDAD_FIELD = TAREAS_SCHEMA.fields.find(
+  (f) => f.key === "prioridad",
+)!;
+const ASIGNADO_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "asignado")!;
+const TIPO_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "tipo")!;
 
 function TaskCard({
   task,
@@ -62,12 +71,12 @@ function TaskCard({
   onDelete,
   onMove,
 }: {
-  task: DocRecord
-  onEdit: () => void
-  onDelete: () => void
-  onMove: (estado: string) => void
+  task: DocRecord;
+  onEdit: () => void;
+  onDelete: () => void;
+  onMove: (estado: string) => void;
 }) {
-  const di = task.vence ? dueInfo(String(task.vence)) : null
+  const di = task.vence ? dueInfo(String(task.vence)) : null;
   return (
     <div
       draggable
@@ -97,7 +106,10 @@ function TaskCard({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              onClick={onDelete}
+              className="text-destructive focus:text-destructive"
+            >
               <Trash2 className="size-3.5" /> Eliminar
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -109,13 +121,18 @@ function TaskCard({
           {task.tipo ? (
             <Badge
               variant="outline"
-              className={cn("border", colorForOption(TIPO_FIELD.options, String(task.tipo)))}
+              className={cn(
+                "border",
+                colorForOption(TIPO_FIELD.options, String(task.tipo)),
+              )}
             >
               {String(task.tipo)}
             </Badge>
           ) : null}
           {task.cliente ? (
-            <span className="truncate text-xs text-muted-foreground">{String(task.cliente)}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {String(task.cliente)}
+            </span>
           ) : null}
         </div>
       )}
@@ -126,94 +143,110 @@ function TaskCard({
           {task.prioridad ? (
             <Badge
               variant="outline"
-              className={cn("border", colorForOption(PRIORIDAD_FIELD.options, String(task.prioridad)))}
+              className={cn(
+                "border",
+                colorForOption(PRIORIDAD_FIELD.options, String(task.prioridad)),
+              )}
             >
               {String(task.prioridad)}
             </Badge>
           ) : null}
         </div>
         {di ? (
-          <Badge variant="outline" className={cn("border", OPTION_COLOR_CLASSES[di.color])}>
+          <Badge
+            variant="outline"
+            className={cn("border", OPTION_COLOR_CLASSES[di.color])}
+          >
             {di.label}
           </Badge>
         ) : null}
       </div>
     </div>
-  )
+  );
 }
 
 export function KanbanBoard() {
-  const { data, loading, add, update, remove } = useCollection("tareas")
-  const clientes = useCollection("clientes")
-  const [tab, setTab] = useState<"tablero" | "backlog">("tablero")
-  const [filterMember, setFilterMember] = useState<string>("all")
-  const [filterTipo, setFilterTipo] = useState<string>("all")
-  const [filterCliente, setFilterCliente] = useState<string>("all")
-  const [showCompleted, setShowCompleted] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [editing, setEditing] = useState<DocRecord | null>(null)
-  const [form, setForm] = useState<FormState>({})
-  const [saving, setSaving] = useState(false)
+  const { data, loading, add, update, remove } = useCollection("tareas");
+  const clientes = useCollection("clientes");
+  const [tab, setTab] = useState<"tablero" | "backlog">("tablero");
+  const [filterMember, setFilterMember] = useState<string>("all");
+  const [filterTipo, setFilterTipo] = useState<string>("all");
+  const [filterCliente, setFilterCliente] = useState<string>("all");
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<DocRecord | null>(null);
+  const [form, setForm] = useState<FormState>({});
+  const [saving, setSaving] = useState(false);
 
-  const { existingIds } = useNotificationsContext()
+  const { existingIds } = useNotificationsContext();
 
   // Opciones de cliente, en vivo desde la colección Clientes.
   const clienteOptions = useMemo(() => {
-    const names = clientes.data.map((c) => String(c.cliente ?? "")).filter(Boolean)
-    return Array.from(new Set(names))
-  }, [clientes.data])
+    const names = clientes.data
+      .map((c) => String(c.cliente ?? ""))
+      .filter(Boolean);
+    return Array.from(new Set(names));
+  }, [clientes.data]);
 
   const visible = useMemo(() => {
-    let rows = filterMember === "all" ? data : data.filter((t) => t.asignado === filterMember)
-    if (filterTipo !== "all") rows = rows.filter((t) => t.tipo === filterTipo)
-    if (filterCliente !== "all") rows = rows.filter((t) => t.cliente === filterCliente)
-    if (!showCompleted) rows = rows.filter((t) => t.estado !== "Hecho")
-    return rows
-  }, [data, filterMember, filterTipo, filterCliente, showCompleted])
+    let rows =
+      filterMember === "all"
+        ? data
+        : data.filter((t) => t.asignado === filterMember);
+    if (filterTipo !== "all") rows = rows.filter((t) => t.tipo === filterTipo);
+    if (filterCliente !== "all")
+      rows = rows.filter((t) => t.cliente === filterCliente);
+    if (!showCompleted) rows = rows.filter((t) => t.estado !== "Hecho");
+    return rows;
+  }, [data, filterMember, filterTipo, filterCliente, showCompleted]);
 
   // En el backlog, las completadas van al fondo.
   const backlogRows = useMemo(
-    () => [...visible].sort((a, b) => (a.estado === "Hecho" ? 1 : 0) - (b.estado === "Hecho" ? 1 : 0)),
+    () =>
+      [...visible].sort(
+        (a, b) =>
+          (a.estado === "Hecho" ? 1 : 0) - (b.estado === "Hecho" ? 1 : 0),
+      ),
     [visible],
-  )
+  );
 
   function openCreate(estado?: string) {
-    setEditing(null)
-    setForm({ estado: estado ?? "To do" })
-    setDialogOpen(true)
+    setEditing(null);
+    setForm({ estado: estado ?? "To do" });
+    setDialogOpen(true);
   }
   function openEdit(task: DocRecord) {
-    setEditing(task)
-    const next: FormState = {}
-    for (const f of TAREAS_SCHEMA.fields) next[f.key] = task[f.key]
-    setForm(next)
-    setDialogOpen(true)
+    setEditing(task);
+    const next: FormState = {};
+    for (const f of TAREAS_SCHEMA.fields) next[f.key] = task[f.key];
+    setForm(next);
+    setDialogOpen(true);
   }
 
   async function handleSave() {
     if (!String(form.tarea ?? "").trim()) {
-      toast.error("Falta el nombre de la tarea")
-      return
+      toast.error("Falta el nombre de la tarea");
+      return;
     }
-    const payload: Record<string, unknown> = {}
+    const payload: Record<string, unknown> = {};
     for (const f of TAREAS_SCHEMA.fields) {
-      const v = form[f.key]
-      if (v !== undefined && v !== "") payload[f.key] = v
+      const v = form[f.key];
+      if (v !== undefined && v !== "") payload[f.key] = v;
     }
-    if (!payload.estado) payload.estado = "To do"
-    setSaving(true)
+    if (!payload.estado) payload.estado = "To do";
+    setSaving(true);
     try {
-      if (editing) await update(editing.id, payload)
-      else await add(payload)
-      toast.success(editing ? "Guardado" : "Tarea creada")
+      if (editing) await update(editing.id, payload);
+      else await add(payload);
+      toast.success(editing ? "Guardado" : "Tarea creada");
 
       // Fire a notification when a task is assigned/reassigned.
-      const newAsignado = String(payload.asignado ?? "")
-      const oldAsignado = editing ? String(editing.asignado ?? "") : ""
-      const taskName = String(payload.tarea ?? "")
+      const newAsignado = String(payload.asignado ?? "");
+      const oldAsignado = editing ? String(editing.asignado ?? "") : "";
+      const taskName = String(payload.tarea ?? "");
       if (newAsignado && newAsignado !== oldAsignado) {
         // Use a timestamp-based key so each reassignment generates its own notif
-        const key = `tarea_asig_${editing?.id ?? "new"}_${Date.now()}`
+        const key = `tarea_asig_${editing?.id ?? "new"}_${Date.now()}`;
         if (!existingIds.has(key)) {
           await setDoc(doc(db, "notificaciones", key), {
             tipo: "tarea",
@@ -224,23 +257,23 @@ export function KanbanBoard() {
             href: "/admin/tareas",
             leidoPor: [],
             creadoEn: serverTimestamp(),
-          })
+          });
         }
       }
 
-      setDialogOpen(false)
+      setDialogOpen(false);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error al guardar")
+      toast.error(err instanceof Error ? err.message : "Error al guardar");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
   async function move(id: string, estado: string) {
     try {
-      await update(id, { estado })
+      await update(id, { estado });
     } catch {
-      toast.error("No se pudo mover")
+      toast.error("No se pudo mover");
     }
   }
 
@@ -248,8 +281,12 @@ export function KanbanBoard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{TAREAS_SCHEMA.title}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{TAREAS_SCHEMA.description}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {TAREAS_SCHEMA.title}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {TAREAS_SCHEMA.description}
+          </p>
         </div>
         <Button onClick={() => openCreate()}>
           <Plus className="size-4" /> Nueva tarea
@@ -264,7 +301,9 @@ export function KanbanBoard() {
             onClick={() => setTab("tablero")}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-colors",
-              tab === "tablero" ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
+              tab === "tablero"
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             <LayoutGrid className="size-3.5" /> Tablero
@@ -274,7 +313,9 @@ export function KanbanBoard() {
             onClick={() => setTab("backlog")}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-colors",
-              tab === "backlog" ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
+              tab === "backlog"
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             <List className="size-3.5" /> Backlog
@@ -363,25 +404,39 @@ export function KanbanBoard() {
       ) : tab === "tablero" ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {TAREAS_ESTADOS.map((col) => {
-            const cards = visible.filter((t) => (t.estado ?? "To do") === col.value)
+            const cards = visible.filter(
+              (t) => (t.estado ?? "To do") === col.value,
+            );
             return (
               <div
                 key={col.value}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
-                  e.preventDefault()
-                  const id = e.dataTransfer.getData("text/plain")
-                  if (id) move(id, col.value)
+                  e.preventDefault();
+                  const id = e.dataTransfer.getData("text/plain");
+                  if (id) move(id, col.value);
                 }}
                 className="flex min-h-[120px] flex-col gap-2 rounded-xl border border-border/60 bg-secondary/20 p-2.5"
               >
                 <div className="flex items-center justify-between px-1 py-1">
                   <div className="flex items-center gap-2">
-                    <span className={cn("size-2 rounded-full", OPTION_COLOR_CLASSES[col.color ?? "gray"])} />
+                    <span
+                      className={cn(
+                        "size-2 rounded-full",
+                        OPTION_COLOR_CLASSES[col.color ?? "gray"],
+                      )}
+                    />
                     <span className="text-sm font-medium">{col.value}</span>
-                    <span className="text-xs text-muted-foreground">{cards.length}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {cards.length}
+                    </span>
                   </div>
-                  <Button variant="ghost" size="icon" className="size-6" onClick={() => openCreate(col.value)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-6"
+                    onClick={() => openCreate(col.value)}
+                  >
                     <Plus className="size-3.5" />
                   </Button>
                 </div>
@@ -395,14 +450,16 @@ export function KanbanBoard() {
                   />
                 ))}
               </div>
-            )
+            );
           })}
         </div>
       ) : (
         // Vista Backlog (tabla)
         <div className="overflow-x-auto rounded-xl border border-border bg-card/40">
           {backlogRows.length === 0 ? (
-            <p className="py-12 text-center text-sm text-muted-foreground">No hay tareas.</p>
+            <p className="py-12 text-center text-sm text-muted-foreground">
+              No hay tareas.
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -419,7 +476,7 @@ export function KanbanBoard() {
               </TableHeader>
               <TableBody>
                 {backlogRows.map((t) => {
-                  const di = t.vence ? dueInfo(String(t.vence)) : null
+                  const di = t.vence ? dueInfo(String(t.vence)) : null;
                   return (
                     <TableRow key={t.id}>
                       <TableCell>{t.tarea}</TableCell>
@@ -428,7 +485,16 @@ export function KanbanBoard() {
                       </TableCell>
                       <TableCell>
                         {t.tipo ? (
-                          <Badge variant="outline" className={cn("border", colorForOption(TIPO_FIELD.options, String(t.tipo)))}>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "border",
+                              colorForOption(
+                                TIPO_FIELD.options,
+                                String(t.tipo),
+                              ),
+                            )}
+                          >
                             {String(t.tipo)}
                           </Badge>
                         ) : (
@@ -438,12 +504,20 @@ export function KanbanBoard() {
                       <TableCell>
                         <div className="flex items-center gap-1.5">
                           <MemberAvatar name={t.asignado} />
-                          <span className="text-xs">{t.asignado ? String(t.asignado) : ""}</span>
+                          <span className="text-xs">
+                            {t.asignado ? String(t.asignado) : ""}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>
                         {t.estado ? (
-                          <Badge variant="outline" className={cn("border", colorForOption(TAREAS_ESTADOS, String(t.estado)))}>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "border",
+                              colorForOption(TAREAS_ESTADOS, String(t.estado)),
+                            )}
+                          >
                             {String(t.estado)}
                           </Badge>
                         ) : (
@@ -452,7 +526,16 @@ export function KanbanBoard() {
                       </TableCell>
                       <TableCell>
                         {t.prioridad ? (
-                          <Badge variant="outline" className={cn("border", colorForOption(PRIORIDAD_FIELD.options, String(t.prioridad)))}>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "border",
+                              colorForOption(
+                                PRIORIDAD_FIELD.options,
+                                String(t.prioridad),
+                              ),
+                            )}
+                          >
                             {String(t.prioridad)}
                           </Badge>
                         ) : (
@@ -464,7 +547,13 @@ export function KanbanBoard() {
                           <div className="flex items-center gap-2 whitespace-nowrap">
                             <span>{formatDate(String(t.vence))}</span>
                             {di ? (
-                              <Badge variant="outline" className={cn("border", OPTION_COLOR_CLASSES[di.color])}>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "border",
+                                  OPTION_COLOR_CLASSES[di.color],
+                                )}
+                              >
                                 {di.label}
                               </Badge>
                             ) : null}
@@ -475,7 +564,12 @@ export function KanbanBoard() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="size-8" onClick={() => openEdit(t)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8"
+                            onClick={() => openEdit(t)}
+                          >
                             <Pencil className="size-4" />
                           </Button>
                           <Button
@@ -489,7 +583,7 @@ export function KanbanBoard() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
@@ -501,8 +595,12 @@ export function KanbanBoard() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Editar tarea" : "Nueva tarea"}</DialogTitle>
-            <DialogDescription className="sr-only">Formulario de tarea</DialogDescription>
+            <DialogTitle>
+              {editing ? "Editar tarea" : "Nueva tarea"}
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Formulario de tarea
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -512,16 +610,27 @@ export function KanbanBoard() {
               <Input
                 id="tarea"
                 value={form.tarea ?? ""}
-                onChange={(e) => setForm((p) => ({ ...p, tarea: e.target.value }))}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, tarea: e.target.value }))
+                }
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Cliente</Label>
-                <Select value={form.cliente} onValueChange={(v) => setForm((p) => ({ ...p, cliente: v }))}>
+                <Select
+                  value={form.cliente}
+                  onValueChange={(v) => setForm((p) => ({ ...p, cliente: v }))}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={clienteOptions.length ? "Elegí" : "Creá un cliente primero"} />
+                    <SelectValue
+                      placeholder={
+                        clienteOptions.length
+                          ? "Elegí"
+                          : "Creá un cliente primero"
+                      }
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {clienteOptions.map((name) => (
@@ -534,7 +643,10 @@ export function KanbanBoard() {
               </div>
               <div className="space-y-1.5">
                 <Label>Tipo</Label>
-                <Select value={form.tipo} onValueChange={(v) => setForm((p) => ({ ...p, tipo: v }))}>
+                <Select
+                  value={form.tipo}
+                  onValueChange={(v) => setForm((p) => ({ ...p, tipo: v }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Elegí" />
                   </SelectTrigger>
@@ -552,7 +664,10 @@ export function KanbanBoard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Asignado a</Label>
-                <Select value={form.asignado} onValueChange={(v) => setForm((p) => ({ ...p, asignado: v }))}>
+                <Select
+                  value={form.asignado}
+                  onValueChange={(v) => setForm((p) => ({ ...p, asignado: v }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Elegí" />
                   </SelectTrigger>
@@ -567,7 +682,12 @@ export function KanbanBoard() {
               </div>
               <div className="space-y-1.5">
                 <Label>Prioridad</Label>
-                <Select value={form.prioridad} onValueChange={(v) => setForm((p) => ({ ...p, prioridad: v }))}>
+                <Select
+                  value={form.prioridad}
+                  onValueChange={(v) =>
+                    setForm((p) => ({ ...p, prioridad: v }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Elegí" />
                   </SelectTrigger>
@@ -585,7 +705,10 @@ export function KanbanBoard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>Estado</Label>
-                <Select value={form.estado} onValueChange={(v) => setForm((p) => ({ ...p, estado: v }))}>
+                <Select
+                  value={form.estado}
+                  onValueChange={(v) => setForm((p) => ({ ...p, estado: v }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Elegí" />
                   </SelectTrigger>
@@ -604,7 +727,9 @@ export function KanbanBoard() {
                   id="vence"
                   type="date"
                   value={form.vence ?? ""}
-                  onChange={(e) => setForm((p) => ({ ...p, vence: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, vence: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -615,7 +740,9 @@ export function KanbanBoard() {
                 id="notas"
                 rows={3}
                 value={form.notas ?? ""}
-                onChange={(e) => setForm((p) => ({ ...p, notas: e.target.value }))}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, notas: e.target.value }))
+                }
               />
             </div>
           </div>
@@ -630,5 +757,5 @@ export function KanbanBoard() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

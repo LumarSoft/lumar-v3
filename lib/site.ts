@@ -10,26 +10,35 @@ export const SITE = {
   city: "Rosario",
   region: "Santa Fe",
   country: "AR",
-} as const
+} as const;
 
 /** Fundadores — usados en structured data (sameAs apunta a sus perfiles). */
 export const FOUNDERS = [
   {
     name: "Lucas Quaroni",
-    sameAs: ["https://www.linkedin.com/in/lucasquaroni/", "https://github.com/LucasQuaroni"],
+    sameAs: [
+      "https://www.linkedin.com/in/lucasquaroni/",
+      "https://github.com/LucasQuaroni",
+    ],
   },
   {
     name: "Marcelo Benitez",
-    sameAs: ["https://www.linkedin.com/in/benitez-marcelo/", "https://github.com/marcebenitez2"],
+    sameAs: [
+      "https://www.linkedin.com/in/benitez-marcelo/",
+      "https://github.com/marcebenitez2",
+    ],
   },
   {
     name: "Mateo Bodini",
-    sameAs: ["https://www.linkedin.com/in/mateobodini/", "https://github.com/mateoBodiniARG"],
+    sameAs: [
+      "https://www.linkedin.com/in/mateobodini/",
+      "https://github.com/mateoBodiniARG",
+    ],
   },
-] as const
+] as const;
 
 /** Build a wa.me link, optionally pre-filled with a message. */
 export function whatsappUrl(message?: string) {
-  const base = `https://wa.me/${SITE.whatsapp}`
-  return message ? `${base}?text=${encodeURIComponent(message)}` : base
+  const base = `https://wa.me/${SITE.whatsapp}`;
+  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }

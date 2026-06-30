@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, MousePointerClick, Wrench, BookOpen, ArrowRight, Check } from "lucide-react";
+import {
+  ShoppingCart,
+  MousePointerClick,
+  Wrench,
+  BookOpen,
+  ArrowRight,
+  Check,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { SectionHeading } from "@/components/ui/section-heading";
 
@@ -147,7 +154,9 @@ export function FeaturesSection() {
                   />
                   <span
                     className={`font-mono text-xs tabular-nums transition-colors duration-200 ${
-                      isActive ? "text-brand" : "text-zinc-700 group-hover:text-zinc-500"
+                      isActive
+                        ? "text-brand"
+                        : "text-zinc-700 group-hover:text-zinc-500"
                     }`}
                   >
                     {service.number}
@@ -161,14 +170,18 @@ export function FeaturesSection() {
                   >
                     <Icon
                       className={`w-4 h-4 transition-colors duration-200 ${
-                        isActive ? "text-brand" : "text-zinc-500 group-hover:text-zinc-300"
+                        isActive
+                          ? "text-brand"
+                          : "text-zinc-500 group-hover:text-zinc-300"
                       }`}
                     />
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span
                       className={`font-display font-semibold text-sm transition-colors duration-200 ${
-                        isActive ? "text-zinc-100" : "text-zinc-400 group-hover:text-zinc-200"
+                        isActive
+                          ? "text-zinc-100"
+                          : "text-zinc-400 group-hover:text-zinc-200"
                       }`}
                     >
                       {service.title}

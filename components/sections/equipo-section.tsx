@@ -79,7 +79,8 @@ export function EquipoSection() {
             className="mb-12 max-w-2xl"
             description="Ingenieros en Sistemas de Rosario. Cuando contratás LumarSoft, no hay un equipo de ventas que te pasa a un equipo de desarrollo. Hablás directamente con quien construye tu proyecto, de principio a fin."
           >
-            Somos los tres que fundamos LumarSoft. También somos los tres que escriben el código.
+            Somos los tres que fundamos LumarSoft. También somos los tres que
+            escriben el código.
           </SectionHeading>
 
           {/* Logo — arriba a la derecha */}
@@ -140,7 +141,11 @@ export function EquipoSection() {
                   whileInView={{ pathLength: 1, opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{
-                    pathLength: { duration: 0.65, delay: arrow.delay, ease: "easeOut" },
+                    pathLength: {
+                      duration: 0.65,
+                      delay: arrow.delay,
+                      ease: "easeOut",
+                    },
                     opacity: { duration: 0.01, delay: arrow.delay },
                   }}
                 />
@@ -184,7 +189,9 @@ export function EquipoSection() {
                 <p className="text-xs text-zinc-500 leading-relaxed max-w-[180px]">
                   {member.bio}
                 </p>
-                <div className={`flex items-center gap-3 ${socialAlignments[i]}`}>
+                <div
+                  className={`flex items-center gap-3 ${socialAlignments[i]}`}
+                >
                   <a
                     href={member.linkedin}
                     target="_blank"
@@ -237,8 +244,16 @@ export function EquipoSection() {
           {/* 3-column annotation row */}
           <div className="grid grid-cols-3 pt-1">
             {team.map((member, i) => {
-              const align = ["items-start text-left", "items-center text-center", "items-end text-right"][i];
-              const socialAlign = ["justify-start", "justify-center", "justify-end"][i];
+              const align = [
+                "items-start text-left",
+                "items-center text-center",
+                "items-end text-right",
+              ][i];
+              const socialAlign = [
+                "justify-start",
+                "justify-center",
+                "justify-end",
+              ][i];
               return (
                 <motion.div
                   key={member.name}

@@ -2,9 +2,9 @@
 // Para agregar una: sumá un objeto { question, answer } al array.
 
 export type FaqItem = {
-  question: string
-  answer: string
-}
+  question: string;
+  answer: string;
+};
 
 export const faqs: FaqItem[] = [
   {
@@ -18,7 +18,8 @@ export const faqs: FaqItem[] = [
       "No trabajamos con precios de lista, porque cada proyecto es distinto. Después de entender qué necesitás, te pasamos un presupuesto cerrado y sin letra chica. Si algo se sale del alcance, lo hablamos antes; nunca te aparece una sorpresa en la factura.",
   },
   {
-    question: "Ya tuve una mala experiencia con un desarrollador que desapareció. ¿Por qué sería distinto?",
+    question:
+      "Ya tuve una mala experiencia con un desarrollador que desapareció. ¿Por qué sería distinto?",
     answer:
       "Porque hablás directamente con quien construye tu proyecto, no con un vendedor que después te pasa a otro equipo. Somos tres y trabajamos cada proyecto de principio a fin. No hay intermediarios donde se pierda la comunicación.",
   },
@@ -37,4 +38,4 @@ export const faqs: FaqItem[] = [
     answer:
       "Sí. Trabajamos en remoto con clientes de todo el país y del exterior. La comunicación directa funciona igual de bien por videollamada y WhatsApp que en persona.",
   },
-]
+];

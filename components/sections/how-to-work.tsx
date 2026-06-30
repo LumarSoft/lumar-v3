@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useRef } from "react"
-import { motion, useScroll, useSpring } from "framer-motion"
-import { Search, MessageCircle, Clock, KeyRound } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
-import { SectionHeading } from "@/components/ui/section-heading"
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
+import { Search, MessageCircle, Clock, KeyRound } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 type Step = {
-  icon: LucideIcon
-  number: string
-  title: string
-  description: string
-}
+  icon: LucideIcon;
+  number: string;
+  title: string;
+  description: string;
+};
 
 const steps: Step[] = [
   {
@@ -42,23 +42,23 @@ const steps: Step[] = [
     description:
       "Código limpio y documentado. Sin dependencias artificiales con nosotros. Entregamos de verdad.",
   },
-]
+];
 
-const ease = [0.22, 1, 0.36, 1] as const
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export function PricingSection() {
-  const trackRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null);
 
   // Fill the progress line as the timeline passes through the viewport.
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ["start 70%", "end 65%"],
-  })
+  });
   const lineScale = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 30,
     restDelta: 0.001,
-  })
+  });
 
   return (
     <section id="valores" className="px-6 py-24">
@@ -84,7 +84,7 @@ export function PricingSection() {
 
           <div className="flex flex-col gap-12 md:gap-16">
             {steps.map((step) => {
-              const Icon = step.icon
+              const Icon = step.icon;
               return (
                 <motion.div
                   key={step.number}
@@ -123,11 +123,11 @@ export function PricingSection() {
                     {step.number}
                   </span>
                 </motion.div>
-              )
+              );
             })}
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

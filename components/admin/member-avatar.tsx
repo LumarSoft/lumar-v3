@@ -1,9 +1,15 @@
-import { cn } from "@/lib/utils"
-import { OPTION_COLOR_CLASSES } from "@/lib/admin/colors"
-import { memberByName } from "@/lib/admin/members"
+import { cn } from "@/lib/utils";
+import { OPTION_COLOR_CLASSES } from "@/lib/admin/colors";
+import { memberByName } from "@/lib/admin/members";
 
-export function MemberAvatar({ name, className }: { name?: string; className?: string }) {
-  const member = memberByName(name)
+export function MemberAvatar({
+  name,
+  className,
+}: {
+  name?: string;
+  className?: string;
+}) {
+  const member = memberByName(name);
   if (!member) {
     return (
       <span
@@ -15,7 +21,7 @@ export function MemberAvatar({ name, className }: { name?: string; className?: s
       >
         ?
       </span>
-    )
+    );
   }
   return (
     <span
@@ -28,5 +34,5 @@ export function MemberAvatar({ name, className }: { name?: string; className?: s
     >
       {member.initials}
     </span>
-  )
+  );
 }

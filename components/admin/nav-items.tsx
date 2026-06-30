@@ -8,12 +8,12 @@ import {
   Activity,
   KeyRound,
   type LucideIcon,
-} from "lucide-react"
+} from "lucide-react";
 
 export interface NavItem {
-  href: string
-  label: string
-  icon: LucideIcon
+  href: string;
+  label: string;
+  icon: LucideIcon;
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -25,4 +25,4 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/admin/calendario", label: "Calendario", icon: CalendarDays },
   { href: "/admin/actividad", label: "Actividad", icon: Activity },
   { href: "/admin/datos", label: "Datos relevantes", icon: KeyRound },
-]
+];

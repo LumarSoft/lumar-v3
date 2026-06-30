@@ -108,7 +108,9 @@ export function CtaSection() {
                       type="text"
                       required
                       value={form.nombre}
-                      onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, nombre: e.target.value })
+                      }
                       placeholder="Tu nombre"
                       className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-brand/50 focus:outline-none focus:shadow-[0_0_0_3px_rgba(218,128,55,0.12)] text-zinc-100 placeholder-zinc-600 text-sm transition-all"
                     />
@@ -124,7 +126,9 @@ export function CtaSection() {
                       id="mensaje"
                       required
                       value={form.mensaje}
-                      onChange={(e) => setForm({ ...form, mensaje: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, mensaje: e.target.value })
+                      }
                       placeholder="Contanos qué necesitás, aunque sea a grandes rasgos..."
                       rows={5}
                       className="w-full px-4 py-3 rounded-xl bg-zinc-900/60 border border-zinc-800 focus:border-brand/50 focus:outline-none focus:shadow-[0_0_0_3px_rgba(218,128,55,0.12)] text-zinc-100 placeholder-zinc-600 text-sm transition-all resize-none"

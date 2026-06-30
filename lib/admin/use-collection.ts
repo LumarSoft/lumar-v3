@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
 import {
   addDoc,
   collection,
@@ -15,13 +15,13 @@ import {
   type FirestoreError,
   type QueryDocumentSnapshot,
   type QuerySnapshot,
-} from "firebase/firestore"
-import { db } from "@/lib/firebase/client"
+} from "firebase/firestore";
+import { db } from "@/lib/firebase/client";
 
 export interface DocRecord {
-  id: string
+  id: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
+  [key: string]: any;
 }
 
 /**
@@ -29,31 +29,32 @@ export interface DocRecord {
  * Subscribes via onSnapshot so the 3 socios see each other's changes live.
  */
 export function useCollection(name: string) {
-  const [data, setData] = useState<DocRecord[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [data, setData] = useState<DocRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setLoading(true)
-    const q = query(collection(db, name), orderBy("createdAt", "desc"))
+    setLoading(true);
+    const q = query(collection(db, name), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
       q,
       (snapshot: QuerySnapshot<DocumentData>) => {
         setData(
           snapshot.docs.map(
-            (d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() }) as DocRecord,
+            (d: QueryDocumentSnapshot<DocumentData>) =>
+              ({ id: d.id, ...d.data() }) as DocRecord,
           ),
-        )
-        setLoading(false)
-        setError(null)
+        );
+        setLoading(false);
+        setError(null);
       },
       (err: FirestoreError) => {
-        setError(err.message)
-        setLoading(false)
+        setError(err.message);
+        setLoading(false);
       },
-    )
-    return () => unsubscribe()
-  }, [name])
+    );
+    return () => unsubscribe();
+  }, [name]);
 
   const add = useCallback(
     (values: Record<string, unknown>) =>
@@ -63,15 +64,18 @@ export function useCollection(name: string) {
         updatedAt: serverTimestamp(),
       }),
     [name],
-  )
+  );
 
   const update = useCallback(
     (id: string, values: Record<string, unknown>) =>
       updateDoc(doc(db, name, id), { ...values, updatedAt: serverTimestamp() }),
     [name],
-  )
+  );
 
-  const remove = useCallback((id: string) => deleteDoc(doc(db, name, id)), [name])
+  const remove = useCallback(
+    (id: string) => deleteDoc(doc(db, name, id)),
+    [name],
+  );
 
-  return { data, loading, error, add, update, remove }
+  return { data, loading, error, add, update, remove };
 }
