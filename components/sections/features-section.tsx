@@ -36,10 +36,10 @@ const services: Service[] = [
     title: "Landing Pages",
     tag: "Conversión",
     description:
-      "Una página que convierte visitas en consultas reales. Sin distracciones, con un objetivo claro y copy que habla el idioma de tu cliente.",
+      "Una página que convierte visitas en consultas reales. Sin distracciones, con un objetivo claro y textos pensados para tu cliente.",
     points: [
       "Diseño enfocado en un solo objetivo",
-      "Copy escrito para tu audiencia concreta",
+      "Textos pensados para tu público",
       "Velocidad de carga optimizada",
       "Integración con WhatsApp y formularios",
     ],
@@ -67,8 +67,8 @@ const services: Service[] = [
       "Contá lo que sabés. Nosotros hacemos que llegue a quien tiene que llegar. Sitios web, blogs y estrategia de contenido que posicionan tu negocio.",
     points: [
       "Sitio web que refleja tu negocio real",
-      "SEO técnico desde la estructura",
-      "Blog y contenido optimizado para búsquedas",
+      "Optimización para buscadores (SEO) desde la base",
+      "Blog y contenido pensado para aparecer en Google",
       "Analítica clara para tomar decisiones",
     ],
   },
@@ -113,9 +113,9 @@ export function FeaturesSection() {
           eyebrow="Servicios"
           index="01"
           className="mb-14 max-w-lg"
-          description="Proyectos reales, clientes que volvieron. Proceso claro, entregas definidas y código que siempre es tuyo."
+          description="Cada proyecto se diseña a medida, con un proceso claro, plazos definidos y código que siempre queda en tus manos."
         >
-          De esto vivimos. Hacelo bien o no lo hagas.
+          Lo que desarrollamos para vos.
         </SectionHeading>
 
         {/* ── Desktop: selector + detail panel ── */}

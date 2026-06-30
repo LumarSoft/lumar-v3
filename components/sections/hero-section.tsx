@@ -66,8 +66,8 @@ function AnimatedCounter({ target, suffix = "", duration = 1200 }: { target: num
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const stats = [
-  { target: 6,   suffix: "+", label: "Proyectos entregados" },
-  { target: 3,   suffix: "+", label: "Años entregando" },
+  { target: 50,  suffix: "+", label: "Proyectos entregados" },
+  { target: 6,   suffix: "+", label: "Años de experiencia" },
   { target: 100, suffix: "%", label: "Trato directo" },
 ];
 
@@ -131,12 +131,12 @@ export function HeroSection() {
         >
           <span className="block">
             <RevealWords
-              text="Software que se entrega."
+              text="Eso que imaginás para tu empresa,"
               className="bg-gradient-to-b from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent"
             />
           </span>
           <span className="block mt-2">
-            <RevealWords text="No que se promete." className="text-zinc-500" />
+            <RevealWords text="lo construimos." className="text-zinc-500" />
           </span>
         </motion.h1>
 
@@ -147,8 +147,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-base md:text-xl text-zinc-400 max-w-xl mx-auto mb-12 leading-relaxed"
         >
-          Hablás directo con quienes lo construyen.
-          Sin agencias, sin intermediarios, sin sorpresas al final del proyecto.
+          Trabajás directamente con el equipo que desarrolla tu proyecto.
+          Plazos claros, sin intermediarios y sin sorpresas al final.
         </motion.p>
 
         {/* CTA */}

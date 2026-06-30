@@ -90,7 +90,7 @@ export function Navbar() {
         }`}
       >
         <Link href="/" className="flex items-center">
-          <span className="nav-wordmark font-display text-lg font-black tracking-tight">
+          <span className="font-display text-2xl font-black tracking-tight text-white">
             LumarSoft
           </span>
         </Link>

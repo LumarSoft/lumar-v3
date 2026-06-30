@@ -50,7 +50,7 @@ export function TestimonialsSection() {
           eyebrow="Testimonios"
           index="05"
           className="mb-14 max-w-lg"
-          description="Lo que dicen los que ya trabajaron con nosotros. Sin guion, sin filtro."
+          description="Lo que dicen las empresas que ya trabajaron con nosotros."
         >
           No te lo decimos nosotros. Te lo dicen ellos.
         </SectionHeading>

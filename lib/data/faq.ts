@@ -13,9 +13,9 @@ export const faqs: FaqItem[] = [
       "Depende del alcance, pero te damos una fecha real desde el día uno, no una optimista. Una landing puede estar en una o dos semanas; un sistema a medida lleva más. Dividimos todo en hitos claros y vos aprobás cada etapa antes de avanzar.",
   },
   {
-    question: "¿Cuánto sale?",
+    question: "¿Cuánto cuesta un proyecto?",
     answer:
-      "No tenemos precios de lista porque no hacemos proyectos de lista. Después de entender qué necesitás, te pasamos un presupuesto cerrado y sin letra chica. Si algo se sale del alcance, lo hablamos antes, nunca te aparece una sorpresa en la factura.",
+      "No trabajamos con precios de lista, porque cada proyecto es distinto. Después de entender qué necesitás, te pasamos un presupuesto cerrado y sin letra chica. Si algo se sale del alcance, lo hablamos antes; nunca te aparece una sorpresa en la factura.",
   },
   {
     question: "Ya tuve una mala experiencia con un desarrollador que desapareció. ¿Por qué sería distinto?",

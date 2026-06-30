@@ -19,9 +19,9 @@ export function FaqSection() {
           eyebrow="Preguntas frecuentes"
           index="06"
           className="mb-12"
-          description="Lo que casi todos nos preguntan antes de arrancar. Si te queda otra duda, escribinos."
+          description="Las preguntas que más nos hacen antes de empezar. Si te queda otra, escribinos."
         >
-          Sacate las dudas antes de escribir.
+          Resolvemos tus dudas antes de empezar.
         </SectionHeading>
 
         <div className="flex flex-col divide-y divide-zinc-800/60 border-y border-zinc-800/60">

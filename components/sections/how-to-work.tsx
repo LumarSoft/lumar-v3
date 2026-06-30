@@ -24,9 +24,9 @@ const steps: Step[] = [
   {
     icon: MessageCircle,
     number: "02",
-    title: "Te hablamos en castellano.",
+    title: "Te explicamos sin tecnicismos.",
     description:
-      "Sin tecnicismos, sin humo. Si algo no se entiende, es nuestro problema explicarlo mejor.",
+      "Si algo no queda claro, es nuestra responsabilidad explicarlo mejor. Nada de jerga innecesaria.",
   },
   {
     icon: Clock,
@@ -67,9 +67,9 @@ export function PricingSection() {
           eyebrow="Cómo trabajamos"
           index="03"
           className="mb-16"
-          description="Cuatro cosas que hacemos distinto. En cada proyecto, sin excepción."
+          description="Cuatro principios que aplicamos en cada proyecto, sin excepción."
         >
-          No es lo que prometemos. Es cómo lo hacemos.
+          Así trabajamos en cada proyecto.
         </SectionHeading>
 
         {/* Timeline */}

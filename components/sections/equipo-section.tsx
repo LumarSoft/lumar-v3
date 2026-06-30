@@ -19,7 +19,7 @@ const team = [
     name: "Marcelo Benitez",
     role: "Co-fundador · Fullstack",
     degree: "Tec. en Desarrollo de Software",
-    bio: "Traduce procesos de negocio en sistemas que la gente realmente usa. Sin tecnicismos, sin humo.",
+    bio: "Traduce procesos de negocio en sistemas que la gente realmente usa, explicados siempre con claridad.",
     linkedin: "https://www.linkedin.com/in/benitez-marcelo/",
     github: "https://github.com/marcebenitez2",
     initials: "MB",

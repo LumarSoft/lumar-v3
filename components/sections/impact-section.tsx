@@ -13,25 +13,25 @@ type Objection = {
 
 const objections: Objection[] = [
   {
-    tag: "El que desaparece",
+    tag: "Falta de continuidad",
     problem: "Contraté a alguien y desapareció a la mitad del proyecto.",
     solution:
       "Hablás directamente con quien construye tu proyecto, de principio a fin. Sin intermediarios, sin cuentas de soporte genéricas.",
   },
   {
-    tag: "El template con tu logo",
+    tag: "Soluciones genéricas",
     problem: "Me entregaron un template con mi nombre. No tenía nada que ver con mi negocio.",
     solution:
       "Cada proyecto arranca desde cero. Antes de escribir una línea de código, entendemos cómo funcionás y qué querés lograr.",
   },
   {
-    tag: "El idioma marciano",
+    tag: "Comunicación poco clara",
     problem: "Me explicaron todo con tecnicismos y nunca entendí qué se estaba haciendo.",
     solution:
       "Si algo no se entiende, es nuestro problema explicarlo mejor. Te contamos qué se construye, para qué y cuándo — en castellano.",
   },
   {
-    tag: "El plazo eterno",
+    tag: "Plazos que no se cumplen",
     problem: "Tardaron el doble de lo prometido y el resultado era mediocre.",
     solution:
       "Fechas reales desde el día uno. Cada etapa tiene hitos claros y vos aprobás antes de avanzar a la siguiente.",
@@ -46,10 +46,10 @@ export function ImpactSection() {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <SectionHeading
-          eyebrow="¿Te suena esto?"
+          eyebrow="Lo que escuchamos seguido"
           index="02"
           className="mb-12 max-w-lg"
-          description="Siempre son las mismas historias. Por eso construimos un proceso que elimina cada uno de estos problemas desde el primer día."
+          description="Casi siempre son las mismas situaciones. Por eso definimos un proceso que las evita desde el primer día."
         >
           Lo que nos cuentan antes de contratarnos.
         </SectionHeading>
@@ -106,8 +106,8 @@ export function ImpactSection() {
           className="mt-12 flex flex-col items-center text-center gap-5"
         >
           <p className="text-zinc-300 text-base md:text-lg max-w-xl leading-relaxed text-balance">
-            ¿Por dónde empezás? Con una charla. Nos contás el problema y te decimos
-            honestamente si podemos ayudarte — y cómo. Sin presupuesto apresurado.
+            Todo empieza con una conversación. Nos contás tu problema y te decimos
+            con honestidad si podemos ayudarte y de qué forma. Sin presupuestos apurados.
           </p>
           <a
             href={whatsappUrl("Hola, quiero contarles mi proyecto.")}
