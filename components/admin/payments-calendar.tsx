@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCollection } from "@/lib/admin/use-collection";
+import { cobroPeriodo, isRecurrente } from "@/lib/admin/cobros";
 import { formatARS, formatDate, parseLocalDate } from "@/lib/admin/format";
 import { useNotificationsContext } from "@/lib/admin/notifications-context";
 import { ensureNotification } from "@/lib/admin/use-notifications";
@@ -121,9 +122,9 @@ export function PaymentsCalendar() {
     const viewMk = `${year}-${String(month + 1).padStart(2, "0")}`;
     for (const c of cobros.data) {
       let day = dayInView(c.vencimiento);
-      if (!day) {
+      if (!day && isRecurrente(c)) {
         const dc = Number(c.diaCobro);
-        const periodoMk = c.periodo ? String(c.periodo) : viewMk;
+        const periodoMk = cobroPeriodo(c);
         if (Number.isFinite(dc) && dc >= 1 && dc <= 31 && viewMk >= periodoMk) {
           day = Math.min(dc, daysInMonth);
         }

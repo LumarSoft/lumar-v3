@@ -158,6 +158,16 @@ export const COBROS_SCHEMA: SectionSchema = {
       helpText: "Día del mes en que se cobra (para recurrentes).",
     },
     {
+      key: "periodo",
+      label: "Período pendiente",
+      type: "text",
+      placeholder: "2026-06",
+      showWhen: { field: "categoria", equals: "Recurrente mensual" },
+      helpText:
+        "Mes (AAAA-MM) que todavía se está cobrando. Avanza solo al tocar \"Cobrar\" — tocalo a mano solo para corregir un error.",
+      inTable: false,
+    },
+    {
       key: "vencimiento",
       label: "Vencimiento",
       type: "date",

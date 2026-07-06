@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { CrudSection, type ExtraColumn } from "@/components/admin/crud-section";
 import { Button } from "@/components/ui/button";
@@ -9,12 +9,34 @@ import {
   cobroDueDate,
   cobroPaidForMonth,
   cobroPeriodo,
+  isInstancia,
   isRecurrente,
+  monthKey,
   nextPeriodo,
   periodoDate,
 } from "@/lib/admin/cobros";
 import { daysUntil } from "@/lib/admin/format";
 import { useCollection, type DocRecord } from "@/lib/admin/use-collection";
+
+/**
+ * Antes, un recurrente sin `periodo` guardado calculaba su mes pendiente como
+ * "el mes real de hoy" (ver cobroPeriodo). Eso hacía que, apenas cambiaba el
+ * mes calendario, un cliente que todavía no había pagado (ej. Heroica, Mutual)
+ * pasara de "debe junio" a "debe julio" sin que nadie lo cobrara: el pago de
+ * junio "desaparecía". Acá fijamos el período pendiente en Firestore la
+ * primera vez que falta, para que deje de depender del reloj.
+ */
+function inferPeriodo(row: DocRecord, allCobros: DocRecord[]): string {
+  const paid = allCobros
+    .filter(
+      (c) => isInstancia(c) && c.cliente === row.cliente && c.periodoPagado,
+    )
+    .map((c) => String(c.periodoPagado))
+    .sort();
+  if (paid.length > 0) return nextPeriodo(paid[paid.length - 1]);
+  const createdAt = row.createdAt?.toDate?.() as Date | undefined;
+  return monthKey(createdAt ?? new Date());
+}
 
 const MESES = [
   "ene",
@@ -52,6 +74,19 @@ function sortCobros(a: DocRecord, b: DocRecord): number {
 export default function CobrosPage() {
   const cobros = useCollection("cobros");
   const clientes = useCollection("clientes");
+
+  // Autocorrección: fija el período pendiente de cualquier recurrente que
+  // todavía no lo tenga guardado, para que no siga corriendo con la fecha real.
+  useEffect(() => {
+    if (cobros.loading) return;
+    for (const row of cobros.data) {
+      if (isRecurrente(row) && !row.periodo) {
+        const periodo = inferPeriodo(row, cobros.data);
+        cobros.update(row.id, { periodo }).catch(() => {});
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cobros.loading]);
 
   async function cobrarMes(row: DocRecord) {
     const periodo = cobroPeriodo(row);
