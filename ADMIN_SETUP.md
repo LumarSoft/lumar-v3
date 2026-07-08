@@ -80,5 +80,11 @@ Cada socio entra a `/admin` con su Google (los 3 mails en el allowlist). Es tiem
 - `lib/admin/auth-context.tsx` — sesión + guard.
 - `lib/admin/use-collection.ts` — CRUD en tiempo real sobre cualquier colección.
 - `lib/admin/schemas.ts` — **definición de cada sección** (campos, tipos, opciones). Agregar una columna o sección nueva es editar acá.
-- `components/admin/crud-section.tsx` — tabla + alta/edición/borrado genéricos.
-- `app/admin/*` — una página por sección, cada una renderiza `<CrudSection schema={...} />`.
+- `components/admin/form-fields.tsx` — **render único de los formularios** a partir del schema (layout 2 columnas, campos condicionales, autofocus). Todos los dialogs de alta/edición lo usan, así se ven y se comportan igual.
+- `components/admin/crud-section.tsx` — tabla (desktop) + tarjetas (mobile) + alta/edición/borrado genéricos con búsqueda y orden por columna.
+- `components/admin/cobros-view.tsx` — Cobros tiene vista propia (no usa `CrudSection`): separa cuentas recurrentes, cobros puntuales e historial de pagos.
+- `app/admin/*` — una página por sección; la mayoría renderiza `<CrudSection schema={...} />`.
+
+### Datos que se muestran
+
+`lib/admin/use-collection.ts` ordena por `createdAt` **en el cliente** (no en la query de Firestore) a propósito: si ordenáramos en Firestore, cualquier documento sin `createdAt` (importado o creado desde la consola) quedaría excluido y "desaparecería" del panel.

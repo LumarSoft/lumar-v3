@@ -7,14 +7,13 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
-  orderBy,
-  query,
   serverTimestamp,
   updateDoc,
   type DocumentData,
   type FirestoreError,
   type QueryDocumentSnapshot,
   type QuerySnapshot,
+  type Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
 
@@ -22,6 +21,24 @@ export interface DocRecord {
   id: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
+}
+
+/**
+ * Ordena por createdAt descendente EN EL CLIENTE (no en la query).
+ * Ojo: si usáramos orderBy("createdAt") en Firestore, cualquier documento sin
+ * ese campo (importado, migrado o creado desde la consola) quedaría EXCLUIDO
+ * del resultado y "desaparecería" del panel. Ordenando acá, todos aparecen.
+ * Los que no tienen fecha (o tienen el serverTimestamp pendiente de un alta
+ * recién hecha) van arriba, que es lo que uno espera ver primero.
+ */
+function createdAtMillis(rec: DocRecord): number {
+  const ts = rec.createdAt as Timestamp | undefined;
+  if (ts && typeof ts.toMillis === "function") return ts.toMillis();
+  return Number.POSITIVE_INFINITY;
+}
+
+function byCreatedDesc(a: DocRecord, b: DocRecord): number {
+  return createdAtMillis(b) - createdAtMillis(a);
 }
 
 /**
@@ -35,16 +52,15 @@ export function useCollection(name: string) {
 
   useEffect(() => {
     setLoading(true);
-    const q = query(collection(db, name), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(
-      q,
+      collection(db, name),
       (snapshot: QuerySnapshot<DocumentData>) => {
-        setData(
-          snapshot.docs.map(
-            (d: QueryDocumentSnapshot<DocumentData>) =>
-              ({ id: d.id, ...d.data() }) as DocRecord,
-          ),
+        const rows = snapshot.docs.map(
+          (d: QueryDocumentSnapshot<DocumentData>) =>
+            ({ id: d.id, ...d.data() }) as DocRecord,
         );
+        rows.sort(byCreatedDesc);
+        setData(rows);
         setLoading(false);
         setError(null);
       },

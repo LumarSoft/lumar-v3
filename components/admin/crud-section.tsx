@@ -2,12 +2,22 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Copy, Inbox } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Eye,
+  EyeOff,
+  Copy,
+  Inbox,
+  Search,
+  ArrowUp,
+  ArrowDown,
+  ChevronsUpDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -17,13 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +46,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
+import { FormFields } from "@/components/admin/form-fields";
 import { useCollection, type DocRecord } from "@/lib/admin/use-collection";
 import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors";
 import {
@@ -51,7 +55,6 @@ import {
   arsToUsd,
   formatDate,
   dueInfo,
-  addMonths,
 } from "@/lib/admin/format";
 import type { FieldDef, SectionSchema } from "@/lib/admin/schemas";
 
@@ -188,14 +191,59 @@ export function CrudSection({
     [schema],
   );
   const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
+  const [sortState, setSortState] = useState<{
+    key: string;
+    dir: "asc" | "desc";
+  } | null>(null);
+
+  function toggleSort(key: string) {
+    setSortState((prev) => {
+      if (prev?.key !== key) return { key, dir: "asc" };
+      if (prev.dir === "asc") return { key, dir: "desc" };
+      return null; // tercer click: vuelve al orden por defecto
+    });
+  }
+
   const visible = useMemo(() => {
     let rows =
       filter === "all" || !schema.filterKey
         ? data
         : data.filter((r) => String(r[schema.filterKey as string]) === filter);
-    if (sortRows) rows = [...rows].sort(sortRows);
+
+    const q = search.trim().toLowerCase();
+    if (q) {
+      rows = rows.filter((r) =>
+        schema.fields.some((f) =>
+          String(r[f.key] ?? "")
+            .toLowerCase()
+            .includes(q),
+        ),
+      );
+    }
+
+    if (sortState) {
+      const field = schema.fields.find((f) => f.key === sortState.key);
+      const numeric =
+        field?.type === "currency" || field?.type === "number";
+      rows = [...rows].sort((a, b) => {
+        const av = a[sortState.key];
+        const bv = b[sortState.key];
+        let cmp: number;
+        if (numeric) {
+          cmp = (Number(av) || 0) - (Number(bv) || 0);
+        } else {
+          cmp = String(av ?? "").localeCompare(String(bv ?? ""), "es", {
+            numeric: true,
+          });
+        }
+        return sortState.dir === "asc" ? cmp : -cmp;
+      });
+    } else if (sortRows) {
+      rows = [...rows].sort(sortRows);
+    }
     return rows;
-  }, [data, filter, schema.filterKey, sortRows]);
+  }, [data, filter, search, sortState, schema.filterKey, schema.fields, sortRows]);
 
   function openCreate() {
     setEditing(null);
@@ -316,35 +364,137 @@ export function CrudSection({
         </div>
       ) : null}
 
-      <div className="rounded-xl border border-border bg-card/40">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Spinner className="size-5 text-muted-foreground" />
+      {data.length > 0 ? (
+        <div className="relative max-w-xs">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={`Buscar ${schema.title.toLowerCase()}…`}
+            className="pl-9"
+          />
+        </div>
+      ) : null}
+
+      {loading ? (
+        <div className="flex items-center justify-center rounded-xl border border-border bg-card/40 py-16">
+          <Spinner className="size-5 text-muted-foreground" />
+        </div>
+      ) : data.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-border bg-card/40 py-16 text-center">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-secondary">
+            <Inbox className="size-5 text-muted-foreground" />
           </div>
-        ) : data.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-secondary">
-              <Inbox className="size-5 text-muted-foreground" />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Todavía no hay {schema.title.toLowerCase()}.
-            </p>
-            <Button variant="secondary" size="sm" onClick={openCreate}>
-              <Plus className="size-4" /> Agregar el primero
-            </Button>
+          <p className="text-sm text-muted-foreground">
+            Todavía no hay {schema.title.toLowerCase()}.
+          </p>
+          <Button variant="secondary" size="sm" onClick={openCreate}>
+            <Plus className="size-4" /> Agregar el primero
+          </Button>
+        </div>
+      ) : visible.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card/40 py-12 text-center text-sm text-muted-foreground">
+          {search.trim()
+            ? `Nada coincide con "${search.trim()}".`
+            : "Nada en este filtro."}
+        </div>
+      ) : (
+        <>
+          {/* Vista mobile: tarjetas */}
+          <div className="space-y-3 md:hidden">
+            {visible.map((row) => (
+              <div
+                key={row.id}
+                className="rounded-xl border border-border bg-card/40 p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <p className="min-w-0 flex-1 break-words font-medium">
+                    {String(row[schema.titleKey] ?? "—")}
+                  </p>
+                  <div className="flex shrink-0 gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      onClick={() => openEdit(row)}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => setDeleteTarget(row)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+                <dl className="mt-3 space-y-1.5">
+                  {tableFields
+                    .filter((f) => f.key !== schema.titleKey)
+                    .map((f) => (
+                      <div
+                        key={f.key}
+                        className="flex items-start justify-between gap-3"
+                      >
+                        <dt className="text-xs text-muted-foreground">
+                          {f.label}
+                        </dt>
+                        <dd className="min-w-0 text-right text-sm">
+                          {renderCell(f, row)}
+                        </dd>
+                      </div>
+                    ))}
+                  {extraColumns.map((c) => (
+                    <div
+                      key={c.key}
+                      className="flex items-start justify-between gap-3"
+                    >
+                      <dt className="text-xs text-muted-foreground">
+                        {c.label}
+                      </dt>
+                      <dd className="min-w-0 text-right text-sm">
+                        {c.render(row)}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
           </div>
-        ) : visible.length === 0 ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">
-            Nada en este filtro.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
+
+          {/* Vista desktop: tabla */}
+          <div className="hidden overflow-x-auto rounded-xl border border-border bg-card/40 md:block">
             <Table>
               <TableHeader>
                 <TableRow>
-                  {tableFields.map((f) => (
-                    <TableHead key={f.key}>{f.label}</TableHead>
-                  ))}
+                  {tableFields.map((f) => {
+                    const sorted = sortState?.key === f.key;
+                    return (
+                      <TableHead key={f.key}>
+                        <button
+                          type="button"
+                          onClick={() => toggleSort(f.key)}
+                          className={cn(
+                            "-ml-1 inline-flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:text-foreground",
+                            sorted ? "text-foreground" : "text-muted-foreground",
+                          )}
+                        >
+                          {f.label}
+                          {sorted ? (
+                            sortState!.dir === "asc" ? (
+                              <ArrowUp className="size-3" />
+                            ) : (
+                              <ArrowDown className="size-3" />
+                            )
+                          ) : (
+                            <ChevronsUpDown className="size-3 opacity-40" />
+                          )}
+                        </button>
+                      </TableHead>
+                    );
+                  })}
                   {extraColumns.map((c) => (
                     <TableHead key={c.key}>{c.label}</TableHead>
                   ))}
@@ -385,12 +535,12 @@ export function CrudSection({
               </TableBody>
             </Table>
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* Create / edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {editing
@@ -402,117 +552,34 @@ export function CrudSection({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
-            {schema.fields.map((f) => {
-              if (
-                f.showWhen &&
-                String(form[f.showWhen.field] ?? "") !== f.showWhen.equals
-              ) {
-                return null;
-              }
-              return (
-                <div key={f.key} className="space-y-1.5">
-                  <Label htmlFor={f.key}>
-                    {f.label}
-                    {f.required ? (
-                      <span className="ml-0.5 text-destructive">*</span>
-                    ) : null}
-                  </Label>
-                  {f.type === "select" ? (
-                    <Select
-                      value={form[f.key] ? String(form[f.key]) : undefined}
-                      onValueChange={(v) => setField(f.key, v)}
-                    >
-                      <SelectTrigger id={f.key}>
-                        <SelectValue
-                          placeholder={
-                            f.dynamicSource && clientOptions.length === 0
-                              ? "Creá un cliente primero"
-                              : "Elegí una opción"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(f.dynamicSource ? clientOptions : f.options)?.map(
-                          (o) => (
-                            <SelectItem key={o.value} value={o.value}>
-                              {o.value}
-                            </SelectItem>
-                          ),
-                        )}
-                      </SelectContent>
-                    </Select>
-                  ) : f.type === "textarea" ? (
-                    <Textarea
-                      id={f.key}
-                      value={(form[f.key] as string) ?? ""}
-                      placeholder={f.placeholder}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                      rows={3}
-                    />
-                  ) : f.type === "secret" ? (
-                    <Textarea
-                      id={f.key}
-                      value={(form[f.key] as string) ?? ""}
-                      placeholder={f.placeholder}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                      rows={2}
-                      className="font-mono text-xs"
-                    />
-                  ) : f.type === "date" && f.reviewCycle ? (
-                    <div className="flex gap-2">
-                      <Input
-                        id={f.key}
-                        type="date"
-                        value={(form[f.key] as string | undefined) ?? ""}
-                        onChange={(e) => setField(f.key, e.target.value)}
-                      />
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() =>
-                          setField(
-                            f.key,
-                            addMonths(form[f.key] as string, f.reviewCycle!),
-                          )
-                        }
-                      >
-                        +{f.reviewCycle} meses
-                      </Button>
-                    </div>
-                  ) : (
-                    <Input
-                      id={f.key}
-                      type={
-                        f.type === "currency" || f.type === "number"
-                          ? "number"
-                          : f.type === "date"
-                            ? "date"
-                            : "text"
-                      }
-                      value={(form[f.key] as string | number | undefined) ?? ""}
-                      placeholder={f.placeholder}
-                      onChange={(e) => setField(f.key, e.target.value)}
-                    />
-                  )}
-                  {f.helpText ? (
-                    <p className="text-xs text-muted-foreground">
-                      {f.helpText}
-                    </p>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
+            }}
+          >
+            <div className="py-2">
+              <FormFields
+                fields={schema.fields}
+                form={form}
+                onChange={setField}
+                clientOptions={clientOptions}
+              />
+            </div>
 
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setDialogOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Guardando…" : "Guardar"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="mt-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Guardando…" : "Guardar"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 

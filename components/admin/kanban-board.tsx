@@ -14,9 +14,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -42,6 +39,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -50,6 +57,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { MemberAvatar } from "@/components/admin/member-avatar";
+import { FormFields, type FormState } from "@/components/admin/form-fields";
 import { useCollection, type DocRecord } from "@/lib/admin/use-collection";
 import { TAREAS_SCHEMA, TAREAS_ESTADOS } from "@/lib/admin/schemas";
 import { MEMBERS } from "@/lib/admin/members";
@@ -57,12 +65,9 @@ import { colorForOption, OPTION_COLOR_CLASSES } from "@/lib/admin/colors";
 import { dueInfo, formatDate } from "@/lib/admin/format";
 import { useNotificationsContext } from "@/lib/admin/notifications-context";
 
-type FormState = Record<string, string | undefined>;
-
 const PRIORIDAD_FIELD = TAREAS_SCHEMA.fields.find(
   (f) => f.key === "prioridad",
 )!;
-const ASIGNADO_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "asignado")!;
 const TIPO_FIELD = TAREAS_SCHEMA.fields.find((f) => f.key === "tipo")!;
 
 function TaskCard({
@@ -177,6 +182,19 @@ export function KanbanBoard() {
   const [editing, setEditing] = useState<DocRecord | null>(null);
   const [form, setForm] = useState<FormState>({});
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DocRecord | null>(null);
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    try {
+      await remove(deleteTarget.id);
+      toast.success("Tarea eliminada");
+    } catch {
+      toast.error("No se pudo eliminar");
+    } finally {
+      setDeleteTarget(null);
+    }
+  }
 
   const { existingIds } = useNotificationsContext();
 
@@ -209,6 +227,10 @@ export function KanbanBoard() {
       ),
     [visible],
   );
+
+  function setField(key: string, value: string | number | undefined) {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }
 
   function openCreate(estado?: string) {
     setEditing(null);
@@ -445,7 +467,7 @@ export function KanbanBoard() {
                     key={task.id}
                     task={task}
                     onEdit={() => openEdit(task)}
-                    onDelete={() => remove(task.id)}
+                    onDelete={() => setDeleteTarget(task)}
                     onMove={(estado) => move(task.id, estado)}
                   />
                 ))}
@@ -576,7 +598,7 @@ export function KanbanBoard() {
                             variant="ghost"
                             size="icon"
                             className="size-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => remove(t.id)}
+                            onClick={() => setDeleteTarget(t)}
                           >
                             <Trash2 className="size-4" />
                           </Button>
@@ -593,7 +615,7 @@ export function KanbanBoard() {
 
       {/* Dialog crear/editar */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {editing ? "Editar tarea" : "Nueva tarea"}
@@ -602,160 +624,60 @@ export function KanbanBoard() {
               Formulario de tarea
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="tarea">
-                Tarea <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="tarea"
-                value={form.tarea ?? ""}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, tarea: e.target.value }))
-                }
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
+            }}
+          >
+            <div className="py-2">
+              <FormFields
+                fields={TAREAS_SCHEMA.fields}
+                form={form as FormState}
+                onChange={setField}
+                clientOptions={clienteOptions.map((v) => ({ value: v }))}
               />
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Cliente</Label>
-                <Select
-                  value={form.cliente}
-                  onValueChange={(v) => setForm((p) => ({ ...p, cliente: v }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={
-                        clienteOptions.length
-                          ? "Elegí"
-                          : "Creá un cliente primero"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clienteOptions.map((name) => (
-                      <SelectItem key={name} value={name}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Tipo</Label>
-                <Select
-                  value={form.tipo}
-                  onValueChange={(v) => setForm((p) => ({ ...p, tipo: v }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elegí" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIPO_FIELD.options?.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Asignado a</Label>
-                <Select
-                  value={form.asignado}
-                  onValueChange={(v) => setForm((p) => ({ ...p, asignado: v }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elegí" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ASIGNADO_FIELD.options?.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Prioridad</Label>
-                <Select
-                  value={form.prioridad}
-                  onValueChange={(v) =>
-                    setForm((p) => ({ ...p, prioridad: v }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elegí" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PRIORIDAD_FIELD.options?.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Estado</Label>
-                <Select
-                  value={form.estado}
-                  onValueChange={(v) => setForm((p) => ({ ...p, estado: v }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Elegí" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TAREAS_ESTADOS.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.value}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="vence">Vence</Label>
-                <Input
-                  id="vence"
-                  type="date"
-                  value={form.vence ?? ""}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, vence: e.target.value }))
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="notas">Notas</Label>
-              <Textarea
-                id="notas"
-                rows={3}
-                value={form.notas ?? ""}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, notas: e.target.value }))
-                }
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setDialogOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Guardando…" : "Guardar"}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="mt-4">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Guardando…" : "Guardar"}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
+
+      {/* Confirmar borrado */}
+      <AlertDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar esta tarea?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget ? `"${String(deleteTarget.tarea)}". ` : ""}
+              Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

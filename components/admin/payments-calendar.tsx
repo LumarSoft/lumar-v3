@@ -380,75 +380,92 @@ export function PaymentsCalendar() {
               Evento puntual del calendario
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-titulo">Título</Label>
-              <Input
-                id="ev-titulo"
-                value={evForm.titulo}
-                placeholder="Ej: Reunión con cliente X"
-                onChange={(e) =>
-                  setEvForm((f) => ({ ...f, titulo: e.target.value }))
-                }
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveEvent();
+            }}
+          >
+            <div className="space-y-4 py-2">
               <div className="space-y-1.5">
-                <Label htmlFor="ev-fecha">Fecha</Label>
+                <Label htmlFor="ev-titulo">Título</Label>
                 <Input
-                  id="ev-fecha"
-                  type="date"
-                  value={evForm.fecha}
+                  id="ev-titulo"
+                  value={evForm.titulo}
+                  placeholder="Ej: Reunión con cliente X"
+                  autoFocus
                   onChange={(e) =>
-                    setEvForm((f) => ({ ...f, fecha: e.target.value }))
+                    setEvForm((f) => ({ ...f, titulo: e.target.value }))
                   }
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="ev-fecha">Fecha</Label>
+                  <Input
+                    id="ev-fecha"
+                    type="date"
+                    value={evForm.fecha}
+                    onChange={(e) =>
+                      setEvForm((f) => ({ ...f, fecha: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="ev-hora">Hora</Label>
+                  <Input
+                    id="ev-hora"
+                    type="time"
+                    value={evForm.hora}
+                    onChange={(e) =>
+                      setEvForm((f) => ({ ...f, hora: e.target.value }))
+                    }
+                  />
+                </div>
+              </div>
               <div className="space-y-1.5">
-                <Label htmlFor="ev-hora">Hora</Label>
-                <Input
-                  id="ev-hora"
-                  type="time"
-                  value={evForm.hora}
+                <Label htmlFor="ev-notas">Notas</Label>
+                <Textarea
+                  id="ev-notas"
+                  rows={2}
+                  value={evForm.notas}
                   onChange={(e) =>
-                    setEvForm((f) => ({ ...f, hora: e.target.value }))
+                    setEvForm((f) => ({ ...f, notas: e.target.value }))
                   }
                 />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-notas">Notas</Label>
-              <Textarea
-                id="ev-notas"
-                rows={2}
-                value={evForm.notas}
-                onChange={(e) =>
-                  setEvForm((f) => ({ ...f, notas: e.target.value }))
-                }
-              />
-            </div>
-          </div>
-          <DialogFooter className="sm:justify-between">
-            {editingId ? (
-              <Button
-                variant="ghost"
-                className="text-destructive hover:text-destructive"
-                onClick={deleteEvent}
-              >
-                Eliminar
-              </Button>
-            ) : (
-              <span />
-            )}
-            <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setEventOpen(false)}>
-                Cancelar
-              </Button>
-              <Button onClick={saveEvent} disabled={saving}>
-                {saving ? "Guardando…" : editingId ? "Guardar" : "Crear evento"}
-              </Button>
-            </div>
-          </DialogFooter>
+            <DialogFooter className="mt-4 sm:justify-between">
+              {editingId ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  onClick={deleteEvent}
+                >
+                  Eliminar
+                </Button>
+              ) : (
+                <span />
+              )}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setEventOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving
+                    ? "Guardando…"
+                    : editingId
+                      ? "Guardar"
+                      : "Crear evento"}
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
