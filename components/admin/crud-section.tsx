@@ -224,8 +224,7 @@ export function CrudSection({
 
     if (sortState) {
       const field = schema.fields.find((f) => f.key === sortState.key);
-      const numeric =
-        field?.type === "currency" || field?.type === "number";
+      const numeric = field?.type === "currency" || field?.type === "number";
       rows = [...rows].sort((a, b) => {
         const av = a[sortState.key];
         const bv = b[sortState.key];
@@ -243,7 +242,15 @@ export function CrudSection({
       rows = [...rows].sort(sortRows);
     }
     return rows;
-  }, [data, filter, search, sortState, schema.filterKey, schema.fields, sortRows]);
+  }, [
+    data,
+    filter,
+    search,
+    sortState,
+    schema.filterKey,
+    schema.fields,
+    sortRows,
+  ]);
 
   function openCreate() {
     setEditing(null);
@@ -478,7 +485,9 @@ export function CrudSection({
                           onClick={() => toggleSort(f.key)}
                           className={cn(
                             "-ml-1 inline-flex items-center gap-1 rounded px-1 py-0.5 transition-colors hover:text-foreground",
-                            sorted ? "text-foreground" : "text-muted-foreground",
+                            sorted
+                              ? "text-foreground"
+                              : "text-muted-foreground",
                           )}
                         >
                           {f.label}
@@ -540,12 +549,12 @@ export function CrudSection({
 
       {/* Create / edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {editing
                 ? `Editar ${schema.itemNoun}`
-                : `Nuevo ${schema.itemNoun}`}
+                : `${schema.itemGender === "f" ? "Nueva" : "Nuevo"} ${schema.itemNoun}`}
             </DialogTitle>
             <DialogDescription className="sr-only">
               Formulario de {schema.itemNoun}
@@ -558,7 +567,21 @@ export function CrudSection({
               handleSave();
             }}
           >
-            <div className="py-2">
+            {/* `data-lenis-prevent`: si Lenis vuelve a envolver esta ruta, le
+                dice que no intercepte la rueda acá adentro.
+                `scrollbarWidth/Color`: fuerza una barra visible siempre; en
+                macOS las flotantes se esconden y no se nota que sigue el
+                contenido. El 12rem descuenta título, footer y padding. */}
+            <div
+              data-lenis-prevent
+              className="-mx-6 px-6 py-2"
+              style={{
+                maxHeight: "max(180px, calc(85vh - 12rem))",
+                overflowY: "auto",
+                scrollbarWidth: "thin",
+                scrollbarColor: "var(--muted-foreground) transparent",
+              }}
+            >
               <FormFields
                 fields={schema.fields}
                 form={form}

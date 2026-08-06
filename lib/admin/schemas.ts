@@ -30,6 +30,11 @@ export interface FieldDef {
   reviewCycle?: number;
   /** For the form: only show this field when another field equals a value. */
   showWhen?: { field: string; equals: string };
+  /**
+   * Campo que escribe el sistema, no la persona (ej: CAE devuelto por ARCA).
+   * Se muestra en la tabla pero no aparece en el formulario de alta/edición.
+   */
+  readOnly?: boolean;
 }
 
 export interface SectionSchema {
@@ -39,6 +44,8 @@ export interface SectionSchema {
   description?: string;
   /** Singular noun for buttons, e.g. "cliente". */
   itemNoun: string;
+  /** Género del sustantivo, para concordar el artículo ("Nueva factura"). Default: masculino. */
+  itemGender?: "m" | "f";
   /** The field used as the row title (first column, required). */
   titleKey: string;
   fields: FieldDef[];
@@ -108,6 +115,67 @@ export const CLIENTES_SCHEMA: SectionSchema = {
         { value: "Riesgo", color: "red" },
       ],
     },
+    // ── Datos fiscales (los usa Facturas para emitir en ARCA) ─────────────
+    {
+      key: "razonSocial",
+      label: "Razón social",
+      type: "text",
+      inTable: false,
+      placeholder: "Como figura en ARCA",
+      helpText:
+        "Nombre legal para el PDF. Si está vacío se usa el nombre del cliente.",
+    },
+    {
+      key: "docTipo",
+      label: "Tipo de documento",
+      type: "select",
+      inTable: false,
+      options: [
+        { value: "CUIT", color: "blue" },
+        { value: "DNI", color: "gray" },
+        { value: "Consumidor final", color: "gray" },
+      ],
+      helpText:
+        "Con qué documento se identifica al receptor en el comprobante.",
+    },
+    {
+      key: "docNro",
+      label: "CUIT / DNI",
+      type: "text",
+      placeholder: "20123456789 (sin guiones)",
+      helpText: "Solo números, sin guiones ni puntos.",
+    },
+    {
+      key: "domicilio",
+      label: "Domicilio",
+      type: "text",
+      inTable: false,
+      placeholder: "Moreno 58 - Rosario Norte, Santa Fe",
+      helpText: "Como figura en ARCA. Va en el comprobante.",
+    },
+    {
+      key: "email",
+      label: "Email de facturación",
+      type: "text",
+      inTable: false,
+      placeholder: "administracion@cliente.com",
+      helpText:
+        "A dónde se manda la factura al emitirla. Si está vacío, no se envía mail.",
+    },
+    {
+      key: "condicionIva",
+      label: "Condición IVA",
+      type: "select",
+      inTable: false,
+      options: [
+        { value: "Responsable Inscripto", color: "blue" },
+        { value: "Monotributista", color: "green" },
+        { value: "Exento", color: "purple" },
+        { value: "Consumidor Final", color: "gray" },
+      ],
+      helpText:
+        "Obligatorio en el comprobante desde la RG 5616. Sin esto ARCA rechaza la emisión.",
+    },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],
 };
@@ -164,7 +232,7 @@ export const COBROS_SCHEMA: SectionSchema = {
       placeholder: "2026-06",
       showWhen: { field: "categoria", equals: "Recurrente mensual" },
       helpText:
-        "Mes (AAAA-MM) que todavía se está cobrando. Avanza solo al tocar \"Cobrar\" — tocalo a mano solo para corregir un error.",
+        'Mes (AAAA-MM) que todavía se está cobrando. Avanza solo al tocar "Cobrar" — tocalo a mano solo para corregir un error.',
       inTable: false,
     },
     {
@@ -185,6 +253,161 @@ export const COBROS_SCHEMA: SectionSchema = {
         { value: "USD/Cripto", color: "orange" },
         { value: "Otro", color: "gray" },
       ],
+    },
+    { key: "notas", label: "Notas", type: "textarea", inTable: false },
+  ],
+};
+
+// ── Facturas (emisión electrónica en ARCA) ───────────────────────────────
+// Una fila "Fija" se emite una sola vez. Una "Recurrente mensual" es una
+// plantilla que se emite mes a mes: al emitir, se guarda la instancia
+// histórica y la plantilla avanza al período siguiente (mismo patrón que Cobros).
+export const FACTURAS_SCHEMA: SectionSchema = {
+  collection: "facturas",
+  title: "Facturas",
+  description:
+    "Emisión electrónica contra ARCA. Cargá el borrador, revisalo y tocá EMITIR: se pide el CAE y se descarga el PDF.",
+  itemNoun: "factura",
+  itemGender: "f",
+  titleKey: "concepto",
+  filterKey: "tipo",
+  fields: [
+    {
+      key: "concepto",
+      label: "Concepto",
+      type: "text",
+      required: true,
+      placeholder: "Ej: Desarrollo y mantenimiento web",
+      helpText:
+        "Descripción del servicio. Va en el PDF y en el nombre del archivo.",
+    },
+    {
+      key: "tipo",
+      label: "Tipo",
+      type: "select",
+      options: [
+        { value: "Recurrente mensual", color: "green" },
+        { value: "Fija", color: "blue" },
+      ],
+      helpText:
+        "Recurrente: se emite todos los meses y avanza sola. Fija: se emite una única vez.",
+    },
+    {
+      key: "cliente",
+      label: "Cliente",
+      type: "select",
+      dynamicSource: "clientes",
+      required: true,
+      helpText:
+        "Los datos fiscales (CUIT, condición IVA) se toman de la ficha del cliente.",
+    },
+    { key: "importe", label: "Importe", type: "currency", required: true },
+    {
+      key: "codigo",
+      label: "Código",
+      type: "text",
+      inTable: false,
+      placeholder: "SIST",
+      helpText:
+        "Código interno del servicio. Va en la primera columna del PDF.",
+    },
+    {
+      key: "condicionVenta",
+      label: "Condición de venta",
+      type: "select",
+      inTable: false,
+      options: [
+        { value: "Transferencia Bancaria", color: "blue" },
+        { value: "Contado", color: "green" },
+        { value: "Cuenta Corriente", color: "purple" },
+        { value: "Otra", color: "gray" },
+      ],
+      helpText: "Vacío = Transferencia Bancaria.",
+    },
+    {
+      key: "fechaEmision",
+      label: "Fecha emisión",
+      type: "date",
+      helpText:
+        "Vacío: las recurrentes toman el primer día hábil del mes del período (saltea fines de semana y feriados); las fijas, hoy. ARCA acepta ±10 días respecto de hoy.",
+    },
+    {
+      key: "servicioDesde",
+      label: "Servicio desde",
+      type: "date",
+      helpText: "Vacío = primer día del período.",
+    },
+    {
+      key: "servicioHasta",
+      label: "Servicio hasta",
+      type: "date",
+      helpText: "Vacío = último día del período.",
+    },
+    {
+      key: "vtoPago",
+      label: "Vto. de pago",
+      type: "date",
+      inTable: false,
+      helpText:
+        "Obligatorio para servicios. Vacío = 5 días hábiles después de la emisión.",
+    },
+    {
+      key: "periodo",
+      label: "Período a emitir",
+      type: "text",
+      placeholder: "2026-08",
+      inTable: false,
+      showWhen: { field: "tipo", equals: "Recurrente mensual" },
+      helpText:
+        "Mes (AAAA-MM) todavía sin emitir. Avanza solo al tocar EMITIR — editalo a mano solo para corregir.",
+    },
+    {
+      key: "estado",
+      label: "Estado",
+      type: "select",
+      readOnly: true,
+      options: [
+        { value: "Borrador", color: "gray" },
+        { value: "Emitida", color: "green" },
+        { value: "Error", color: "red" },
+      ],
+    },
+    // ── Devueltos por ARCA. Los escribe el sistema, no se editan a mano ──
+    { key: "cae", label: "CAE", type: "text", readOnly: true, inTable: false },
+    {
+      key: "caeVto",
+      label: "Vto. CAE",
+      type: "date",
+      readOnly: true,
+      inTable: false,
+    },
+    {
+      key: "ptoVta",
+      label: "Pto. venta",
+      type: "number",
+      readOnly: true,
+      inTable: false,
+    },
+    {
+      key: "cbteNro",
+      label: "Nro. comprobante",
+      type: "number",
+      readOnly: true,
+      inTable: false,
+    },
+    {
+      key: "cbteTipo",
+      label: "Tipo comprobante",
+      type: "number",
+      readOnly: true,
+      inTable: false,
+    },
+    {
+      key: "ambiente",
+      label: "Ambiente",
+      type: "text",
+      readOnly: true,
+      inTable: false,
     },
     { key: "notas", label: "Notas", type: "textarea", inTable: false },
   ],

@@ -3,6 +3,7 @@ import {
   Users,
   KanbanSquare,
   Receipt,
+  FileText,
   CalendarClock,
   CalendarDays,
   Activity,
@@ -40,6 +41,7 @@ export const NAV_GROUPS: NavGroup[] = [
     title: "Finanzas",
     items: [
       { href: "/admin/cobros", label: "Cobros", icon: Receipt },
+      { href: "/admin/facturas", label: "Facturas", icon: FileText },
       {
         href: "/admin/vencimientos",
         label: "Vencimientos",

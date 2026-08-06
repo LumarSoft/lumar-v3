@@ -41,13 +41,17 @@ export function FormFields({
   // Primer campo visible → autofocus al abrir el formulario.
   const firstVisibleKey = fields.find(
     (f) =>
-      !f.showWhen ||
-      String(form[f.showWhen.field] ?? "") === f.showWhen.equals,
+      !f.readOnly &&
+      (!f.showWhen ||
+        String(form[f.showWhen.field] ?? "") === f.showWhen.equals),
   )?.key;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {fields.map((f) => {
+        // Campos que escribe el sistema (ej: el CAE que devuelve ARCA): se ven
+        // en la tabla pero no se editan a mano.
+        if (f.readOnly) return null;
         if (
           f.showWhen &&
           String(form[f.showWhen.field] ?? "") !== f.showWhen.equals
@@ -122,7 +126,10 @@ export function FormFields({
                   variant="secondary"
                   className="shrink-0"
                   onClick={() =>
-                    onChange(f.key, addMonths(form[f.key] as string, f.reviewCycle!))
+                    onChange(
+                      f.key,
+                      addMonths(form[f.key] as string, f.reviewCycle!),
+                    )
                   }
                 >
                   +{f.reviewCycle} meses
