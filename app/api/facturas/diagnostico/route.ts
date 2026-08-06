@@ -20,6 +20,7 @@ import {
   explicarFault,
   inspeccionarCertificado,
 } from "@/lib/arca/diagnostico";
+import { diagnosticoViaGateway } from "@/lib/arca/gateway";
 import { NoAutorizado, requireAdmin } from "@/lib/server/require-admin";
 
 export const runtime = "nodejs";
@@ -74,6 +75,22 @@ export async function GET(request: Request) {
       },
       { status: 500 },
     );
+  }
+
+  // Con pasarela, el que habla con ARCA es el VPS: le pedimos su diagnóstico
+  // en vez de intentar desde acá (que es justamente lo que no funciona).
+  if (cfg.usaGateway) {
+    pasos.push({
+      paso: "Modo de emisión",
+      ok: true,
+      detalle: {
+        modo: "pasarela (VPS)",
+        url: cfg.gatewayUrl,
+        nota: "El CAE lo pide el VPS. El certificado vive allá, no en Vercel.",
+      },
+    });
+    pasos.push(...(await diagnosticoViaGateway(cfg)));
+    return NextResponse.json({ ok: pasos.every((p) => p.ok), pasos });
   }
 
   const wsfe = new WsfeClient(cfg.produccion);

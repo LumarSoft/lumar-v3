@@ -86,6 +86,45 @@ el envío de facturas por mail las reusa.
 > dominio verificado en Resend. `onboarding@resend.dev` solo entrega a tu propia
 > casilla.
 
+## Dónde se emite: en tu máquina, no en Vercel
+
+**ARCA no acepta conexiones desde los servidores de Vercel.** Lo comprobamos:
+desde ahí `wsaa.afip.gov.ar` responde pero `servicios1.afip.gov.ar` tira
+`fetch failed`. Probamos la región gru1 (São Paulo), el dominio alternativo
+`afip.gob.ar` y una pasarela en el VPS de Fly Spirits: ninguna funcionó, porque
+ese VPS tampoco llega. ARCA atiende de forma errática a IPs no argentinas.
+
+Así que la emisión se hace **con el panel corriendo en tu máquina**:
+
+```bash
+cd ~/Desktop/Lumar/lumar-v3
+pnpm dev
+# → http://localhost:3000/admin/facturas
+```
+
+Esto no es un workaround incómodo: emitís a mano una vez por mes revisando los
+importes, y el certificado nunca sale de tu equipo.
+
+**Qué cambia y qué no:**
+
+| | En Vercel | En local |
+|---|---|---|
+| Ver y cargar facturas | ✅ | ✅ |
+| Clientes, cobros, todo el panel | ✅ | ✅ |
+| **Emitir (pedir el CAE)** | ❌ | ✅ |
+| PDF y envío por mail | — | ✅ |
+
+Firestore es el mismo en los dos casos, así que los datos son idénticos. Lo que
+cargues desde Vercel lo ves en local y viceversa.
+
+Por eso **el certificado va solo en `.env.local`, no en Vercel**. Si intentás
+emitir desde el deploy, el panel te avisa con un mensaje claro en vez de fallar
+de forma rara.
+
+> Si algún día conseguís un VPS con IP argentina, ya está listo el camino: hay
+> una pasarela en `flyspirits-api/src/lumarsoft/` y el panel la usa solo con
+> setear `ARCA_GATEWAY_URL` y `ARCA_GATEWAY_TOKEN`.
+
 ## 6. Probar la conexión (antes de emitir nada)
 
 `/admin/facturas` → botón **"Probar conexión con ARCA"**. Es de solo lectura, no

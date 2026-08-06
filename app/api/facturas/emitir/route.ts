@@ -7,6 +7,7 @@ import {
   emitirFacturaC,
   type DatosEmision,
 } from "@/lib/arca/emitir";
+import { emitirViaGateway } from "@/lib/arca/gateway";
 import { renderFacturaPdf } from "@/lib/facturas/pdf";
 import { adminDb } from "@/lib/server/firebase-admin";
 import { NoAutorizado, requireAdmin } from "@/lib/server/require-admin";
@@ -83,10 +84,13 @@ export async function POST(request: Request) {
     );
   }
 
-  // 4. La emisión propiamente dicha.
+  // 4. La emisión propiamente dicha. Si hay pasarela configurada, el CAE lo
+  //    pide el VPS: ARCA no atiende bien a las IPs de Vercel.
   let resultado;
   try {
-    resultado = await emitirFacturaC(cfg, body);
+    resultado = cfg.usaGateway
+      ? await emitirViaGateway(cfg, body)
+      : await emitirFacturaC(cfg, body);
   } catch (err) {
     await lockRef.set({ estado: "error", hasta: 0 }, { merge: true });
     if (err instanceof ArcaRechazo) {

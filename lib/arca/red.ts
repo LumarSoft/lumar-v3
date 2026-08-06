@@ -34,6 +34,55 @@ function esArca(url: string): boolean {
   return /\.afip\.(gov|gob)\.ar/i.test(url);
 }
 
+/**
+ * PROBLEMA 3 — el error real queda oculto.
+ *
+ * `fetch` de Node reporta cualquier fallo de red o TLS como "fetch failed" y
+ * mete el motivo en `err.cause`. El SDK hace `new ArcaSoapError(err.message)`,
+ * o sea que descarta el cause: nos quedamos con "fetch failed" pelado y sin
+ * saber si fue DNS, certificado, TLS o un firewall.
+ *
+ * Como ya interceptamos el fetch, le pegamos el motivo al mensaje antes de que
+ * el SDK lo pierda.
+ */
+function conCausa(err: unknown, url: string): Error {
+  const base = err instanceof Error ? err : new Error(String(err));
+  const causa = (base as Error & { cause?: unknown }).cause;
+
+  const detalles: string[] = [];
+  let actual: unknown = causa;
+  // Las causas pueden venir anidadas (AggregateError, por ejemplo).
+  for (let i = 0; i < 4 && actual; i++) {
+    const c = actual as { code?: string; message?: string; cause?: unknown };
+    const txt = [c.code, c.message].filter(Boolean).join(": ");
+    if (txt && !detalles.includes(txt)) detalles.push(txt);
+    if (Array.isArray((actual as { errors?: unknown[] }).errors)) {
+      for (const e of (actual as { errors: unknown[] }).errors) {
+        const ce = e as { code?: string; message?: string };
+        const t = [ce.code, ce.message].filter(Boolean).join(": ");
+        if (t && !detalles.includes(t)) detalles.push(t);
+      }
+    }
+    actual = c.cause;
+  }
+
+  const host = (() => {
+    try {
+      return new URL(url).host;
+    } catch {
+      return url;
+    }
+  })();
+
+  const enriquecido = new Error(
+    detalles.length
+      ? `${base.message} [${host}] — causa: ${detalles.join(" | ")}`
+      : `${base.message} [${host}] — sin causa disponible`,
+  );
+  (enriquecido as Error & { cause?: unknown }).cause = causa;
+  return enriquecido;
+}
+
 export function instalarFixRed(): void {
   const global = globalThis as typeof globalThis & { [MARCA]?: boolean };
   if (global[MARCA]) return;
@@ -51,18 +100,25 @@ export function instalarFixRed(): void {
       destino = url;
     }
 
-    if (!esWsaa(url)) return original(destino, init);
+    let opciones = init;
+    if (esWsaa(url)) {
+      const headers = new Headers(
+        init?.headers ??
+          (typeof input === "object" && "headers" in input
+            ? input.headers
+            : undefined),
+      );
+      if (!headers.has("SOAPAction")) {
+        headers.set("SOAPAction", '""');
+        opciones = { ...init, headers };
+      }
+    }
 
-    const headers = new Headers(
-      init?.headers ??
-        (typeof input === "object" && "headers" in input
-          ? input.headers
-          : undefined),
-    );
-    if (headers.has("SOAPAction")) return original(destino, init);
-
-    headers.set("SOAPAction", '""');
-    return original(destino, { ...init, headers });
+    try {
+      return await original(destino, opciones);
+    } catch (err) {
+      throw conCausa(err, url);
+    }
   };
 
   global[MARCA] = true;
