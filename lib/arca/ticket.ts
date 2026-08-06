@@ -10,10 +10,10 @@ import "server-only";
 import { WsaaClient } from "@ramiidv/arca-facturacion";
 import { adminDb } from "@/lib/server/firebase-admin";
 import type { EmisorConfig } from "@/lib/arca/config";
-import { instalarFixSoapAction } from "@/lib/arca/soapaction-fix";
+import { instalarFixRed } from "@/lib/arca/red";
 
-// El SDK no manda el header SOAPAction y WSAA lo exige. Ver el archivo.
-instalarFixSoapAction();
+// Parches de red para hablar con ARCA desde afuera del país. Ver el archivo.
+instalarFixRed();
 
 const COLECCION = "arca_auth";
 const SERVICIO = "wsfe";

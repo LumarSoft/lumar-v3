@@ -56,6 +56,25 @@ export async function conDetalleWsaa<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
+/**
+ * Traduce errores de red hacia ARCA. El caso típico en Vercel: WSAA responde
+ * pero servicios1 no, porque ARCA atiende de forma errática a IPs no argentinas.
+ */
+export function explicarErrorRed(msg: string): string | null {
+  if (
+    !/fetch failed|ECONNRESET|ETIMEDOUT|ENOTFOUND|socket hang up/i.test(msg)
+  ) {
+    return null;
+  }
+  return (
+    "No se pudo abrir la conexión con ARCA (no es un rechazo: el pedido nunca llegó). " +
+    "Si WSAA funciona y esto falla, casi seguro es la IP del servidor: ARCA atiende " +
+    "de forma errática a direcciones fuera de Argentina. Probá mover la función a la " +
+    "región gru1 (São Paulo) en Vercel, o poné ARCA_USAR_DOMINIO_GOB=true para pegarle " +
+    "a afip.gob.ar en vez de afip.gov.ar. Si persiste, hay que salir por una IP argentina."
+  );
+}
+
 /** Traduce las fallas conocidas de WSAA a algo accionable. */
 export function explicarFault(fault: string): string | null {
   const f = fault.toLowerCase();
@@ -92,7 +111,7 @@ export function explicarFault(fault: string): string | null {
   if (f.includes("no soapaction header")) {
     return (
       "Bug del SDK: no manda el header SOAPAction que WSAA exige. Lo corrige " +
-      "lib/arca/soapaction-fix.ts — si ves esto, ese parche no se está aplicando."
+      "lib/arca/red.ts — si ves esto, ese parche no se está aplicando."
     );
   }
   if (f.includes("computador no autorizado") || f.includes("wsn")) {

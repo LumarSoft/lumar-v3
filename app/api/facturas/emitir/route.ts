@@ -15,6 +15,10 @@ import { nombrePdf } from "@/lib/admin/facturas";
 // firebase-admin y @react-pdf/renderer necesitan Node, no Edge.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// ARCA responde de forma errática a IPs no argentinas: desde iad1 (Washington)
+// `wsaa.afip.gov.ar` contesta pero `servicios1.afip.gov.ar` tira "fetch failed".
+// gru1 (São Paulo) es la región de Vercel más cercana a Argentina.
+export const preferredRegion = "gru1";
 export const maxDuration = 60;
 
 interface Body extends DatosEmision {

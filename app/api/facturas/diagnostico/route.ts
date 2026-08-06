@@ -16,6 +16,7 @@ import {
 import { obtenerAuth } from "@/lib/arca/ticket";
 import {
   conDetalleWsaa,
+  explicarErrorRed,
   explicarFault,
   inspeccionarCertificado,
 } from "@/lib/arca/diagnostico";
@@ -23,6 +24,10 @@ import { NoAutorizado, requireAdmin } from "@/lib/server/require-admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// ARCA responde de forma errática a IPs no argentinas: desde iad1 (Washington)
+// `wsaa.afip.gov.ar` contesta pero `servicios1.afip.gov.ar` tira "fetch failed".
+// gru1 (São Paulo) es la región de Vercel más cercana a Argentina.
+export const preferredRegion = "gru1";
 
 interface Paso {
   paso: string;
@@ -78,10 +83,16 @@ export async function GET(request: Request) {
     const status = await wsfe.serverStatus();
     pasos.push({ paso: "Servidores de ARCA", ok: true, detalle: status });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     pasos.push({
       paso: "Servidores de ARCA",
       ok: false,
-      detalle: err instanceof Error ? err.message : String(err),
+      detalle: {
+        error: msg,
+        ...(explicarErrorRed(msg)
+          ? { queSignifica: explicarErrorRed(msg) }
+          : {}),
+      },
     });
   }
 
@@ -210,7 +221,12 @@ export async function GET(request: Request) {
                 "Esperable en homologación: ARCA no replica ahí el padrón de puntos " +
                 "de venta. No impide emitir. El chequeo que vale es el de abajo.",
             }
-          : msg,
+          : {
+              error: msg,
+              ...(explicarErrorRed(msg)
+                ? { queSignifica: explicarErrorRed(msg) }
+                : {}),
+            },
     });
   }
 
@@ -243,10 +259,12 @@ export async function GET(request: Request) {
       ok: false,
       detalle: {
         error: msg,
-        nota: /11002|empadronado|10016|602/i.test(msg)
-          ? `El punto de venta ${cfg.ptoVta} no está habilitado para Web Services. ` +
-            `Los del facturador en línea no sirven acá. Usá uno de los que lista el paso anterior.`
-          : "No pude consultar el último comprobante.",
+        nota:
+          explicarErrorRed(msg) ??
+          (/11002|empadronado|10016|602/i.test(msg)
+            ? `El punto de venta ${cfg.ptoVta} no está habilitado para Web Services. ` +
+              `Los del facturador en línea no sirven acá. Usá uno de los que lista el paso anterior.`
+            : "No pude consultar el último comprobante."),
       },
     });
   }
