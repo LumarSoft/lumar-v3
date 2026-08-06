@@ -1,5 +1,6 @@
 // Emisión de Factura C (monotributo) contra WSFEv1.
 import "server-only";
+import { X509Certificate } from "node:crypto";
 import { Arca, WsfeClient } from "@ramiidv/arca-facturacion";
 import {
   CBTE_TIPO_FACTURA_C,
@@ -53,6 +54,15 @@ export class ArcaRechazo extends Error {
   }
 }
 
+/** Emisor (CA) de un certificado PEM. "" si no se puede leer. */
+function emisorDelCertificado(pem: string): string {
+  try {
+    return new X509Certificate(pem).issuer;
+  } catch {
+    return "";
+  }
+}
+
 function listar(x: unknown): { Code: number; Msg: string }[] {
   if (!x) return [];
   return Array.isArray(x) ? x : [x as { Code: number; Msg: string }];
@@ -62,6 +72,21 @@ export async function emitirFacturaC(
   cfg: EmisorConfig,
   datos: DatosEmision,
 ): Promise<ResultadoEmision> {
+  // Los certificados de homologación los firma la CA "Computadores Test" y no
+  // sirven en producción. Sin este chequeo, poner ARCA_PRODUCCION=true con el
+  // certificado de pruebas falla con un HTTP 500 opaco de WSAA.
+  if (
+    cfg.produccion &&
+    /computadores test/i.test(emisorDelCertificado(cfg.cert))
+  ) {
+    throw new ArcaRechazo(
+      "El certificado cargado es de homologación y el ambiente está en producción",
+      "Generá el certificado de producción por 'Administración de Certificados Digitales' " +
+        "y vinculalo desde 'Administrador de Relaciones de Clave Fiscal'. " +
+        "Mientras tanto, poné ARCA_PRODUCCION=false para seguir emitiendo de prueba.",
+    );
+  }
+
   const docTipo = docTipoCodigo(datos.receptor.docTipo);
   const condicionIva = condicionIvaCodigo(datos.receptor.condicionIva);
 

@@ -88,16 +88,25 @@ export async function GET(request: Request) {
   // 3. El certificado en sí, sin hablar con ARCA todavía.
   try {
     const info = inspeccionarCertificado(cfg.cert, cfg.key);
+    // Los de homologación los firma la CA "Computadores Test".
+    const esDePrueba = /computadores test/i.test(info.emisor);
+    const ambienteCruzado = esDePrueba === cfg.produccion;
+
     pasos.push({
       paso: "Certificado (lectura local)",
-      ok: info.vigente && info.claveCoincide,
+      ok: info.vigente && info.claveCoincide && !ambienteCruzado,
       detalle: {
         ...info,
+        tipo: esDePrueba ? "homologación (prueba)" : "producción",
         nota: !info.claveCoincide
           ? "La clave privada NO corresponde a este certificado. Revisá que ARCA_KEY_BASE64 sea el .key con el que generaste el .csr."
           : !info.vigente
             ? "El certificado está fuera de su período de validez."
-            : "Certificado vigente y clave privada correcta.",
+            : ambienteCruzado
+              ? esDePrueba
+                ? "Certificado de HOMOLOGACIÓN con ARCA_PRODUCCION=true. No va a funcionar: generá el de producción por 'Administración de Certificados Digitales'."
+                : "Certificado de PRODUCCIÓN con ARCA_PRODUCCION=false. Para emitir de prueba hace falta el de homologación (WSASS)."
+              : "Certificado vigente, clave privada correcta y acorde al ambiente.",
       },
     });
   } catch (err) {
