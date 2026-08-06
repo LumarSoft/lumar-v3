@@ -86,44 +86,42 @@ el envío de facturas por mail las reusa.
 > dominio verificado en Resend. `onboarding@resend.dev` solo entrega a tu propia
 > casilla.
 
-## Dónde se emite: en tu máquina, no en Vercel
+## Cómo llegamos a ARCA: pasarela en el VPS
 
-**ARCA no acepta conexiones desde los servidores de Vercel.** Lo comprobamos:
-desde ahí `wsaa.afip.gov.ar` responde pero `servicios1.afip.gov.ar` tira
-`fetch failed`. Probamos la región gru1 (São Paulo), el dominio alternativo
-`afip.gob.ar` y una pasarela en el VPS de Fly Spirits: ninguna funcionó, porque
-ese VPS tampoco llega. ARCA atiende de forma errática a IPs no argentinas.
+**Desde los servidores de Vercel no se puede.** `wsaa.afip.gov.ar` responde
+pero `servicios1.afip.gov.ar` no. Probamos la región gru1 (São Paulo) y el
+dominio alternativo `afip.gob.ar`: ninguna alcanzó.
 
-Así que la emisión se hace **con el panel corriendo en tu máquina**:
+Desde el VPS de `apis.flyspirits.com.ar` sí se llega (verificado con Node:
+`HTTP 200`). Así que ese servidor oficia de pasarela.
 
-```bash
-cd ~/Desktop/Lumar/lumar-v3
-pnpm dev
-# → http://localhost:3000/admin/facturas
+```
+Panel en Vercel  ──POST /api/lumarsoft/emitir──▶  VPS  ──SOAP──▶  ARCA
+      ▲                                                              │
+      └──────────────── CAE, vencimiento, nro ────────────────────────┘
 ```
 
-Esto no es un workaround incómodo: emitís a mano una vez por mes revisando los
-importes, y el certificado nunca sale de tu equipo.
+El panel manda los datos de la factura, el VPS pide el CAE y lo devuelve. El
+PDF, Firestore y el mail siguen en Vercel: son la parte que no necesita hablar
+con ARCA.
 
-**Qué cambia y qué no:**
+**El certificado vive solo en el VPS.** Sacalo de Vercel — ahí no sirve, y es
+una superficie de exposición menos.
 
-| | En Vercel | En local |
-|---|---|---|
-| Ver y cargar facturas | ✅ | ✅ |
-| Clientes, cobros, todo el panel | ✅ | ✅ |
-| **Emitir (pedir el CAE)** | ❌ | ✅ |
-| PDF y envío por mail | — | ✅ |
+Código de la pasarela: `flyspirits-api/src/lumarsoft/`. Está aislado del resto
+de esa API y no comparte nada con la facturación de Fly Spirits.
 
-Firestore es el mismo en los dos casos, así que los datos son idénticos. Lo que
-cargues desde Vercel lo ves en local y viceversa.
+### Un detalle de diagnóstico que costó caro
 
-Por eso **el certificado va solo en `.env.local`, no en Vercel**. Si intentás
-emitir desde el deploy, el panel te avisa con un mensaje claro en vez de fallar
-de forma rara.
+`curl` desde el VPS fallaba con `dh key too small`: los servidores de ARCA usan
+Diffie-Hellman de 1024 bits y OpenSSL 3 con las crypto-policies de RHEL lo
+rechaza. **Pero Node trae su propio OpenSSL y no hereda esas políticas**, así
+que el mismo pedido desde Node funciona. Si vas a probar conectividad, hacelo
+con Node, no con curl.
 
-> Si algún día conseguís un VPS con IP argentina, ya está listo el camino: hay
-> una pasarela en `flyspirits-api/src/lumarsoft/` y el panel la usa solo con
-> setear `ARCA_GATEWAY_URL` y `ARCA_GATEWAY_TOKEN`.
+Aparte, `fetch` reporta todo como `fetch failed` y guarda el motivo en
+`err.cause`, que el SDK descartaba. `lib/arca/red.ts` ahora lo rescata antes de
+que se pierda.
 
 ## 6. Probar la conexión (antes de emitir nada)
 
@@ -187,8 +185,11 @@ La clave privada es la misma; solo cambia el certificado. Después:
 2. Reiniciar y correr **"Probar conexión con ARCA"**: el paso del certificado
    debe decir `tipo: producción` y quedar en verde. Si sigue diciendo
    "Computadores Test", el certificado cargado es el de pruebas.
-3. Cargar todas las variables `ARCA_*` en **Vercel → Settings → Environment
-   Variables**
+3. Cargar en **Vercel → Settings → Environment Variables**:
+   - Todas las `ARCA_*` de datos (CUIT, razón social, domicilio, etc.)
+   - `ARCA_GATEWAY_URL=https://apis.flyspirits.com.ar/api/lumarsoft`
+   - `ARCA_GATEWAY_TOKEN=<el mismo LUMARSOFT_API_TOKEN del VPS>`
+   - **Sin** `ARCA_CERT_BASE64` ni `ARCA_KEY_BASE64`: el certificado va en el VPS
 
 Con un solo computador fiscal alcanza para todos los webservices; no hace falta
 uno por servicio.

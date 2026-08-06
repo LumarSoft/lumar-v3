@@ -57,8 +57,8 @@ export async function conDetalleWsaa<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 /**
- * Traduce errores de red hacia ARCA. El caso típico en Vercel: WSAA responde
- * pero servicios1 no, porque ARCA atiende de forma errática a IPs no argentinas.
+ * Traduce errores de red hacia ARCA. El caso típico en Vercel es el DH de 1024
+ * bits que OpenSSL rechaza por default; ver lib/arca/red.ts.
  */
 export function explicarErrorRed(msg: string): string | null {
   if (
@@ -66,12 +66,17 @@ export function explicarErrorRed(msg: string): string | null {
   ) {
     return null;
   }
+  if (/DH_KEY_TOO_SMALL|dh key too small/i.test(msg)) {
+    return (
+      "Los servidores de ARCA negocian Diffie-Hellman con una clave de 1024 bits y " +
+      "este runtime la rechaza (OpenSSL SECLEVEL=2). Lo resuelve lib/arca/red.ts, " +
+      "que hace los pedidos a ARCA con node:https y SECLEVEL=1. Si ves esto, ese " +
+      "parche no se está aplicando."
+    );
+  }
   return (
-    "No se pudo abrir la conexión con ARCA (no es un rechazo: el pedido nunca llegó). " +
-    "Si WSAA funciona y esto falla, casi seguro es la IP del servidor: ARCA atiende " +
-    "de forma errática a direcciones fuera de Argentina. Probá mover la función a la " +
-    "región gru1 (São Paulo) en Vercel, o poné ARCA_USAR_DOMINIO_GOB=true para pegarle " +
-    "a afip.gob.ar en vez de afip.gov.ar. Si persiste, hay que salir por una IP argentina."
+    "No se pudo abrir la conexión con ARCA: el pedido nunca llegó. Puede ser DNS, " +
+    "TLS o un firewall — el código de la causa que aparece arriba lo dice."
   );
 }
 
