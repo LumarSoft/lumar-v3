@@ -86,42 +86,25 @@ el envío de facturas por mail las reusa.
 > dominio verificado en Resend. `onboarding@resend.dev` solo entrega a tu propia
 > casilla.
 
-## Cómo llegamos a ARCA: pasarela en el VPS
+## Por qué ARCA no anda "de fábrica" desde Vercel
 
-**Desde los servidores de Vercel no se puede.** `wsaa.afip.gov.ar` responde
-pero `servicios1.afip.gov.ar` no. Probamos la región gru1 (São Paulo) y el
-dominio alternativo `afip.gob.ar`: ninguna alcanzó.
+Los servidores de ARCA negocian TLS con una clave Diffie-Hellman de **1024
+bits**. OpenSSL 3 la rechaza a partir de `SECLEVEL=2`, que es el default del
+runtime de Vercel. El síntoma es `ERR_SSL_DH_KEY_TOO_SMALL`, y llega disfrazado
+de `fetch failed` porque `fetch` guarda el motivo en `err.cause` y el SDK lo
+descarta.
 
-Desde el VPS de `apis.flyspirits.com.ar` sí se llega (verificado con Node:
-`HTTP 200`). Así que ese servidor oficia de pasarela.
+`lib/arca/red.ts` lo resuelve: los pedidos a ARCA salen por `node:https` con
+`ciphers: DEFAULT@SECLEVEL=1`. Está **acotado por host** — solo `*.afip.gov.ar`
+y `*.afip.gob.ar`. Firestore, Resend y todo lo demás siguen con TLS estricto.
 
-```
-Panel en Vercel  ──POST /api/lumarsoft/emitir──▶  VPS  ──SOAP──▶  ARCA
-      ▲                                                              │
-      └──────────────── CAE, vencimiento, nro ────────────────────────┘
-```
+Ese mismo archivo arregla otras dos cosas: agrega el header `SOAPAction` que el
+SDK omite (y sin el cual WSAA responde 500), y rescata la causa real de los
+errores de red antes de que el SDK la pierda.
 
-El panel manda los datos de la factura, el VPS pide el CAE y lo devuelve. El
-PDF, Firestore y el mail siguen en Vercel: son la parte que no necesita hablar
-con ARCA.
-
-**El certificado vive solo en el VPS.** Sacalo de Vercel — ahí no sirve, y es
-una superficie de exposición menos.
-
-Código de la pasarela: `flyspirits-api/src/lumarsoft/`. Está aislado del resto
-de esa API y no comparte nada con la facturación de Fly Spirits.
-
-### Un detalle de diagnóstico que costó caro
-
-`curl` desde el VPS fallaba con `dh key too small`: los servidores de ARCA usan
-Diffie-Hellman de 1024 bits y OpenSSL 3 con las crypto-policies de RHEL lo
-rechaza. **Pero Node trae su propio OpenSSL y no hereda esas políticas**, así
-que el mismo pedido desde Node funciona. Si vas a probar conectividad, hacelo
-con Node, no con curl.
-
-Aparte, `fetch` reporta todo como `fetch failed` y guarda el motivo en
-`err.cause`, que el SDK descartaba. `lib/arca/red.ts` ahora lo rescata antes de
-que se pierda.
+> **Si vas a diagnosticar conectividad, usá Node, no `curl`.** En RHEL y
+> derivados, `curl` usa el OpenSSL del sistema con crypto-policies endurecidas y
+> falla con `dh key too small` aunque Node en la misma máquina funcione.
 
 ## 6. Probar la conexión (antes de emitir nada)
 
@@ -185,11 +168,8 @@ La clave privada es la misma; solo cambia el certificado. Después:
 2. Reiniciar y correr **"Probar conexión con ARCA"**: el paso del certificado
    debe decir `tipo: producción` y quedar en verde. Si sigue diciendo
    "Computadores Test", el certificado cargado es el de pruebas.
-3. Cargar en **Vercel → Settings → Environment Variables**:
-   - Todas las `ARCA_*` de datos (CUIT, razón social, domicilio, etc.)
-   - `ARCA_GATEWAY_URL=https://apis.flyspirits.com.ar/api/lumarsoft`
-   - `ARCA_GATEWAY_TOKEN=<el mismo LUMARSOFT_API_TOKEN del VPS>`
-   - **Sin** `ARCA_CERT_BASE64` ni `ARCA_KEY_BASE64`: el certificado va en el VPS
+3. Cargar todas las variables `ARCA_*` en **Vercel → Settings → Environment
+   Variables**, incluidas `ARCA_CERT_BASE64` y `ARCA_KEY_BASE64`
 
 Con un solo computador fiscal alcanza para todos los webservices; no hace falta
 uno por servicio.
@@ -204,6 +184,9 @@ PDF sale con una banda amarilla que lo aclara.
 | `lib/arca/config.ts` | Lee el certificado y mapea nuestros labels a códigos de ARCA |
 | `lib/arca/ticket.ts` | Ticket de acceso WSAA persistido en Firestore |
 | `lib/arca/emitir.ts` | Arma el comprobante y pide el CAE |
+| `lib/arca/red.ts` | TLS relajado para ARCA, header SOAPAction y causa real de los errores |
+| `lib/arca/diagnostico.ts` | Traduce fallas de ARCA a algo accionable |
+| `app/api/facturas/diagnostico/route.ts` | El botón "Probar conexión" |
 | `lib/facturas/pdf.tsx` | Render del PDF con QR |
 | `lib/server/require-admin.ts` | Guard de los endpoints |
 | `app/api/facturas/emitir/route.ts` | Orquesta: valida, emite, guarda, manda mail |

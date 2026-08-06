@@ -7,7 +7,6 @@ import {
   emitirFacturaC,
   type DatosEmision,
 } from "@/lib/arca/emitir";
-import { emitirViaGateway } from "@/lib/arca/gateway";
 import { renderFacturaPdf } from "@/lib/facturas/pdf";
 import { adminDb } from "@/lib/server/firebase-admin";
 import { NoAutorizado, requireAdmin } from "@/lib/server/require-admin";
@@ -16,10 +15,6 @@ import { nombrePdf } from "@/lib/admin/facturas";
 // firebase-admin y @react-pdf/renderer necesitan Node, no Edge.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// ARCA responde de forma errática a IPs no argentinas: desde iad1 (Washington)
-// `wsaa.afip.gov.ar` contesta pero `servicios1.afip.gov.ar` tira "fetch failed".
-// gru1 (São Paulo) es la región de Vercel más cercana a Argentina.
-export const preferredRegion = "gru1";
 export const maxDuration = 60;
 
 interface Body extends DatosEmision {
@@ -84,13 +79,10 @@ export async function POST(request: Request) {
     );
   }
 
-  // 4. La emisión propiamente dicha. Si hay pasarela configurada, el CAE lo
-  //    pide el VPS: ARCA no atiende bien a las IPs de Vercel.
+  // 4. La emisión propiamente dicha.
   let resultado;
   try {
-    resultado = cfg.usaGateway
-      ? await emitirViaGateway(cfg, body)
-      : await emitirFacturaC(cfg, body);
+    resultado = await emitirFacturaC(cfg, body);
   } catch (err) {
     await lockRef.set({ estado: "error", hasta: 0 }, { merge: true });
     if (err instanceof ArcaRechazo) {

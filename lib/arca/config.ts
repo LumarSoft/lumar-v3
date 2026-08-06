@@ -33,17 +33,8 @@ export interface EmisorConfig {
   cuit: number;
   ptoVta: number;
   produccion: boolean;
-  /** Vacíos cuando se emite por la pasarela: el certificado vive en el VPS. */
   cert: string;
   key: string;
-  /**
-   * Si está seteada, no hablamos con ARCA desde acá: le mandamos la factura a
-   * esta URL y el VPS pide el CAE. ARCA no atiende de forma confiable a las
-   * IPs de Vercel; desde un servidor argentino sí.
-   */
-  gatewayUrl: string;
-  gatewayToken: string;
-  usaGateway: boolean;
   razonSocial: string;
   domicilio: string;
   inicioActividades: string;
@@ -87,8 +78,6 @@ function pem(nombre: string): string {
 
 export function leerConfig(): EmisorConfig {
   const produccion = process.env.ARCA_PRODUCCION === "true";
-  const gatewayUrl = (process.env.ARCA_GATEWAY_URL ?? "").replace(/\/+$/, "");
-  const usaGateway = gatewayUrl.length > 0;
   const cuit = Number(requerido("ARCA_CUIT").replace(/\D/g, ""));
   if (!Number.isFinite(cuit) || String(cuit).length !== 11) {
     throw new ConfigError("ARCA_CUIT tiene que ser un CUIT de 11 dígitos.");
@@ -97,42 +86,12 @@ export function leerConfig(): EmisorConfig {
   if (!Number.isFinite(ptoVta) || ptoVta <= 0) {
     throw new ConfigError("ARCA_PTO_VTA tiene que ser un número mayor a cero.");
   }
-  if (usaGateway && !process.env.ARCA_GATEWAY_TOKEN) {
-    throw new ConfigError(
-      "Hay ARCA_GATEWAY_URL pero falta ARCA_GATEWAY_TOKEN (el secreto compartido con el VPS).",
-    );
-  }
-
-  // Sin certificado y sin pasarela no hay forma de pedir un CAE. Pasa en el
-  // deploy de Vercel, que a propósito no tiene el certificado: ARCA no atiende
-  // a sus IPs, así que se emite levantando el panel localmente.
-  if (!usaGateway && !process.env.ARCA_CERT_BASE64) {
-    throw new ConfigError(
-      "Esta instancia no está configurada para emitir. ARCA no acepta conexiones " +
-        "desde los servidores de Vercel, así que la emisión se hace con el panel " +
-        "corriendo en tu máquina: cloná el repo, poné el certificado en .env.local " +
-        "y levantá con `pnpm dev`. El resto del panel funciona normalmente acá.",
-    );
-  }
-
   return {
     cuit,
     ptoVta,
     produccion,
-    // Con pasarela el certificado no vive acá, así que no se exige.
-    cert: usaGateway
-      ? process.env.ARCA_CERT_BASE64
-        ? pem("ARCA_CERT_BASE64")
-        : ""
-      : pem("ARCA_CERT_BASE64"),
-    key: usaGateway
-      ? process.env.ARCA_KEY_BASE64
-        ? pem("ARCA_KEY_BASE64")
-        : ""
-      : pem("ARCA_KEY_BASE64"),
-    gatewayUrl,
-    gatewayToken: process.env.ARCA_GATEWAY_TOKEN ?? "",
-    usaGateway,
+    cert: pem("ARCA_CERT_BASE64"),
+    key: pem("ARCA_KEY_BASE64"),
     razonSocial: process.env.ARCA_RAZON_SOCIAL ?? "",
     domicilio: process.env.ARCA_DOMICILIO ?? "",
     inicioActividades: process.env.ARCA_INICIO_ACTIVIDADES ?? "",
