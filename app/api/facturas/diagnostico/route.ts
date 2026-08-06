@@ -153,21 +153,47 @@ export async function GET(request: Request) {
   try {
     const puntos = await wsfe.getPuntosVenta(auth);
     const lista = Array.isArray(puntos) ? puntos : [puntos];
+
+    // Para cada punto de venta habilitado, en qué número de Factura C va.
+    // Así se ve de un vistazo cuál está en uso y cuál arranca de cero.
+    const conNumeracion = await Promise.all(
+      lista.map(async (p) => {
+        const nro = Number((p as { Nro?: number }).Nro);
+        try {
+          const ultimo = await wsfe.ultimoComprobante(
+            auth,
+            nro,
+            CBTE_TIPO_FACTURA_C,
+          );
+          return {
+            ...(p as object),
+            ultimaFacturaC: ultimo,
+            proximaSeria: ultimo + 1,
+            enUso: cfg.ptoVta === nro ? "← el del .env" : undefined,
+          };
+        } catch {
+          return { ...(p as object), ultimaFacturaC: "no se pudo consultar" };
+        }
+      }),
+    );
+
     pasos.push({
-      paso: "Puntos de venta habilitados",
+      paso: "Puntos de venta habilitados para Web Services",
       ok: true,
-      detalle: lista,
+      detalle: conNumeracion,
     });
 
     const configurado = lista.find(
       (p) => Number((p as { Nro?: number }).Nro) === cfg.ptoVta,
     );
     pasos.push({
-      paso: `El punto de venta ${cfg.ptoVta} del .env existe`,
+      paso: `El punto de venta ${cfg.ptoVta} del .env está habilitado`,
       ok: Boolean(configurado),
       detalle:
         configurado ??
-        "No aparece en la lista. Usá alguno de los números de arriba en ARCA_PTO_VTA.",
+        `No figura entre los habilitados para Web Services. Ojo: los puntos de venta del ` +
+          `facturador en línea (RCEL) NO sirven acá, ARCA lleva padrones separados. ` +
+          `Poné en ARCA_PTO_VTA alguno de los números de arriba.`,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -217,8 +243,9 @@ export async function GET(request: Request) {
       ok: false,
       detalle: {
         error: msg,
-        nota: /empadronado|10016|602/i.test(msg)
-          ? `WSFE no reconoce el punto de venta ${cfg.ptoVta}. Probá con 1, o con el número que diste de alta como "Web Services" en ARCA.`
+        nota: /11002|empadronado|10016|602/i.test(msg)
+          ? `El punto de venta ${cfg.ptoVta} no está habilitado para Web Services. ` +
+            `Los del facturador en línea no sirven acá. Usá uno de los que lista el paso anterior.`
           : "No pude consultar el último comprobante.",
       },
     });

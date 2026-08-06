@@ -112,14 +112,47 @@ PDF sale con una banda amarilla que lo aclara.
 
 ## 8. Pasar a producción
 
-1. Repetir el trámite del certificado por **Administración de Certificados
-   Digitales** (el de homologación no sirve) y vincularlo desde **Administrador
-   de Relaciones de Clave Fiscal** al servicio de Facturación Electrónica
-2. Reemplazar `ARCA_CERT_BASE64` y `ARCA_KEY_BASE64` por los nuevos
-3. `ARCA_PRODUCCION=true`
-4. Cargar todas las variables `ARCA_*` en **Vercel → Settings → Environment
+El certificado de homologación **no sirve** en producción: lo firma la CA
+"Computadores Test" y ARCA lo rechaza. Hay que sacar uno nuevo. Todo se hace
+desde **Administrador de Relaciones de Clave Fiscal** (clave fiscal nivel 3).
+
+**A. Habilitar la app de certificados** (solo si no la tenés en Mis Servicios)
+
+> Administrador de Relaciones → **Adherir Servicio** →
+> `ARCA > Servicios interactivos > Administración de Certificados Digitales`
+
+**B. Crear el certificado**
+
+Entrar a "Administración de Certificados Digitales" → crear un alias (ej.
+`lumar-prod`) → pegar el mismo `lumar.csr` → descargar el `.crt`.
+Ese alias es lo que ARCA llama **Computador Fiscal**.
+
+**C. Delegar el webservice al certificado**
+
+> Administrador de Relaciones → **Nueva Relación** → Buscar servicio →
+> agrupación **Webservices** → **Facturación Electrónica** →
+> en "Representante" elegir el **computador fiscal** del desplegable → Confirmar
+
+Ojo: acá NO es "Servicios interactivos" ni el Facturador en línea. La agrupación
+correcta es **Webservices**.
+
+**D. Cargar y activar**
+
+```bash
+node scripts/arca-env.mjs ~/arca-lumar/lumar-prod.crt ~/arca-lumar/lumar.key
+```
+
+La clave privada es la misma; solo cambia el certificado. Después:
+
+1. `ARCA_PRODUCCION=true` en `.env`
+2. Reiniciar y correr **"Probar conexión con ARCA"**: el paso del certificado
+   debe decir `tipo: producción` y quedar en verde. Si sigue diciendo
+   "Computadores Test", el certificado cargado es el de pruebas.
+3. Cargar todas las variables `ARCA_*` en **Vercel → Settings → Environment
    Variables**
-5. Correr "Probar conexión" de nuevo: el punto de venta puede tener otro número
+
+Con un solo computador fiscal alcanza para todos los webservices; no hace falta
+uno por servicio.
 
 En homologación el CAE es válido pero el comprobante no tiene efecto fiscal, y el
 PDF sale con una banda amarilla que lo aclara.
