@@ -25,3 +25,27 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Seguridad (16/11/2026): que no se suban claves, volcados ni archivos subidos
+# Variables de entorno: el .env* de arriba también tapaba el ejemplo, que sí se versiona
+!.env.example
+# Volcados de base: .sql sueltos en la raíz o con dump/backup en el nombre, y comprimidos
+/*.sql
+*dump*.sql
+*backup*.sql
+*.sql.gz
+*.dump
+# Llaves y certificados (incluye el .crt y la .key de ARCA que lee scripts/arca-env.mjs)
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+# Cuenta de servicio de Firebase: va en base64 en la variable de entorno, nunca el JSON en el repo
+serviceAccount*.json
+*service-account*.json
+*firebase-adminsdk*.json
+# Básicos que faltaban
+/coverage
+.DS_Store
+*.log
